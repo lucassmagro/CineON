@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import { fileURLToPath } from "node:url";
 import { CORS_ORIGENS } from "./config.js";
 import { criarContainer, type Container } from "./container.js";
 import { rotaNaoEncontrada, tratarErros } from "./middlewares/erros.js";
@@ -26,6 +27,10 @@ export function criarApp(container: Container = criarContainer()) {
     const banco = await container.verificarBanco().catch(() => false);
     res.status(banco ? 200 : 503).json({ status: banco ? "ok" : "erro", banco });
   });
+
+  // pôsteres dos filmes da seed; o caminho vale tanto rodando de src/ quanto de dist/
+  const posteres = fileURLToPath(new URL("../public/posteres", import.meta.url));
+  app.use("/posteres", express.static(posteres, { maxAge: "7d" }));
 
   app.use(criarRotas(container));
   app.use(rotaNaoEncontrada);

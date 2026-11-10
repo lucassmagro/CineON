@@ -10,6 +10,7 @@ const campos = {
   duracaoMin: true,
   classificacao: true,
   genero: true,
+  posterUrl: true,
   ativo: true,
 } satisfies Prisma.FilmeSelect;
 

@@ -28,10 +28,11 @@ export type Filme = {
   duracaoMin: number;
   classificacao: string;
   genero: string;
+  posterUrl: string | null;
   ativo: boolean;
 };
 
-export type DadosFilme = Omit<Filme, "id" | "ativo">;
+export type DadosFilme = Omit<Filme, "id" | "ativo" | "posterUrl"> & { posterUrl?: string | null };
 
 export type Sala = { id: number; nome: string; ativa: boolean };
 
@@ -51,7 +52,7 @@ export type Sessao = {
 };
 
 export type SessaoDetalhada = Sessao & {
-  filme: { id: number; titulo: string; duracaoMin: number; classificacao: string; genero: string };
+  filme: { id: number; titulo: string; duracaoMin: number; classificacao: string; genero: string; posterUrl: string | null };
   sala: { id: number; nome: string };
 };
 

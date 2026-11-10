@@ -18,17 +18,30 @@ export const Login = z.object({
   senha: z.string().min(1),
 });
 
+// caminho servido pela própria API (/posteres/arquivo.jpg) ou um endereço http(s); vazio tira o pôster
+const Poster = z.preprocess(
+  (v) => (typeof v === "string" && v.trim() === "" ? null : v),
+  z.string().trim().max(300).regex(/^(\/|https?:\/\/)\S+$/, "Use um caminho /posteres/... ou um endereço http(s)").nullable(),
+);
+
 const CLASSIFICACOES = ["L", "10", "12", "14", "16", "18"] as const;
 
-export const NovoFilme = z.object({
+const CamposFilme = z.object({
   titulo: texto(1, 150),
-  sinopse: z.string().trim().max(2000).default(""),
+  sinopse: z.string().trim().max(2000),
   duracaoMin: z.number().int().min(1).max(600),
   classificacao: z.enum(CLASSIFICACOES),
   genero: texto(1, 50),
+  posterUrl: Poster,
 });
 
-export const AlteracaoFilme = NovoFilme.partial()
+export const NovoFilme = CamposFilme.extend({
+  sinopse: CamposFilme.shape.sinopse.default(""),
+  posterUrl: Poster.optional(),
+});
+
+// sem default aqui: no zod 4 o partial ainda aplica o default e apagaria a sinopse num PATCH
+export const AlteracaoFilme = CamposFilme.partial()
   .extend({ ativo: z.boolean().optional() })
   .strict();
 

@@ -9,7 +9,7 @@ export function paraNumero(valor: Prisma.Decimal | number | string): number {
 }
 
 export const incluirSessaoDetalhada = {
-  filme: { select: { id: true, titulo: true, duracaoMin: true, classificacao: true, genero: true } },
+  filme: { select: { id: true, titulo: true, duracaoMin: true, classificacao: true, genero: true, posterUrl: true } },
   sala: { select: { id: true, nome: true } },
 } satisfies Prisma.SessaoInclude;
 

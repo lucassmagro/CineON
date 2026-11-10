@@ -40,6 +40,32 @@ test("autenticação: cadastro, login, /auth/me e erros", async () => {
   assert.equal(r.status, 400);
 });
 
+test("filme: pôster opcional e alteração parcial não apaga a sinopse", async () => {
+  const titulo = `Filme Teste ${sufixo()}`;
+  let r = await chamar(api, "POST", "/filmes", {
+    token: operador,
+    corpo: { titulo, sinopse: "Uma sinopse", duracaoMin: 90, classificacao: "L", genero: "Teste", posterUrl: "/posteres/forrest-commit.jpg" },
+  });
+  assert.equal(r.status, 201);
+  const id = r.corpo.id as number;
+  assert.equal(r.corpo.posterUrl, "/posteres/forrest-commit.jpg");
+
+  r = await chamar(api, "PUT", `/filmes/${id}`, { token: operador, corpo: { ativo: false } });
+  assert.equal(r.status, 200);
+  assert.equal(r.corpo.sinopse, "Uma sinopse");
+  assert.equal(r.corpo.posterUrl, "/posteres/forrest-commit.jpg");
+
+  // vazio tira o pôster; esquema estranho é recusado
+  r = await chamar(api, "PUT", `/filmes/${id}`, { token: operador, corpo: { posterUrl: "" } });
+  assert.equal(r.corpo.posterUrl, null);
+  r = await chamar(api, "PUT", `/filmes/${id}`, { token: operador, corpo: { posterUrl: "javascript:alert(1)" } });
+  assert.equal(r.status, 400);
+
+  const img = await fetch(`${api.base}/posteres/forrest-commit.jpg`);
+  assert.equal(img.status, 200);
+  assert.equal(img.headers.get("content-type"), "image/jpeg");
+});
+
 test("gerência: sala gera assentos (procedure), sessão gera mapa (trigger), sem sobreposição", async () => {
   const c = await cenario(api, operador, { filas: 3, porFila: 4 });
   assert.equal(c.assentos.length, 12);
