@@ -66,9 +66,6 @@ const escuro: Paleta = {
 
 export const coresFundo = { claro: claro.fundo, escuro: escuro.fundo };
 
-// as duas paletas inteiras, pras miniaturas do seletor de aparência
-export const paletas = { claro, escuro };
-
 export function useTema(): Paleta {
   const sistema = useColorScheme();
   const aparencia = useContext(ContextoAparencia);

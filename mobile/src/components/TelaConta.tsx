@@ -5,16 +5,15 @@ import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { Arte } from '@/components/Arte';
-import { SeletorAparencia } from '@/components/SeletorAparencia';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCarregar } from '@/hooks/useCarregar';
 import { useAgora } from '@/hooks/useContagem';
 import type { Ingresso } from '@/models/tipos';
 import { ingressoService } from '@/services/cineon';
 import { Surgir } from '@/ui/animacoes';
-import { useAparencia } from '@/ui/aparencia';
+import { useAparencia, type Aparencia } from '@/ui/aparencia';
 import { tomDoTexto } from '@/ui/arteFilme';
-import { Etiqueta, Linha, Secao, Tela, Texto } from '@/ui/componentes';
+import { Etiqueta, Linha, Secao, Segmentos, Tela, Texto } from '@/ui/componentes';
 import { espaco, raio, useMargem, useTema } from '@/ui/tema';
 import { Tocavel } from '@/ui/Tocavel';
 import { confirmar } from '@/utils/dialogos';
@@ -101,7 +100,17 @@ export function TelaConta() {
 
       <Surgir indice={2}>
         <Secao titulo="Aparência" nota={preferencia === 'sistema' ? 'No automático, o CineON acompanha o modo claro ou escuro do aparelho.' : undefined}>
-          <SeletorAparencia valor={preferencia} aoMudar={(v) => definir(v)} />
+          <View style={estilos.aparencia}>
+            <Segmentos<Aparencia>
+              opcoes={[
+                { valor: 'sistema', rotulo: 'Automático' },
+                { valor: 'claro', rotulo: 'Claro' },
+                { valor: 'escuro', rotulo: 'Escuro' },
+              ]}
+              valor={preferencia}
+              aoMudar={(v) => definir(v)}
+            />
+          </View>
         </Secao>
       </Surgir>
 
@@ -156,6 +165,7 @@ const estilos = StyleSheet.create({
   numero: { flex: 1, alignItems: 'center', paddingHorizontal: espaco.xs },
   numeroValor: { fontVariant: ['tabular-nums'], letterSpacing: -0.5 },
   divisor: { width: StyleSheet.hairlineWidth, alignSelf: 'stretch', marginVertical: espaco.xs },
+  aparencia: { padding: espaco.m },
   sair: { minHeight: 50, borderRadius: raio.medio, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   rodape: { alignItems: 'center', gap: 2, marginTop: espaco.xxl },
   rodapeTexto: { textAlign: 'center' },
