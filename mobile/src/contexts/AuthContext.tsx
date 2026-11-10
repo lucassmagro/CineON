@@ -2,7 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import type { Usuario } from '@/models/tipos';
-import { definirToken, quandoSessaoExpirar } from '@/services/api';
+import { definirToken, ErroApi, quandoSessaoExpirar } from '@/services/api';
 import { authService } from '@/services/cineon';
 import { lerToken, removerToken, salvarToken } from '@/storage/tokenStorage';
 
@@ -36,8 +36,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!token) return;
         definirToken(token);
         setUsuario(await authService.eu());
-      } catch {
-        await sair();
+      } catch (e) {
+        // sem rede ou API fora do ar: mantém o token salvo pra tentar de novo no próximo carregamento.
+        // Qualquer outro erro (token vencido ou inválido) encerra a sessão.
+        if (!(e instanceof ErroApi && e.status === 0)) await sair();
       } finally {
         setVerificando(false);
       }
