@@ -1,0 +1,130 @@
+### precisa da extensão REST Client do VS Code e da API rodando (npm run dev) com o seed
+
+@base = http://localhost:3000
+
+### saúde
+GET {{base}}/saude
+
+### login do operador
+# @name loginOperador
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "operador@cineon.com", "senha": "cineon123" }
+
+### login de cliente
+# @name loginCliente
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "ana@cineon.com", "senha": "cineon123" }
+
+###
+@op = {{loginOperador.response.body.accessToken}}
+@cli = {{loginCliente.response.body.accessToken}}
+
+### cadastro
+POST {{base}}/auth/cadastro
+Content-Type: application/json
+
+{ "nome": "Carla Dias", "email": "carla@exemplo.com", "senha": "senha123" }
+
+### usuário logado
+GET {{base}}/auth/me
+Authorization: Bearer {{cli}}
+
+### novo operador
+POST {{base}}/usuarios/operadores
+Authorization: Bearer {{op}}
+Content-Type: application/json
+
+{ "nome": "Bilheteria 2", "email": "bilheteria2@cineon.com", "senha": "cineon123" }
+
+### filmes em cartaz
+GET {{base}}/filmes?emCartaz=true
+
+### todos os filmes
+GET {{base}}/filmes
+
+### um filme com as próximas sessões
+GET {{base}}/filmes/1
+
+### criar filme
+POST {{base}}/filmes
+Authorization: Bearer {{op}}
+Content-Type: application/json
+
+{ "titulo": "Noite no Museu do Café", "sinopse": "Comédia em Chapecó.", "duracaoMin": 100, "classificacao": "L", "genero": "Comédia" }
+
+### desativar filme
+PUT {{base}}/filmes/1
+Authorization: Bearer {{op}}
+Content-Type: application/json
+
+{ "ativo": false }
+
+### salas
+GET {{base}}/salas
+Authorization: Bearer {{op}}
+
+### criar sala
+POST {{base}}/salas
+Authorization: Bearer {{op}}
+Content-Type: application/json
+
+{ "nome": "Sala VIP", "filas": 4, "assentosPorFila": 6 }
+
+### próximas sessões (aceita ?filmeId=1&data=2026-11-24)
+GET {{base}}/sessoes
+
+### mapa de assentos
+GET {{base}}/sessoes/40/assentos
+Authorization: Bearer {{cli}}
+
+### criar sessão
+POST {{base}}/sessoes
+Authorization: Bearer {{op}}
+Content-Type: application/json
+
+{ "filmeId": 1, "salaId": 1, "inicio": "2026-11-30T10:00:00-03:00", "preco": 24.9 }
+
+### reservar (troque sessaoId e assentoIds pelos do mapa)
+# @name reserva
+POST {{base}}/reservas
+Authorization: Bearer {{cli}}
+Content-Type: application/json
+
+{ "sessaoId": 40, "assentoIds": [1, 2] }
+
+###
+@reservaId = {{reserva.response.body.id}}
+
+GET {{base}}/reservas/{{reservaId}}
+Authorization: Bearer {{cli}}
+
+### pagar
+POST {{base}}/reservas/{{reservaId}}/pagamento
+Authorization: Bearer {{cli}}
+
+### desistir da reserva
+DELETE {{base}}/reservas/{{reservaId}}
+Authorization: Bearer {{cli}}
+
+### meus ingressos
+GET {{base}}/ingressos/meus
+Authorization: Bearer {{cli}}
+
+### validar ingresso
+POST {{base}}/ingressos/validacao
+Authorization: Bearer {{op}}
+Content-Type: application/json
+
+{ "codigo": "COLE-O-CODIGO" }
+
+### relatório de ocupação
+GET {{base}}/relatorios/ocupacao?inicio=2026-11-01T00:00:00-03:00&fim=2026-12-01T00:00:00-03:00
+Authorization: Bearer {{op}}
+
+###
+GET {{base}}/relatorios/vendas?inicio=2026-11-01T00:00:00-03:00&fim=2026-12-01T00:00:00-03:00
+Authorization: Bearer {{op}}
