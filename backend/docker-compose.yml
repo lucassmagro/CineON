@@ -1,0 +1,15 @@
+# banco de desenvolvimento (docker compose up -d). Porta 5433 pra não bater com algum Postgres instalado na máquina.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cineon
+    ports:
+      - "5433:5432"
+    volumes:
+      - cineon-dados:/var/lib/postgresql/data
+
+volumes:
+  cineon-dados:
