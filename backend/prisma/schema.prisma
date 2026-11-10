@@ -1,0 +1,202 @@
+// Nomes em snake_case no banco (@@map/@map) pra facilitar o SQL escrito à mão.
+// CHECKs, EXCLUDE, índice parcial, triggers, procedure e função estão na migração objetos_sql.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Papel {
+  CLIENTE
+  OPERADOR
+}
+
+enum StatusAssento {
+  LIVRE
+  RESERVADO
+  VENDIDO
+}
+
+enum StatusReserva {
+  PENDENTE
+  PAGA
+  EXPIRADA
+  CANCELADA
+}
+
+enum CanalVenda {
+  ONLINE
+  BALCAO
+}
+
+enum StatusIngresso {
+  VALIDO
+  UTILIZADO
+  CANCELADO
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nome      String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(150)
+  senhaHash String   @map("senha_hash") @db.VarChar(100) // hash bcrypt
+  papel     Papel    @default(CLIENTE)
+  criadoEm  DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+
+  reservas           Reserva[]
+  ingressosValidados Ingresso[] @relation("ValidadoPor")
+
+  @@map("usuarios")
+}
+
+model Filme {
+  id            Int      @id @default(autoincrement())
+  titulo        String   @db.VarChar(150)
+  sinopse       String   @default("")
+  duracaoMin    Int      @map("duracao_min")
+  classificacao String   @db.VarChar(10) // L, 10, 12, 14, 16, 18
+  genero        String   @db.VarChar(50)
+  ativo         Boolean  @default(true)
+  criadoEm      DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+
+  sessoes Sessao[]
+
+  @@map("filmes")
+}
+
+model Sala {
+  id    Int     @id @default(autoincrement())
+  nome  String  @unique @db.VarChar(50)
+  ativa Boolean @default(true)
+
+  assentos Assento[]
+  sessoes  Sessao[]
+
+  @@map("salas")
+}
+
+// assentos fixos da sala, gerados pela procedure sp_gerar_assentos_sala
+model Assento {
+  id     Int    @id @default(autoincrement())
+  salaId Int    @map("sala_id")
+  fila   String @db.VarChar(2)
+  numero Int
+
+  sala    Sala            @relation(fields: [salaId], references: [id], onDelete: Cascade)
+  sessoes AssentoSessao[]
+
+  @@unique([salaId, fila, numero])
+  @@map("assentos")
+}
+
+model Sessao {
+  id      Int      @id @default(autoincrement())
+  filmeId Int      @map("filme_id")
+  salaId  Int      @map("sala_id")
+  inicio  DateTime @db.Timestamptz(3)
+  fim     DateTime @db.Timestamptz(3) // inicio + duração do filme + limpeza
+  preco   Decimal  @db.Decimal(10, 2)
+
+  filme    Filme           @relation(fields: [filmeId], references: [id], onDelete: Restrict)
+  sala     Sala            @relation(fields: [salaId], references: [id], onDelete: Restrict)
+  assentos AssentoSessao[]
+  reservas Reserva[]
+
+  @@index([filmeId, inicio])
+  @@index([inicio])
+  @@map("sessoes")
+}
+
+// Mapa de assentos da sessão: uma linha por assento, criada pela trigger
+// trg_sessao_gera_mapa. A PK composta garante um único estado por assento na
+// sessão, e é essa linha que travamos com FOR UPDATE na hora de reservar.
+model AssentoSessao {
+  sessaoId     Int           @map("sessao_id")
+  assentoId    Int           @map("assento_id")
+  status       StatusAssento @default(LIVRE)
+  reservaId    Int?          @map("reserva_id")
+  atualizadoEm DateTime      @default(now()) @updatedAt @map("atualizado_em") @db.Timestamptz(3)
+
+  sessao   Sessao    @relation(fields: [sessaoId], references: [id], onDelete: Cascade)
+  assento  Assento   @relation(fields: [assentoId], references: [id], onDelete: Restrict)
+  reserva  Reserva?  @relation(fields: [reservaId], references: [id], onDelete: SetNull)
+  ingresso Ingresso?
+
+  @@id([sessaoId, assentoId])
+  @@index([reservaId])
+  @@map("assentos_sessao")
+}
+
+model Reserva {
+  id          Int           @id @default(autoincrement())
+  usuarioId   Int           @map("usuario_id") // cliente, ou o operador nas vendas do balcão
+  sessaoId    Int           @map("sessao_id")
+  status      StatusReserva @default(PENDENTE)
+  canal       CanalVenda    @default(ONLINE)
+  nomeCliente String?       @map("nome_cliente") @db.VarChar(100) // opcional, só no balcão
+  criadaEm    DateTime      @default(now()) @map("criada_em") @db.Timestamptz(3)
+  expiraEm    DateTime      @map("expira_em") @db.Timestamptz(3)
+  valorTotal  Decimal       @default(0) @map("valor_total") @db.Decimal(10, 2)
+
+  usuario   Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Restrict)
+  sessao    Sessao          @relation(fields: [sessaoId], references: [id], onDelete: Restrict)
+  assentos  AssentoSessao[]
+  pagamento Pagamento?
+  ingressos Ingresso[]
+
+  @@index([usuarioId, criadaEm(sort: Desc)])
+  @@index([sessaoId])
+  @@map("reservas")
+}
+
+// pagamento simulado, 1:1 com a reserva
+model Pagamento {
+  id        Int      @id @default(autoincrement())
+  reservaId Int      @unique @map("reserva_id")
+  valor     Decimal  @db.Decimal(10, 2)
+  transacao String   @unique @db.VarChar(36) // uuid gerado na hora
+  pagoEm    DateTime @default(now()) @map("pago_em") @db.Timestamptz(3)
+
+  reserva Reserva @relation(fields: [reservaId], references: [id], onDelete: Restrict)
+
+  @@map("pagamentos")
+}
+
+model Ingresso {
+  id            Int            @id @default(autoincrement())
+  codigo        String         @unique @db.VarChar(12)
+  reservaId     Int            @map("reserva_id")
+  sessaoId      Int            @map("sessao_id")
+  assentoId     Int            @map("assento_id")
+  valor         Decimal        @db.Decimal(10, 2)
+  status        StatusIngresso @default(VALIDO)
+  emitidoEm     DateTime       @default(now()) @map("emitido_em") @db.Timestamptz(3)
+  utilizadoEm   DateTime?      @map("utilizado_em") @db.Timestamptz(3)
+  validadoPorId Int?           @map("validado_por_id")
+
+  reserva       Reserva       @relation(fields: [reservaId], references: [id], onDelete: Restrict)
+  // FK composta pro mapa + o @@unique abaixo: o banco não deixa vender o mesmo assento duas vezes
+  assentoSessao AssentoSessao @relation(fields: [sessaoId, assentoId], references: [sessaoId, assentoId], onDelete: Restrict)
+  validadoPor   Usuario?      @relation("ValidadoPor", fields: [validadoPorId], references: [id], onDelete: SetNull)
+
+  @@unique([sessaoId, assentoId])
+  @@index([reservaId])
+  @@map("ingressos")
+}
+
+// preenchida pela trigger de auditoria
+model LogAuditoria {
+  id           BigInt   @id @default(autoincrement())
+  tabela       String   @db.VarChar(50)
+  operacao     String   @db.VarChar(10)
+  dadosAntigos Json?    @map("dados_antigos")
+  dadosNovos   Json?    @map("dados_novos")
+  ocorridoEm   DateTime @default(now()) @map("ocorrido_em") @db.Timestamptz(3)
+
+  @@index([tabela, ocorridoEm])
+  @@map("log_auditoria")
+}
