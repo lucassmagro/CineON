@@ -30,6 +30,7 @@ rectangle "CineON" {
   usecase "UC15 Relatório de vendas\ne ocupação" as UC15
   usecase "UC16 Cadastrar operador" as UC16
   usecase "UC17 Expirar reservas\nvencidas" as UC17
+  usecase "UC18 Cancelar\ningressos" as UC18
 }
 
 Visitante --> UC01
@@ -56,4 +57,5 @@ Gerencia --> UC15
 Gerencia --> UC16
 
 Sistema --> UC17
+Cliente --> UC18
 @enduml

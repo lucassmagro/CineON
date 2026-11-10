@@ -25,6 +25,7 @@ O diagrama está em [casos-de-uso.puml](casos-de-uso.puml) (PlantUML). Para gera
 | UC07 | Emitir ingressos | (include UC06) | 1 ingresso por assento, código único de 10 caracteres | RN05 |
 | UC08 | Ver meus ingressos | Cliente | próximos (com código) e anteriores | RN10 |
 | UC09 | Desistir da reserva | Cliente | libera os assentos na hora | — |
+| UC18 | Cancelar ingressos | Cliente | no passe aberto, "Cancelar ingressos" → escolhe os lugares → confirma → lugares livres e valor estornado | RN16 |
 | UC10 | Vender no balcão | Bilheteria | escolhe a sessão → mapa → reserva (nome do cliente opcional) → pagamento | canal BALCAO |
 | UC11 | Validar ingresso | Bilheteria | digita o código → entrada liberada (UTILIZADO) ou motivo da recusa | RN06 |
 | UC12 | Manter filmes | Gerência | criar, editar, desativar, excluir (sem sessões) | RN12 |

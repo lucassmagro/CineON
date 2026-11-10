@@ -11,7 +11,7 @@ Aplicativo de **bilheteria de cinema com marcação de assentos**. Trabalho Fina
 
 ## O que o sistema faz
 
-- **Cliente**: vê os filmes em cartaz e as sessões, escolhe os assentos no **mapa** (livre / reservado / vendido), tem alguns minutos para pagar (reserva temporária com expiração), paga (simulado) e recebe os **ingressos com código único**.
+- **Cliente**: vê os filmes em cartaz e as sessões, escolhe os assentos no **mapa** (livre / reservado / vendido), tem alguns minutos para pagar (reserva temporária com expiração), paga (simulado) e recebe os **ingressos com código único**, que pode cancelar até 30 min antes da sessão (o lugar volta a ficar livre).
 - **Bilheteria (operador)**: vende no balcão e **valida os ingressos na entrada**, marcando-os como utilizados.
 - **Gerência (operador)**: cadastra filmes, salas (os assentos são gerados automaticamente) e sessões, e consulta o **relatório de vendas e ocupação**.
 - **Garantia central**: um assento de uma sessão **nunca** é vendido duas vezes, nem com cliques simultâneos. Detalhes em [docs/concorrencia.md](docs/concorrencia.md).

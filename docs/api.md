@@ -97,6 +97,7 @@ Reserva = {
 | GET | `/ingressos/meus` | 👤 | — | 200 `Ingresso[]` |
 | GET | `/ingressos/:codigo` | 👤 dono ou 🛠 | — | 200 `Ingresso` |
 | POST | `/ingressos/validacao` | 🛠 | `{ codigo }` | 200 (UTILIZADO) · 404 · **409 já utilizado** (`detalhes.utilizadoEm`) · 422 fora do horário |
+| POST | `/ingressos/cancelamento` | 👤 dono ou 🛠 | `{ codigos: string[] }` (1 a 100, mesma sessão) | 200 `Ingresso[]` (CANCELADO) · 403 de outra pessoa · 404 algum código não existe · 409 já usado ou cancelado · 422 fora do prazo |
 
 `Ingresso = { codigo, status, valor, fila, numero, assento, emitidoEm, utilizadoEm, nomeCliente, sessao: Sessao }`
 

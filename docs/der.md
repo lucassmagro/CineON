@@ -86,7 +86,7 @@ erDiagram
         varchar codigo UK "10 caracteres"
         int reserva_id FK
         int sessao_id FK "FK composta -> assentos_sessao"
-        int assento_id FK "UNIQUE (sessao_id, assento_id)"
+        int assento_id FK "UNIQUE parcial (sessao_id, assento_id) se não CANCELADO"
         decimal valor "CHECK >= 0"
         enum status "VALIDO | UTILIZADO | CANCELADO"
         timestamptz emitido_em
@@ -120,7 +120,7 @@ erDiagram
 | `reservas` | `(usuario_id, criada_em DESC)`, `(sessao_id)` | índices | consultas por usuário e por sessão |
 | `pagamentos` | `reserva_id` | UNIQUE (1:1) | uma reserva tem no máximo um pagamento |
 | `ingressos` | `codigo` | UNIQUE | código único, usado na validação |
-| `ingressos` | `(sessao_id, assento_id)` | **UNIQUE + FK composta** | **o banco recusa um segundo ingresso para o mesmo assento da mesma sessão** |
+| `ingressos` | `(sessao_id, assento_id)` | **UNIQUE parcial `WHERE status <> 'CANCELADO'` + FK composta** | **o banco recusa um segundo ingresso ativo para o mesmo assento da mesma sessão; um cancelado não bloqueia a revenda** |
 | vários | `ck_*` | CHECK | preço, duração, número e valores não negativos; datas coerentes |
 
 ## Objetos programáveis

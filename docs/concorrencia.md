@@ -8,7 +8,7 @@
 |---|---|---|
 | 1 | **Regra de negócio**: só reserva assento disponível (`estaDisponivel`) | `backend/src/services/ReservaService.ts` |
 | 2 | **Transação + lock pessimista** (`SELECT … FOR UPDATE`, em ordem fixa) | `backend/src/repositories/MapaAssentosPrismaRepository.ts` |
-| 3 | **Constraints**: PK `assentos_sessao(sessao_id, assento_id)` e `UNIQUE ingressos(sessao_id, assento_id)` | migrações Prisma |
+| 3 | **Constraints**: PK `assentos_sessao(sessao_id, assento_id)` e o índice único parcial `ux_ingressos_assento_ativo` (só um ingresso não cancelado por assento) | migrações Prisma |
 
 ## Fluxo da reserva (uma transação interativa do Prisma, READ COMMITTED)
 
@@ -53,7 +53,7 @@ BEGIN
   service: PENDENTE? dentro do prazo? dono ou operador?
   SELECT … FROM assentos_sessao WHERE reserva_id = $1 ORDER BY assento_id FOR UPDATE
   INSERT pagamentos; UPDATE reservas (PAGA); UPDATE assentos_sessao (VENDIDO)
-  INSERT ingressos  ← UNIQUE(codigo) e UNIQUE(sessao_id, assento_id)
+  INSERT ingressos  ← UNIQUE(codigo) e UNIQUE parcial (sessao_id, assento_id)
 COMMIT
 ```
 
@@ -66,6 +66,10 @@ COMMIT
 
 `SELECT id FROM ingressos WHERE codigo = $1 FOR UPDATE`: duas validações simultâneas do mesmo código são serializadas, e só a primeira marca UTILIZADO.
 
+## Cancelamento do ingresso
+
+Uma transação: `SELECT ... FROM ingressos WHERE codigo = ANY($1) ORDER BY id FOR UPDATE`, depois o `FOR UPDATE` dos assentos (`ORDER BY assento_id`), e só então assento LIVRE, ingresso CANCELADO e desconto no `valor_total` da reserva. A ordem dos locks é sempre ingressos e depois assentos, então dois cancelamentos cruzados não fazem deadlock, e um cancelamento junto com uma validação do mesmo código é serializado pelo lock do ingresso.
+
 ## Testes automatizados (`backend/tests/concorrencia.test.ts`)
 
 | Teste | Resultado esperado |
@@ -74,6 +78,7 @@ COMMIT
 | 3 pedidos com assentos cruzados em ordens diferentes | 1 × 201, 2 × 409, nenhum 500 (sem deadlock) |
 | 5 pagamentos simultâneos da mesma reserva | 1 × 201, 4 × 409, só 2 ingressos |
 | 4 validações simultâneas do mesmo ingresso | 1 × 200, 3 × 409 |
+| 4 cancelamentos simultâneos do mesmo ingresso | 1 × 200, 3 × 409, valor estornado uma vez só |
 | INSERT direto de ingresso duplicado (simulando um bug) | o banco recusa (P2002) |
 
 Demonstração ao vivo em produção: `npm run demo:concorrencia -- https://api.seu-dominio 20`

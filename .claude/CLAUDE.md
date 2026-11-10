@@ -18,17 +18,17 @@ Trabalho Final de **Programação II + Banco de Dados II**, UNOESC Chapecó, 202
 ## Decisões aprovadas (09/11/2026)
 
 - D1 monorepo (`backend/` + `mobile/`) · D2 cinema · D3 AWS EC2 + RDS + nginx + systemd + certbot
-- **D4: só o que o PDF pede.** SEM meia-entrada, SEM QR Code, SEM câmera, SEM método de pagamento. O pagamento é um botão "Pagar" simulado
+- **D4: só o que o PDF pede.** SEM meia-entrada, SEM QR Code, SEM câmera, SEM método de pagamento. O pagamento é um botão "Pagar" simulado. Exceções pedidas pelo usuário depois: cancelamento de ingresso e pôsteres (10/11)
 - D5 reserva expira em 10 min (`RESERVA_MINUTOS`). O PDF não define tempo
 - **Visual do app (redesenho de 10/11): minimalista no estilo Apple, SEM gradientes.**
   - Cores do sistema iOS em `src/ui/tema.ts`, modo claro/escuro automático (`useTema`), escala tipográfica do iOS (`tipos`).
   - Uma só cor de ação: o azul do sistema (botões, assentos escolhidos, seleção). O dia escolhido é preto/branco, como no Calendário.
   - Cada filme tem um tom sólido de uma paleta curada de 8 cores (`src/ui/arteFilme.ts`, escolhido pelo id). Ele aparece no ingresso (`Passe`, um por sessão, estilo Wallet) e como reserva da capa quando o filme não tem pôster.
   - **Pôsteres** (10/11): coluna `filmes.poster_url` (migração `poster_filme`), opcional, com caminho `/posteres/x.jpg` ou URL http(s). A API serve `backend/public/posteres/` em `/posteres` (cache de 7 dias). São montagens da equipe sobre fotos do Pexels (créditos em `CREDITOS.md` na mesma pasta). `Arte` esmaece a imagem por cima do bloco de cor; `urlArquivo()` em `services/api.ts` resolve o caminho relativo. A miniatura (`mini`) é em pé, 40×60. O formulário de filme tem o campo "Pôster".
-  - Margem responsiva `useMargem()` (16 no celular, 20 em telas ≥ 600) e largura máxima: `larguraLeitura` 680 para listas e formulários, `larguraGrade` 1080 para a grade de filmes.
+  - Margem responsiva `useMargem()` (16 no celular, 20 em telas ≥ 600) e largura máxima: `larguraLeitura` 680 para listas e formulários, `larguraGrade` 1080 para a grade de filmes. A grade de Em cartaz tem 3 colunas de pôsteres grandes a partir de 600 px e 2 no celular, com o título e o gênero em texto embaixo de cada pôster.
   - Gerência no estilo Ajustes (`Linha` com `icone`), contadores −/+ (`Contador`) e formulários em modal.
-  - **Tema claro/escuro manual**: `TemaProvider` (`contexts/TemaContext.tsx`) guarda "sistema/claro/escuro" no AsyncStorage (`storage/preferenciasStorage.ts`). O `BotaoTema` fica ao lado do título das abas, no login e no cadastro. A troca é um esmaecimento cruzado calmo de 460 ms (na Web com View Transitions em `utils/transicaoTema.web.ts`, no celular um véu). A revelação circular foi descartada em 10/11 por destoar do resto. A Conta (`components/TelaConta.tsx`) tem cartão de perfil, resumo dos ingressos e próxima sessão (cliente), atalhos (operador) e o `SeletorAparencia` com miniaturas de tela, como no iOS.
-  - **Movimento**: todo toque passa pelo `Tocavel` (`ui/Tocavel.tsx`, Reanimated): mola ao apertar, crescimento leve no hover da Web, `realce` para linhas de lista e vibração no celular. `ui/animacoes.tsx` tem `Surgir` (entrada escalonada da grade), `Pulso` (pulo quando um valor muda) e `entradaTela` (a `Tela` esmaece ao montar). O `Segmentos` tem pílula deslizando. Tudo respeita o "reduzir movimento".
+  - **Tema claro/escuro manual**: `TemaProvider` (`contexts/TemaContext.tsx`) guarda "sistema/claro/escuro" no AsyncStorage (`storage/preferenciasStorage.ts`). O `BotaoTema` fica ao lado do título das abas, no login e no cadastro. A troca é um esmaecimento cruzado calmo de 460 ms (na Web com View Transitions em `utils/transicaoTema.web.ts`, no celular um véu). A revelação circular foi descartada em 10/11 por destoar do resto. A Conta (`components/TelaConta.tsx`) tem cartão de perfil, resumo dos ingressos e próxima sessão (cliente), atalhos (operador) e o segmentado "Aparência" (o usuário preferiu o segmentado às miniaturas de tela).
+  - **Movimento**: todo toque passa pelo `Tocavel` (`ui/Tocavel.tsx`, Reanimated): mola ao apertar, crescimento leve no hover da Web, `realce` para linhas de lista e vibração no celular. `ui/animacoes.tsx` tem `Surgir` (entrada escalonada), `AparecerTela`, `Pulso` (pulo quando um valor muda), `Expandir` (abre e fecha animando a altura real), `Chegar` (entrada com mola, usada na compra confirmada) e `EmSequencia` (códigos do passe em cascata). **Não usar o `entering`/`layout` do Reanimated**: na Web ele põe `position: absolute` no item uns 2 s depois da entrada e tudo se sobrepõe; e o `LinearTransition` da Web anima tamanho com `scale` (texto distorce). **Props do `Tocavel` não podem mudar entre renders** (papel, escala): na Web isso recria o elemento e corta a animação. O `Segmentos` tem pílula deslizando. Tudo respeita o "reduzir movimento".
   - **Navegação**: `ui/Pilha.tsx` usa a pilha nativa no celular e a pilha JS na Web, com deslize e esmaecimento. Na Web a pilha JS vem SEM animação por padrão (`animation: 'default'` liga) e o `Stack.Screen` dela é outro componente (`Pilha.Screen` resolve). As abas usam a `BarraAbas`: uma pílula flutuante centralizada (`tabBar={barraAbas}`), com destaque deslizando.
   - Favicon: bloco preto arredondado com o ícone de filme em branco.
 - **Filmes com nomes de paródia do mundo da tecnologia** (seed e banco local): Velozes e Compilados, Procurando o Bug, Forrest Commit, O Silêncio dos Servidores, O Poderoso Chatbot, De Volta para o Backup
@@ -36,8 +36,8 @@ Trabalho Final de **Programação II + Banco de Dados II**, UNOESC Chapecó, 202
 
 ## Status (atualizado em 10/11/2026)
 
-- [x] F0/F1 Setup + banco: schema, migrações `init`, `objetos_sql` e `poster_filme`, seed
-- [x] F2 Backend completo + 15 testes passando (unidade, integração, concorrência). Corrigido em 10/11: o `AlteracaoFilme` herdava o default da sinopse e um PUT só com `ativo` apagava a sinopse
+- [x] F0/F1 Setup + banco: schema, migrações `init`, `objetos_sql`, `poster_filme` e `cancelamento_ingresso`, seed
+- [x] F2 Backend completo + 17 testes passando (unidade, integração, concorrência). Corrigido em 10/11: o `AlteracaoFilme` herdava o default da sinopse e um PUT só com `ativo` apagava a sinopse
 - [x] F4 App Expo: Cliente + Bilheteria + Gerência. Typecheck e lint limpos. Fluxos testados no Chrome headless
 - [x] Docs: DER, casos de uso, API, regras, concorrência, deploy; arquivos em `deploy/`
 - [ ] **F3 Deploy na AWS: depende da conta AWS e de um domínio da equipe** (guia em `docs/deploy.md`)
@@ -65,6 +65,8 @@ Trabalho Final de **Programação II + Banco de Dados II**, UNOESC Chapecó, 202
 - `jobs/expirarReservas.ts`: `setInterval` de 30 s → `ReservaService.expirarVencidas` (`FOR UPDATE SKIP LOCKED`)
 
 **Concorrência (crítico):** `MapaAssentosPrismaRepository.travar` faz o `FOR UPDATE` (`ORDER BY assento_id`) e a leitura em **DOIS comandos**. Em READ COMMITTED, um JOIN no mesmo comando do lock lê as outras tabelas com o snapshot antigo. Esse bug foi pego pelo teste dos 20 cliques e corrigido. Explicação em `docs/concorrencia.md`.
+
+**Cancelamento de ingresso (10/11, RN16/UC18):** `POST /ingressos/cancelamento { codigos }` em `IngressoService.cancelar`. Dono ou operador, só VALIDO, mesma sessão, até `CANCELAMENTO_ANTECEDENCIA_MIN` (30) antes do início, tudo ou nada. Locks: ingressos `ORDER BY id` e depois assentos. Ingresso vira CANCELADO, assento LIVRE e o valor sai do `valor_total` da reserva (estorno simulado). O `@@unique(sessaoId, assentoId)` virou o índice único parcial `ux_ingressos_assento_ativo ... WHERE status <> 'CANCELADO'` (SQL na migração `cancelamento_ingresso`; o Prisma não acusa drift, conferido com `migrate diff`). No app: botão "Cancelar ingressos" embaixo do passe aberto e a tela modal `(cliente)/cancelar/[sessaoId]` (começa sem nada marcado, "Todos os lugares", estorno no rodapé). `CANCELAMENTO_MINUTOS` em `services/cineon.ts` precisa bater com a API.
 
 **Banco** (migração `objetos_sql`): `btree_gist`, CHECKs, `EXCLUDE` (sessões sobrepostas), índice parcial `ix_reservas_pendentes_expira_em`, trigger `trg_sessao_gera_mapa`, triggers de auditoria → `log_auditoria`, procedure `sp_gerar_assentos_sala`, função `fn_relatorio_ocupacao` (5 tabelas, CTEs). Testado: o Prisma **não** acusa drift com esses objetos.
 
