@@ -6,11 +6,16 @@ import { definirToken, ErroApi, quandoSessaoExpirar } from '@/services/api';
 import { authService } from '@/services/cineon';
 import { lerToken, removerToken, salvarToken } from '@/storage/tokenStorage';
 
+// dados da animação de boas-vindas logo depois de entrar
+export type BoasVindas = { nome: string; operador: boolean; hora: number };
+
 type AuthContextType = {
   usuario: Usuario | null;
   verificando: boolean; // conferindo o token salvo ao abrir o app
   entrar: (email: string, senha: string) => Promise<void>;
   sair: () => Promise<void>;
+  boasVindas: BoasVindas | null;
+  encerrarBoasVindas: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -18,11 +23,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [verificando, setVerificando] = useState(true);
+  const [boasVindas, setBoasVindas] = useState<BoasVindas | null>(null);
 
   const sair = useCallback(async () => {
     definirToken(null);
     await removerToken();
     setUsuario(null);
+    setBoasVindas(null);
   }, []);
 
   // se tiver token salvo, pergunta pra API quem é o usuário
@@ -51,9 +58,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     definirToken(accessToken);
     await salvarToken(accessToken);
     setUsuario(logado);
+    // só no login de verdade; recarregar a página com o token salvo não mostra de novo
+    setBoasVindas({ nome: logado.nome.trim().split(/\s+/)[0] ?? logado.nome, operador: logado.papel === 'OPERADOR', hora: new Date().getHours() });
   }, []);
 
-  const valor = useMemo(() => ({ usuario, verificando, entrar, sair }), [usuario, verificando, entrar, sair]);
+  const encerrarBoasVindas = useCallback(() => setBoasVindas(null), []);
+
+  const valor = useMemo(
+    () => ({ usuario, verificando, entrar, sair, boasVindas, encerrarBoasVindas }),
+    [usuario, verificando, entrar, sair, boasVindas, encerrarBoasVindas],
+  );
   return <AuthContext value={valor}>{children}</AuthContext>;
 }
 
