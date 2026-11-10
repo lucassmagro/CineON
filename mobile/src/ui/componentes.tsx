@@ -76,6 +76,7 @@ export function Tela({
   atualizando = false,
   rodape,
   acaoTitulo,
+  semBotaoTema = false,
   largura = larguraLeitura,
 }: {
   children: ReactNode;
@@ -86,6 +87,8 @@ export function Tela({
   atualizando?: boolean;
   rodape?: ReactNode;
   acaoTitulo?: ReactNode;
+  /** a Conta já tem a escolha de aparência, então não repete o botão */
+  semBotaoTema?: boolean;
   /** largura máxima do conteúdo em telas grandes */
   largura?: number;
 }) {
@@ -116,7 +119,7 @@ export function Tela({
               ) : null}
             </View>
             {/* nas telas das abas, o botão de tema fica ao lado do título */}
-            <View style={{ paddingTop: 6 }}>{acaoTitulo ?? (semCabecalho ? <BotaoTema /> : null)}</View>
+            <View style={{ paddingTop: 6 }}>{acaoTitulo ?? (semCabecalho && !semBotaoTema ? <BotaoTema /> : null)}</View>
           </View>
         ) : null}
         {children}

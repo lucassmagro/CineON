@@ -47,7 +47,7 @@ export function TelaConta() {
   const versao = Constants.expoConfig?.version ?? '1.0.0';
 
   return (
-    <Tela semCabecalho titulo="Conta">
+    <Tela semCabecalho semBotaoTema titulo="Conta">
       <Surgir>
         <View style={[estilos.perfil, { marginHorizontal: margem, backgroundColor: c.fundoElevado }]}>
           <View style={[estilos.avatar, { backgroundColor: tomDoTexto(nome) }]}>
