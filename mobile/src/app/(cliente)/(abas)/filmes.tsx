@@ -12,6 +12,7 @@ import { Tocavel } from '@/ui/Tocavel';
 import { duracao } from '@/utils/formatar';
 
 const GAP = 16;
+const GAP_LARGO = 28;
 
 export default function EmCartaz() {
   const router = useRouter();
@@ -23,10 +24,12 @@ export default function EmCartaz() {
   if (vm.erro) return <MensagemErro mensagem={vm.erro} aoTentarDeNovo={vm.recarregar} />;
   const filmes = vm.dados ?? [];
 
-  // colunas pela largura disponível: 2 no celular, até 6 no desktop
+  // pôsteres grandes em 3 colunas; só o celular estreito fica com 2 pra não ficarem minúsculos
+  const largo = width >= 600;
+  const colunas = largo ? 3 : 2;
+  const espacamento = largo ? GAP_LARGO : GAP;
   const largura = Math.min(width, larguraGrade);
-  const colunas = Math.max(2, Math.min(6, Math.floor((largura - 2 * margem + GAP) / (150 + GAP))));
-  const larguraCartaz = Math.floor((largura - 2 * margem - GAP * (colunas - 1)) / colunas);
+  const larguraCartaz = Math.floor((largura - 2 * margem - espacamento * (colunas - 1)) / colunas);
 
   return (
     <Tela
@@ -39,7 +42,7 @@ export default function EmCartaz() {
       {filmes.length === 0 ? (
         <Vazio icone="film-outline" titulo="Nenhuma sessão por enquanto" texto="Assim que a programação for publicada, os filmes aparecem aqui." />
       ) : (
-        <View style={[estilos.grade, { paddingHorizontal: margem, columnGap: GAP }]}>
+        <View style={[estilos.grade, { paddingHorizontal: margem, columnGap: espacamento, rowGap: largo ? 36 : 24 }]}>
           {filmes.map((f, i) => (
             <Surgir key={f.id} indice={i} style={{ width: larguraCartaz }}>
             <Tocavel
@@ -49,10 +52,14 @@ export default function EmCartaz() {
               accessibilityRole="button"
               accessibilityLabel={`${f.titulo}, ${f.genero}, ${duracao(f.duracaoMin)}`}>
               <Arte titulo={f.titulo} id={f.id} poster={f.posterUrl} genero={f.genero} />
+              {/* o título em texto embaixo, como na App Store e no Apple TV */}
+              <Texto tipo={largo ? 'titulo3' : 'destaque'} numberOfLines={2} style={estilos.titulo}>
+                {f.titulo}
+              </Texto>
               <View style={estilos.meta}>
-                <SeloClassificacao valor={f.classificacao} tamanho={16} />
-                <Texto tipo="nota" cor="secundario">
-                  {duracao(f.duracaoMin)}
+                <SeloClassificacao valor={f.classificacao} tamanho={largo ? 18 : 16} />
+                <Texto tipo={largo ? 'subtitulo' : 'nota'} cor="secundario" numberOfLines={1} style={{ flexShrink: 1 }}>
+                  {f.genero}, {duracao(f.duracaoMin)}
                 </Texto>
               </View>
             </Tocavel>
@@ -65,6 +72,7 @@ export default function EmCartaz() {
 }
 
 const estilos = StyleSheet.create({
-  grade: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 24 },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: espaco.s },
+  grade: { flexDirection: 'row', flexWrap: 'wrap' },
+  titulo: { marginTop: espaco.s + 2, letterSpacing: -0.2 },
+  meta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 3 },
 });
