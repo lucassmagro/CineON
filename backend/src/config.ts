@@ -24,6 +24,7 @@ export const JWT_MINUTOS = inteiro("JWT_MINUTOS", 120);
 export type ConfigRegras = {
   reservaMinutos: number;
   validacaoAntecedenciaMin: number;
+  cancelamentoAntecedenciaMin: number;
   limpezaSalaMin: number;
   maxAssentosPorReserva: number;
 };
@@ -31,6 +32,8 @@ export type ConfigRegras = {
 export const REGRAS: ConfigRegras = {
   reservaMinutos: inteiro("RESERVA_MINUTOS", 10),
   validacaoAntecedenciaMin: inteiro("VALIDACAO_ANTECEDENCIA_MIN", 60),
+  // o cliente pode cancelar até esse tanto de minutos antes do início da sessão
+  cancelamentoAntecedenciaMin: inteiro("CANCELAMENTO_ANTECEDENCIA_MIN", 30),
   limpezaSalaMin: inteiro("LIMPEZA_SALA_MIN", 15),
   maxAssentosPorReserva: 10,
 };

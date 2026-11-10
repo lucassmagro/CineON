@@ -81,6 +81,24 @@ test("duas validações simultâneas do mesmo ingresso: só uma passa", async ()
   assert.equal(respostas.filter((r) => r.status === 409).length, 3);
 });
 
+test("cancelamentos simultâneos do mesmo ingresso: só um passa e o valor é estornado uma vez", async () => {
+  const c = await cenario(api, operador, { minutosAteInicio: 120 });
+  const ana = await novoCliente(api);
+  const reserva = await chamar(api, "POST", "/reservas", {
+    token: ana.token,
+    corpo: { sessaoId: c.sessaoId, assentoIds: [c.assentos[0]!.id, c.assentos[1]!.id] },
+  });
+  const paga = await chamar(api, "POST", `/reservas/${reserva.corpo.id}/pagamento`, { token: ana.token });
+  const codigo = paga.corpo.ingressos[0].codigo;
+  const respostas = await Promise.all(
+    Array.from({ length: 4 }, () => chamar(api, "POST", "/ingressos/cancelamento", { token: ana.token, corpo: { codigos: [codigo] } })),
+  );
+  assert.equal(respostas.filter((r) => r.status === 200).length, 1);
+  assert.equal(respostas.filter((r) => r.status === 409).length, 3);
+  const depois = await prisma.reserva.findUnique({ where: { id: reserva.corpo.id } });
+  assert.equal(Number(depois?.valorTotal), 25.5);
+});
+
 test("última barreira: o banco recusa um segundo ingresso para o mesmo assento", async () => {
   const c = await cenario(api, operador);
   const ana = await novoCliente(api);

@@ -166,6 +166,55 @@ test("fluxo completo: reserva -> pagamento -> ingressos -> validação na entrad
   assert.equal(r.status, 409);
 });
 
+test("cancelamento: libera o assento, estorna o valor e deixa vender de novo", async () => {
+  const c = await cenario(api, operador, { minutosAteInicio: 120 });
+  const ana = await novoCliente(api);
+  const bia = await novoCliente(api);
+  const [a1, a2] = c.assentos;
+
+  let r = await chamar(api, "POST", "/reservas", { token: ana.token, corpo: { sessaoId: c.sessaoId, assentoIds: [a1!.id, a2!.id] } });
+  const reservaId = r.corpo.id as number;
+  r = await chamar(api, "POST", `/reservas/${reservaId}/pagamento`, { token: ana.token });
+  const [cod1, cod2] = (r.corpo.ingressos as { codigo: string }[]).map((i) => i.codigo);
+
+  // só o dono cancela
+  r = await chamar(api, "POST", "/ingressos/cancelamento", { token: bia.token, corpo: { codigos: [cod1] } });
+  assert.equal(r.status, 403);
+
+  r = await chamar(api, "POST", "/ingressos/cancelamento", { token: ana.token, corpo: { codigos: [cod1] } });
+  assert.equal(r.status, 200);
+  assert.equal(r.corpo[0].status, "CANCELADO");
+
+  r = await chamar(api, "POST", "/ingressos/cancelamento", { token: ana.token, corpo: { codigos: [cod1] } });
+  assert.equal(r.status, 409);
+
+  // o assento volta a ficar livre e o valor sai da reserva (25,50 por ingresso)
+  const mapa = await chamar(api, "GET", `/sessoes/${c.sessaoId}/assentos`);
+  assert.equal(mapa.corpo.filas[0].assentos[0].status, "LIVRE");
+  assert.equal(mapa.corpo.filas[0].assentos[1].status, "VENDIDO");
+  r = await chamar(api, "GET", `/reservas/${reservaId}`, { token: ana.token });
+  assert.equal(r.corpo.valorTotal, 25.5);
+
+  // o índice parcial deixa outra pessoa comprar o mesmo lugar
+  r = await chamar(api, "POST", "/reservas", { token: bia.token, corpo: { sessaoId: c.sessaoId, assentoIds: [a1!.id] } });
+  assert.equal(r.status, 201);
+  r = await chamar(api, "POST", `/reservas/${r.corpo.id}/pagamento`, { token: bia.token });
+  assert.equal(r.status, 201);
+
+  // código que não existe derruba o pedido inteiro, sem cancelar o outro
+  r = await chamar(api, "POST", "/ingressos/cancelamento", { token: ana.token, corpo: { codigos: [cod2, "NAOEXISTE"] } });
+  assert.equal(r.status, 404);
+  r = await chamar(api, "GET", `/ingressos/${cod2}`, { token: ana.token });
+  assert.equal(r.corpo.status, "VALIDO");
+
+  // perto do início não dá mais
+  const perto = await cenario(api, operador, { minutosAteInicio: 20 });
+  r = await chamar(api, "POST", "/reservas", { token: ana.token, corpo: { sessaoId: perto.sessaoId, assentoIds: [perto.assentos[0]!.id] } });
+  r = await chamar(api, "POST", `/reservas/${r.corpo.id}/pagamento`, { token: ana.token });
+  r = await chamar(api, "POST", "/ingressos/cancelamento", { token: ana.token, corpo: { codigos: [r.corpo.ingressos[0].codigo] } });
+  assert.equal(r.status, 422);
+});
+
 test("venda no balcão: operador reserva e paga (canal BALCAO)", async () => {
   const c = await cenario(api, operador);
   let r = await chamar(api, "POST", "/reservas", {

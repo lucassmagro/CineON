@@ -44,6 +44,7 @@ export function criarRotas({ controllers: c, services }: Container): Router {
   // ingressos
   r.get("/ingressos/meus", autenticar, c.ingressos.meus);
   r.post("/ingressos/validacao", ...operador, c.ingressos.validar);
+  r.post("/ingressos/cancelamento", autenticar, c.ingressos.cancelar);
   r.get("/ingressos/:codigo", autenticar, c.ingressos.buscar);
 
   // relatórios

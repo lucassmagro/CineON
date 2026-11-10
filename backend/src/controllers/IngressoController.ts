@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { ingressoDto } from "../dto/respostas.js";
 import { usuarioDaRequisicao } from "../middlewares/autenticacao.js";
 import type { IngressoService } from "../services/IngressoService.js";
-import { ParamCodigo, Validacao } from "../validation/esquemas.js";
+import { CancelamentoIngressos, ParamCodigo, Validacao } from "../validation/esquemas.js";
 
 export class IngressoController {
   constructor(private readonly ingressos: IngressoService) {}
@@ -15,6 +15,12 @@ export class IngressoController {
   buscar = async (req: Request, res: Response) => {
     const { codigo } = ParamCodigo.parse(req.params);
     res.json(ingressoDto(await this.ingressos.buscarPorCodigo(usuarioDaRequisicao(res), codigo)));
+  };
+
+  cancelar = async (req: Request, res: Response) => {
+    const { codigos } = CancelamentoIngressos.parse(req.body);
+    const lista = await this.ingressos.cancelar(usuarioDaRequisicao(res), codigos);
+    res.json(lista.map(ingressoDto));
   };
 
   validar = async (req: Request, res: Response) => {

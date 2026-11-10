@@ -84,6 +84,9 @@ export const Validacao = z.object({ codigo: texto(4, 20) });
 
 export const ParamCodigo = z.object({ codigo: texto(4, 20) });
 
+// uma sessão pode ter várias compras da mesma pessoa, então o limite é maior que o de uma reserva
+export const CancelamentoIngressos = z.object({ codigos: z.array(texto(4, 20)).min(1).max(100) });
+
 export const Periodo = z
   .object({ inicio: DataHora, fim: DataHora, filmeId: Id.optional() })
   .refine((p) => p.fim > p.inicio, { message: "fim deve ser depois de inicio", path: ["fim"] });

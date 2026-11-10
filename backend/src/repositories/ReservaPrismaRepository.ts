@@ -102,6 +102,11 @@ export class ReservaPrismaRepository implements ReservaRepository {
     });
   }
 
+  // estorno simulado do cancelamento: o relatório de vendas soma o valorTotal das reservas pagas
+  async descontarValor(id: number, valor: number): Promise<void> {
+    await this.db.reserva.update({ where: { id }, data: { valorTotal: { decrement: valor } } });
+  }
+
   // SKIP LOCKED: se a reserva estiver sendo paga nesse momento, o job pula ela
   async travarVencidas(agora: Date, limite: number): Promise<number[]> {
     const linhas = await this.db.$queryRaw<{ id: number }[]>`

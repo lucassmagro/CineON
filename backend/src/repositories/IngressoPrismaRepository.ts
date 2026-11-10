@@ -68,6 +68,23 @@ export class IngressoPrismaRepository implements IngressoRepository {
     return i ? paraDominio(i) : null;
   }
 
+  // trava em ordem de id, igual pra todo mundo, pra dois cancelamentos cruzados não darem deadlock
+  async travarPorCodigos(codigos: string[]): Promise<IngressoDetalhado[]> {
+    const travados = await this.db.$queryRaw<{ id: number }[]>`
+      SELECT id FROM ingressos WHERE codigo = ANY(${codigos}::text[]) ORDER BY id FOR UPDATE`;
+    if (travados.length === 0) return [];
+    const lista = await this.db.ingresso.findMany({
+      where: { id: { in: travados.map((t) => t.id) } },
+      include: incluirDetalhes,
+      orderBy: { id: "asc" },
+    });
+    return lista.map(paraDominio);
+  }
+
+  async marcarCancelados(ids: number[]): Promise<void> {
+    await this.db.ingresso.updateMany({ where: { id: { in: ids } }, data: { status: "CANCELADO" } });
+  }
+
   async marcarUtilizado(id: number, quando: Date, operadorId: number): Promise<void> {
     await this.db.ingresso.update({
       where: { id },

@@ -29,6 +29,53 @@ export class IngressoService {
     return ingresso;
   }
 
+  // Cancela um ou mais ingressos da mesma compra. Ou cancela todos, ou nenhum.
+  // Ordem dos locks: ingressos (por id) e depois assentos (por assento_id), sempre igual.
+  async cancelar(usuario: UsuarioAutenticado, codigosDigitados: string[]): Promise<IngressoDetalhado[]> {
+    const codigos = [...new Set(codigosDigitados.map(normalizarCodigo))];
+    const ids = await this.uow.executar(async (repos) => {
+      const agora = this.agora();
+      const lista = await repos.ingressos.travarPorCodigos(codigos);
+      if (lista.length !== codigos.length) throw new RecursoNaoEncontradoError("Ingresso");
+
+      for (const ingresso of lista) {
+        garantirDonoOuOperador(usuario, ingresso.donoId);
+        if (ingresso.status === "UTILIZADO") throw new ConflitoError(`O ingresso ${ingresso.codigo} já foi usado na entrada`);
+        if (ingresso.status === "CANCELADO") throw new ConflitoError(`O ingresso ${ingresso.codigo} já foi cancelado`);
+      }
+
+      const sessaoId = lista[0]!.sessaoId;
+      if (lista.some((i) => i.sessaoId !== sessaoId)) throw new RegraNegocioError("Cancele os ingressos de uma sessão por vez");
+
+      const limite = somarMinutos(lista[0]!.sessao.inicio, -this.regras.cancelamentoAntecedenciaMin);
+      if (agora.getTime() > limite.getTime()) {
+        throw new RegraNegocioError(
+          `O cancelamento vai até ${this.regras.cancelamentoAntecedenciaMin} min antes do início da sessão`,
+          { limite, inicio: lista[0]!.sessao.inicio },
+        );
+      }
+
+      const assentoIds = lista.map((i) => i.assentoId);
+      await repos.mapa.travar(sessaoId, assentoIds);
+      await repos.mapa.liberarVendidos(sessaoId, assentoIds);
+      await repos.ingressos.marcarCancelados(lista.map((i) => i.id));
+
+      // devolve o valor de cada ingresso na reserva de onde ele veio
+      const porReserva = new Map<number, number>();
+      for (const i of lista) porReserva.set(i.reservaId, (porReserva.get(i.reservaId) ?? 0) + i.valor);
+      for (const [reservaId, valor] of porReserva) await repos.reservas.descontarValor(reservaId, valor);
+
+      return lista.map((i) => i.codigo);
+    });
+
+    const cancelados: IngressoDetalhado[] = [];
+    for (const codigo of ids) {
+      const i = await this.ingressos.buscarPorCodigo(codigo);
+      if (i) cancelados.push(i);
+    }
+    return cancelados;
+  }
+
   // validação na entrada da sala
   async validar(operador: UsuarioAutenticado, codigoDigitado: string): Promise<IngressoDetalhado> {
     const codigo = normalizarCodigo(codigoDigitado);

@@ -67,6 +67,7 @@ export interface MapaAssentosRepository {
   marcarReservados(sessaoId: number, assentoIds: number[], reservaId: number): Promise<number>;
   marcarVendidos(reservaId: number): Promise<number>;
   liberarDasReservas(reservaIds: number[]): Promise<number>;
+  liberarVendidos(sessaoId: number, assentoIds: number[]): Promise<number>;
 }
 
 export interface ReservaRepository {
@@ -85,6 +86,7 @@ export interface ReservaRepository {
   atualizarStatus(id: number, status: StatusReserva, valorTotal?: number): Promise<void>;
   travarVencidas(agora: Date, limite: number): Promise<number[]>;
   marcarStatus(ids: number[], status: StatusReserva): Promise<number>;
+  descontarValor(id: number, valor: number): Promise<void>;
 }
 
 export interface PagamentoRepository {
@@ -99,6 +101,8 @@ export interface IngressoRepository {
   buscarPorCodigo(codigo: string): Promise<IngressoDetalhado | null>;
   travarPorCodigo(codigo: string): Promise<IngressoDetalhado | null>;
   marcarUtilizado(id: number, quando: Date, operadorId: number): Promise<void>;
+  travarPorCodigos(codigos: string[]): Promise<IngressoDetalhado[]>;
+  marcarCancelados(ids: number[]): Promise<void>;
 }
 
 export interface RelatorioRepository {

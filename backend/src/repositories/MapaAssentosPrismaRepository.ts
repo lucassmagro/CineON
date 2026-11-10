@@ -100,6 +100,16 @@ export class MapaAssentosPrismaRepository implements MapaAssentosRepository {
     return r.count;
   }
 
+  // ingresso cancelado: o assento volta a ficar livre pra venda
+  async liberarVendidos(sessaoId: number, assentoIds: number[]): Promise<number> {
+    if (assentoIds.length === 0) return 0;
+    const r = await this.db.assentoSessao.updateMany({
+      where: { sessaoId, assentoId: { in: assentoIds }, status: "VENDIDO" },
+      data: { status: "LIVRE", reservaId: null },
+    });
+    return r.count;
+  }
+
   async liberarDasReservas(reservaIds: number[]): Promise<number> {
     if (reservaIds.length === 0) return 0;
     const r = await this.db.assentoSessao.updateMany({
