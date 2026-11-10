@@ -31,6 +31,8 @@ Trabalho Final de **Programação II + Banco de Dados II**, UNOESC Chapecó, 202
   - **Movimento**: todo toque passa pelo `Tocavel` (`ui/Tocavel.tsx`, Reanimated): mola ao apertar, crescimento leve no hover da Web, `realce` para linhas de lista e vibração no celular. `ui/animacoes.tsx` tem `Surgir` (entrada escalonada), `AparecerTela`, `Pulso` (pulo quando um valor muda), `Expandir` (abre e fecha animando a altura real), `Chegar` (entrada com mola, usada na compra confirmada) e `EmSequencia` (códigos do passe em cascata). **Não usar o `entering`/`layout` do Reanimated**: na Web ele põe `position: absolute` no item uns 2 s depois da entrada e tudo se sobrepõe; e o `LinearTransition` da Web anima tamanho com `scale` (texto distorce). **Props do `Tocavel` não podem mudar entre renders** (papel, escala): na Web isso recria o elemento e corta a animação. O `Segmentos` tem pílula deslizando. Tudo respeita o "reduzir movimento".
   - **Navegação**: `ui/Pilha.tsx` usa a pilha nativa no celular e a pilha JS na Web, com deslize e esmaecimento. Na Web a pilha JS vem SEM animação por padrão (`animation: 'default'` liga) e o `Stack.Screen` dela é outro componente (`Pilha.Screen` resolve). As abas usam a `BarraAbas`: uma pílula flutuante centralizada (`tabBar={barraAbas}`), com destaque deslizando.
   - Favicon: bloco preto arredondado com o ícone de filme em branco.
+  - **Avisos e confirmações** (10/11): `utils/dialogos` (`notificar(tipo, titulo, msg)` e `confirmar(...)`). Na Web viram toasts do `react-toastify` v11 (`dialogos.web.ts` reexporta `dialogosWeb.tsx`; o contêiner `ui/Toasts.web.tsx` fica no `_layout` raiz e usa as cores do tema, com a confirmação em toast de dois botões). No celular continua o `Alert.alert` nativo (sucesso não mostra nada, já tem vibração). Não usar `window.alert`/`confirm` nem `Alert.alert` direto nas telas. **Metro: um arquivo `.web.tsx` NÃO substitui um `.ts` de mesmo nome, a extensão tem que ser igual** (por isso `dialogos.web.ts` + `dialogosWeb.tsx`; `Toasts.tsx`/`Toasts.web.tsx` e `transicaoTema.ts`/`.web.ts` funcionam porque as extensões casam). O `Alert.alert` no react-native-web não faz nada e não dá erro, então esse engano é silencioso.
+  - A tela de Conta não repete o botão de tema (`semBotaoTema` no `Tela`): a escolha de aparência já está nela.
 - **Filmes com nomes de paródia do mundo da tecnologia** (seed e banco local): Velozes e Compilados, Procurando o Bug, Forrest Commit, O Silêncio dos Servidores, O Poderoso Chatbot, De Volta para o Backup
 - Na Web o Metro deste ambiente **não recarrega** arquivos alterados: reinicie com `npx expo start --web --clear` para ver mudanças. O Expo reescreve o `mobile/tsconfig.json` ao iniciar (`git checkout` nele)
 
@@ -41,7 +43,7 @@ Trabalho Final de **Programação II + Banco de Dados II**, UNOESC Chapecó, 202
 - [x] F4 App Expo: Cliente + Bilheteria + Gerência. Typecheck e lint limpos. Fluxos testados no Chrome headless
 - [x] Docs: DER, casos de uso, API, regras, concorrência, deploy; arquivos em `deploy/`
 - [ ] **F3 Deploy na AWS: depende da conta AWS e de um domínio da equipe** (guia em `docs/deploy.md`)
-- [x] Código e docs no GitHub (`main`, 14 commits convencionais, push em 09/11)
+- [x] Código e docs no GitHub (`main`, commits convencionais, último push em 10/11)
 - [x] Lapidação visual: pôsteres, tema manual, animações, pílula das abas (o problema dos rótulos cortados sumiu com a barra nova)
 - [ ] Preencher as URLs de produção no README; gerar o PNG do DER/casos de uso se o professor exigir imagem
 
