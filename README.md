@@ -15,6 +15,7 @@ Aplicativo de **bilheteria de cinema com marcação de assentos**. Trabalho Fina
 - **Bilheteria (operador)**: vende no balcão e **valida os ingressos na entrada**, marcando-os como utilizados.
 - **Gerência (operador)**: cadastra filmes, salas (os assentos são gerados automaticamente) e sessões, e consulta o **relatório de vendas e ocupação**.
 - **Interface**: visual minimalista no estilo iOS, com pôsteres dos filmes, modo claro e escuro (automático ou escolhido na Conta), animações suaves e avisos em toasts na Web (`react-toastify`), com o alerta nativo no celular.
+- **Sessão**: o login continua ao recarregar a página (token no `localStorage` na Web e no SecureStore no celular), até o token expirar ou a pessoa sair.
 - **Garantia central**: um assento de uma sessão **nunca** é vendido duas vezes, nem com cliques simultâneos. Detalhes em [docs/concorrencia.md](docs/concorrencia.md).
 
 ## Estrutura
