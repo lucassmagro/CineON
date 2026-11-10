@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { TemaProvider } from '@/contexts/TemaContext';
 import { Pilha } from '@/ui/Pilha';
+import { Toasts } from '@/ui/Toasts';
 import { useTema } from '@/ui/tema';
 
 export default function RootLayout() {
@@ -25,6 +26,7 @@ function Raiz() {
   return (
     <ThemeProvider value={{ ...base, colors: { ...base.colors, primary: c.azul, background: c.fundo, card: c.fundoElevado, text: c.rotulo, border: c.separador } }}>
       <StatusBar style={c.escuro ? 'light' : 'dark'} />
+      <Toasts />
       <Pilha screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.fundo }, cardStyle: { backgroundColor: c.fundo } }} />
     </ThemeProvider>
   );

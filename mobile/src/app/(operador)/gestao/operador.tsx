@@ -6,7 +6,7 @@ import { mensagemDe } from '@/services/api';
 import { authService } from '@/services/cineon';
 import { Botao, Campo, Secao, Tela, TextoErro } from '@/ui/componentes';
 import { useMargem } from '@/ui/tema';
-import { avisar } from '@/utils/dialogos';
+import { notificar } from '@/utils/dialogos';
 
 export default function NovoOperador() {
   const router = useRouter();
@@ -25,7 +25,7 @@ export default function NovoOperador() {
     setErro(null);
     try {
       await authService.criarOperador({ nome: nome.trim(), email: email.trim(), senha });
-      avisar('Operador criado', `${nome.trim()} já pode entrar no app.`);
+      notificar('sucesso', 'Operador criado', `${nome.trim()} já pode entrar no app.`);
       router.back();
     } catch (e) {
       setErro(mensagemDe(e));

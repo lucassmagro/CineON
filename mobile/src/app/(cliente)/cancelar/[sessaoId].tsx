@@ -13,7 +13,7 @@ import { CANCELAMENTO_MINUTOS, ingressoService } from '@/services/cineon';
 import { Pulso } from '@/ui/animacoes';
 import { Botao, Carregando, Linha, MensagemErro, Secao, Tela, Texto, TextoErro, Vazio } from '@/ui/componentes';
 import { espaco, useMargem, useTema } from '@/ui/tema';
-import { confirmar } from '@/utils/dialogos';
+import { confirmar, notificar } from '@/utils/dialogos';
 import { dataHora, dinheiro } from '@/utils/formatar';
 
 export default function CancelarIngressos() {
@@ -89,6 +89,7 @@ export default function CancelarIngressos() {
     try {
       await ingressoService.cancelar(escolhidos.map((i) => i.codigo));
       if (Platform.OS !== 'web') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      notificar('sucesso', n === 1 ? 'Ingresso cancelado' : `${n} ingressos cancelados`, `${dinheiro(estorno)} de estorno.`);
       router.back();
     } catch (e) {
       setErro(mensagemDe(e));
