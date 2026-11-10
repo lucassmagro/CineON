@@ -122,10 +122,11 @@ model AssentoSessao {
   reservaId    Int?          @map("reserva_id")
   atualizadoEm DateTime      @default(now()) @updatedAt @map("atualizado_em") @db.Timestamptz(3)
 
-  sessao   Sessao    @relation(fields: [sessaoId], references: [id], onDelete: Cascade)
-  assento  Assento   @relation(fields: [assentoId], references: [id], onDelete: Restrict)
-  reserva  Reserva?  @relation(fields: [reservaId], references: [id], onDelete: SetNull)
-  ingresso Ingresso?
+  sessao    Sessao     @relation(fields: [sessaoId], references: [id], onDelete: Cascade)
+  assento   Assento    @relation(fields: [assentoId], references: [id], onDelete: Restrict)
+  reserva   Reserva?   @relation(fields: [reservaId], references: [id], onDelete: SetNull)
+  // um assento pode ter um ingresso cancelado e depois um novo; o índice parcial garante só um ativo
+  ingressos Ingresso[]
 
   @@id([sessaoId, assentoId])
   @@index([reservaId])
@@ -180,11 +181,12 @@ model Ingresso {
   validadoPorId Int?           @map("validado_por_id")
 
   reserva       Reserva       @relation(fields: [reservaId], references: [id], onDelete: Restrict)
-  // FK composta pro mapa + o @@unique abaixo: o banco não deixa vender o mesmo assento duas vezes
+  // FK composta pro mapa. O índice único parcial ux_ingressos_assento_ativo (migração cancelamento_ingresso)
+  // não deixa ter dois ingressos ativos pro mesmo assento; cancelados ficam de fora pra poder revender
   assentoSessao AssentoSessao @relation(fields: [sessaoId, assentoId], references: [sessaoId, assentoId], onDelete: Restrict)
   validadoPor   Usuario?      @relation("ValidadoPor", fields: [validadoPorId], references: [id], onDelete: SetNull)
 
-  @@unique([sessaoId, assentoId])
+  @@index([sessaoId, assentoId])
   @@index([reservaId])
   @@map("ingressos")
 }
