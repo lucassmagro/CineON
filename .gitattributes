@@ -1,0 +1,7 @@
+# migrações do Prisma com LF em qualquer sistema (o checksum depende dos bytes do arquivo)
+backend/prisma/migrations/**/*.sql text eol=lf
+backend/prisma/migrations/migration_lock.toml text eol=lf
+
+# scripts e configs que rodam no servidor Linux
+*.sh text eol=lf
+deploy/* text eol=lf

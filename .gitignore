@@ -1,0 +1,22 @@
+# Material das aulas e enunciado (não publicar no GitHub)
+artefatos/
+Trabalho Final 2026-2.pdf
+
+# Dependências e builds
+node_modules/
+dist/
+generated/
+.expo/
+web-build/
+dist-web/
+
+# Segredos
+.env
+.env.*
+!.env.example
+
+# Sistema / IDE
+.DS_Store
+Thumbs.db
+.idea/
+*.log
