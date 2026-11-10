@@ -3,6 +3,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { StatusIngresso } from '@/models/tipos';
+import { EmSequencia, Expandir } from '@/ui/animacoes';
 import { corDoFilme } from '@/ui/arteFilme';
 import { fonteCodigo, tipos } from '@/ui/tema';
 import { Tocavel } from '@/ui/Tocavel';
@@ -35,61 +36,74 @@ export function Passe({ filme, filmeId, inicio, sala, itens, corFundo, recolhido
         <Text style={[tipos.subtitulo, estilos.claro]}>{recolhido ? `${diaAmigavel(inicio)}, ${hora(inicio)}` : diaAmigavel(inicio)}</Text>
       </View>
 
-      {recolhido ? (
+      {/* as duas versões ficam montadas: uma encolhe enquanto a outra cresce */}
+      <Expandir aberto={recolhido}>
         <View style={estilos.recolhido}>
           <Text style={[tipos.titulo3, estilos.branco, { flex: 1 }]} numberOfLines={1}>
             {filme}
           </Text>
           <Text style={[tipos.subtitulo, estilos.claro]}>{quantidade}</Text>
         </View>
-      ) : (
-        <>
-          <Text style={[tipos.titulo1, estilos.branco, estilos.titulo]} numberOfLines={2}>
-            {filme}
-          </Text>
+      </Expandir>
 
-          <View style={estilos.campos}>
-            <Campo rotulo="Sala" valor={sala} />
-            <Campo rotulo={itens.length === 1 ? 'Lugar' : 'Lugares'} valor={lugares} largo />
-            <Campo rotulo="Horário" valor={hora(inicio)} alinharFim />
-          </View>
+      <Expandir aberto={!recolhido}>
+        <Text style={[tipos.titulo1, estilos.branco, estilos.titulo]} numberOfLines={2}>
+          {filme}
+        </Text>
 
-          <View style={estilos.picote}>
-            <View style={[estilos.recorte, estilos.recorteEsq, { backgroundColor: corFundo }]} />
-            <View style={estilos.tracejado} />
-            <View style={[estilos.recorte, estilos.recorteDir, { backgroundColor: corFundo }]} />
-          </View>
+        <View style={estilos.campos}>
+          <Campo rotulo="Sala" valor={sala} />
+          <Campo rotulo={itens.length === 1 ? 'Lugar' : 'Lugares'} valor={lugares} largo />
+          <Campo rotulo="Horário" valor={hora(inicio)} alinharFim />
+        </View>
 
-          {itens.length === 1 ? (
+        <View style={estilos.picote}>
+          <View style={[estilos.recorte, estilos.recorteEsq, { backgroundColor: corFundo }]} />
+          <View style={estilos.tracejado} />
+          <View style={[estilos.recorte, estilos.recorteDir, { backgroundColor: corFundo }]} />
+        </View>
+
+        {itens.length === 1 ? (
+          <EmSequencia indice={0} visivel={!recolhido}>
             <View style={estilos.unico}>
               <Text style={[tipos.legenda, estilos.claro]}>{legendaStatus(itens[0]!)}</Text>
               <Text style={[fonteCodigo, estilos.codigoGrande]} selectable>
                 {itens[0]!.codigo}
               </Text>
             </View>
-          ) : (
-            <View style={estilos.lista}>
-              <Text style={[tipos.legenda, estilos.claro, { marginBottom: 4 }]}>Apresente o código de cada lugar na entrada</Text>
-              {itens.map((i, indice) => (
-                <View key={i.codigo} style={[estilos.item, indice > 0 && estilos.itemBorda, i.status !== 'VALIDO' && { opacity: 0.5 }]}>
+          </EmSequencia>
+        ) : (
+          <View style={estilos.lista}>
+            <Text style={[tipos.legenda, estilos.claro, { marginBottom: 4 }]}>Apresente o código de cada lugar na entrada</Text>
+            {itens.map((i, indice) => (
+              <EmSequencia key={i.codigo} indice={indice} visivel={!recolhido}>
+                <View style={[estilos.item, indice > 0 && estilos.itemBorda, i.status !== 'VALIDO' && { opacity: 0.5 }]}>
                   <Text style={[tipos.destaque, estilos.branco, { width: 52 }]}>{i.assento}</Text>
                   <Text style={[fonteCodigo, estilos.codigo]} selectable>
                     {i.codigo}
                   </Text>
                   {i.status !== 'VALIDO' ? <Text style={[tipos.legenda, estilos.claro]}>{i.status === 'UTILIZADO' ? 'usado' : 'cancelado'}</Text> : null}
                 </View>
-              ))}
-            </View>
-          )}
-        </>
-      )}
+              </EmSequencia>
+            ))}
+          </View>
+        )}
+      </Expandir>
     </View>
   );
 
+  // as props do envoltório não mudam quando o passe abre: na Web, mudar o papel ou a escala
+  // recriava o elemento e o passe pulava pro tamanho final sem animar
   const descricao = `Ingressos de ${filme}, ${sala}, ${quantidade}`;
-  if (!aoTocar) return <View accessibilityLabel={descricao}>{conteudo}</View>;
   return (
-    <Tocavel onPress={aoTocar} escala={0.98} escalaHover={1.01} accessibilityRole="button" accessibilityLabel={descricao}>
+    <Tocavel
+      onPress={aoTocar}
+      disabled={!aoTocar}
+      escala={0.98}
+      escalaHover={1.01}
+      accessibilityRole="button"
+      accessibilityState={{ expanded: !recolhido, disabled: !aoTocar }}
+      accessibilityLabel={descricao}>
       {conteudo}
     </Tocavel>
   );

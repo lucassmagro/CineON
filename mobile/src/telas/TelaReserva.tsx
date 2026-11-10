@@ -13,6 +13,7 @@ import { useContagem } from '@/hooks/useContagem';
 import type { Reserva } from '@/models/tipos';
 import { ErroApi, mensagemDe } from '@/services/api';
 import { reservaService } from '@/services/cineon';
+import { Chegar } from '@/ui/animacoes';
 import { Botao, Carregando, Linha, MensagemErro, Secao, Tela, Texto, TextoErro, Vazio } from '@/ui/componentes';
 import { espaco, useMargem, useTema } from '@/ui/tema';
 import { confirmar } from '@/utils/dialogos';
@@ -74,16 +75,21 @@ export function TelaReserva({ reservaId, acaoFinal, aoVoltarAoMapa }: Props) {
       <>
         <Stack.Screen options={{ title: '', headerBackVisible: false, gestureEnabled: false }} />
         <Tela rodape={<Botao titulo={acaoFinal.titulo} aoTocar={acaoFinal.aoTocar} />}>
+          {/* o check aparece primeiro, depois o texto, e por fim o ingresso chega, como na Wallet */}
           <View style={estilos.sucesso}>
-            <Ionicons name="checkmark-circle" size={64} color={paleta.verde} />
-            <Texto tipo="titulo1" style={{ textAlign: 'center' }}>
-              Compra confirmada
-            </Texto>
-            <Texto tipo="subtitulo" cor="secundario" style={{ textAlign: 'center' }}>
-              {atual.ingressos.length === 1 ? 'Seu ingresso está pronto.' : `Seus ${atual.ingressos.length} ingressos estão prontos.`} Total pago {dinheiro(atual.valorTotal)}.
-            </Texto>
+            <Chegar escalaInicial={0.4} deslocamento={0}>
+              <Ionicons name="checkmark-circle" size={64} color={paleta.verde} />
+            </Chegar>
+            <Chegar atraso={120} deslocamento={10} style={{ alignItems: 'center', gap: espaco.xs }}>
+              <Texto tipo="titulo1" style={{ textAlign: 'center' }}>
+                Compra confirmada
+              </Texto>
+              <Texto tipo="subtitulo" cor="secundario" style={{ textAlign: 'center' }}>
+                {atual.ingressos.length === 1 ? 'Seu ingresso está pronto.' : `Seus ${atual.ingressos.length} ingressos estão prontos.`} Total pago {dinheiro(atual.valorTotal)}.
+              </Texto>
+            </Chegar>
           </View>
-          <View style={{ paddingHorizontal: margem }}>
+          <Chegar atraso={280} deslocamento={72} escalaInicial={0.94} style={{ paddingHorizontal: margem }}>
             <Passe
               filme={atual.sessao.filme.titulo}
               filmeId={atual.sessao.filme.id}
@@ -92,7 +98,7 @@ export function TelaReserva({ reservaId, acaoFinal, aoVoltarAoMapa }: Props) {
               itens={atual.ingressos}
               corFundo={paleta.fundo}
             />
-          </View>
+          </Chegar>
         </Tela>
       </>
     );
