@@ -64,9 +64,13 @@ export const reservaService = {
   pagar: (id: number) => api.post<Reserva>(`/reservas/${id}/pagamento`),
 };
 
+// igual ao CANCELAMENTO_ANTECEDENCIA_MIN da API; a API confere de novo de qualquer jeito
+export const CANCELAMENTO_MINUTOS = 30;
+
 export const ingressoService = {
   meus: () => api.get<Ingresso[]>('/ingressos/meus'),
   validar: (codigo: string) => api.post<Ingresso>('/ingressos/validacao', { codigo }),
+  cancelar: (codigos: string[]) => api.post<Ingresso[]>('/ingressos/cancelamento', { codigos }),
 };
 
 export const relatorioService = {

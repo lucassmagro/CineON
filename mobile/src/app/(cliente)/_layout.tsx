@@ -4,7 +4,7 @@ import { Redirect } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { Carregando } from '@/ui/componentes';
 import { useOpcoesPilha } from '@/ui/navegacao';
-import { Pilha } from '@/ui/Pilha';
+import { opcoesModal, Pilha } from '@/ui/Pilha';
 
 export default function LayoutCliente() {
   const { usuario, verificando } = useAuth();
@@ -19,6 +19,7 @@ export default function LayoutCliente() {
       <Pilha.Screen name="filme/[id]" options={{ title: '' }} />
       <Pilha.Screen name="sessao/[id]" options={{ title: 'Escolha os lugares' }} />
       <Pilha.Screen name="reserva/[id]" options={{ title: 'Pagamento' }} />
+      <Pilha.Screen name="cancelar/[sessaoId]" options={{ title: 'Cancelar ingressos', ...opcoesModal }} />
     </Pilha>
   );
 }

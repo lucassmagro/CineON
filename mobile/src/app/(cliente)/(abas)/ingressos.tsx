@@ -7,7 +7,8 @@ import { Passe } from '@/components/Passe';
 import { useCarregar } from '@/hooks/useCarregar';
 import { useAgora } from '@/hooks/useContagem';
 import type { Ingresso } from '@/models/tipos';
-import { ingressoService } from '@/services/cineon';
+import { CANCELAMENTO_MINUTOS, ingressoService } from '@/services/cineon';
+import { Expandir, Surgir } from '@/ui/animacoes';
 import { Botao, Carregando, Linha, MensagemErro, Secao, Tela, Texto, Vazio } from '@/ui/componentes';
 import { espaco, useMargem, useTema } from '@/ui/tema';
 import { dataHora } from '@/utils/formatar';
@@ -58,12 +59,13 @@ export default function MeusIngressos() {
 
       {proximos.length > 0 ? (
         <View style={{ paddingHorizontal: margem, gap: espaco.s, marginBottom: espaco.xxl }}>
-          {proximos.map((g) => {
+          {proximos.map((g, indice) => {
             const s = g.ingressos[0]!.sessao;
             const recolhido = g.sessaoId !== sessaoAberta;
+            const cancelavel = new Date(s.inicio).getTime() - CANCELAMENTO_MINUTOS * 60_000 > agora;
             return (
+              <Surgir key={g.sessaoId} indice={indice}>
               <Passe
-                key={g.sessaoId}
                 filme={s.filme.titulo}
                 filmeId={s.filme.id}
                 inicio={s.inicio}
@@ -73,19 +75,42 @@ export default function MeusIngressos() {
                 recolhido={recolhido}
                 aoTocar={recolhido ? () => setAberto(g.sessaoId) : undefined}
               />
+              {/* aparece embaixo do passe aberto, enquanto ainda dá pra cancelar */}
+              <Expandir aberto={!recolhido && cancelavel}>
+                <View style={{ alignItems: 'center', paddingTop: espaco.s, paddingBottom: espaco.xs }}>
+                  <Botao
+                    titulo={g.ingressos.length === 1 ? 'Cancelar ingresso' : 'Cancelar ingressos'}
+                    variante="simples"
+                    corTexto={c.vermelho}
+                    icone="close-circle-outline"
+                    compacto
+                    aoTocar={() => router.push({ pathname: '/cancelar/[sessaoId]', params: { sessaoId: g.sessaoId } })}
+                  />
+                </View>
+              </Expandir>
+              </Surgir>
             );
           })}
         </View>
       ) : todos.length > 0 ? (
-        <Vazio icone="ticket-outline" titulo="Nenhuma sessão por vir" texto="Os ingressos de sessões que já passaram estão logo abaixo." />
+        <Vazio icone="ticket-outline" titulo="Nenhuma sessão por vir" texto="Os ingressos usados e cancelados estão logo abaixo." />
       ) : null}
 
       {anteriores.length > 0 ? (
-        <Secao titulo="Anteriores">
+        <Secao titulo="Histórico">
           {anteriores.slice(0, 20).map((g, indice, lista) => {
             const s = g.ingressos[0]!.sessao;
             const usados = g.ingressos.filter((i) => i.status === 'UTILIZADO').length;
+            const cancelados = g.ingressos.filter((i) => i.status === 'CANCELADO').length;
             const total = g.ingressos.length;
+            const resumo =
+              cancelados === total
+                ? total === 1 ? 'Cancelado' : `${total} cancelados`
+                : usados === total
+                  ? total === 1 ? 'Usado' : `${total} usados`
+                  : cancelados > 0
+                    ? `${total - cancelados} de ${total}, ${cancelados} ${cancelados === 1 ? 'cancelado' : 'cancelados'}`
+                    : `${total} ${total === 1 ? 'ingresso' : 'ingressos'}`;
             return (
               <Linha
                 key={g.sessaoId}
@@ -93,8 +118,8 @@ export default function MeusIngressos() {
                 titulo={s.filme.titulo}
                 subtitulo={dataHora(s.inicio)}
                 direita={
-                  <Texto tipo="nota" cor="secundario">
-                    {usados === total ? (total === 1 ? 'Usado' : `${total} usados`) : `${total} ${total === 1 ? 'ingresso' : 'ingressos'}`}
+                  <Texto tipo="nota" cor={cancelados === total ? 'vermelho' : 'secundario'}>
+                    {resumo}
                   </Texto>
                 }
                 ultima={indice === lista.length - 1}
