@@ -1,0 +1,16 @@
+# copiar para /etc/systemd/system/cineon-api.service
+[Unit]
+Description=CineON API (Node.js)
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/CineON/backend
+ExecStart=/usr/bin/npm start
+Restart=always
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/cineon.env
+SyslogIdentifier=cineon-api
+
+[Install]
+WantedBy=multi-user.target
