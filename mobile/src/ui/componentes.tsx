@@ -21,7 +21,7 @@ import {
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { entradaTela, Pulso } from './animacoes';
+import { AparecerTela, Pulso } from './animacoes';
 import { ALTURA_BARRA_ABAS, useEspacoBarraAbas } from './BarraAbas';
 import { BotaoTema } from './BotaoTema';
 import { useReduzirMovimento } from './movimento';
@@ -104,7 +104,7 @@ export function Tela({
         }}
         keyboardShouldPersistTaps="handled"
         refreshControl={aoAtualizar ? <RefreshControl refreshing={atualizando} onRefresh={aoAtualizar} tintColor={c.rotuloSecundario} /> : undefined}>
-        <Animated.View entering={entradaTela} style={{ width: '100%', maxWidth: largura, alignSelf: 'center' }}>
+        <AparecerTela style={{ width: '100%', maxWidth: largura, alignSelf: 'center' }}>
         {titulo ? (
           <View style={[estilosFixos.tituloGrande, { paddingHorizontal: margem }]}>
             <View style={{ flex: 1 }}>
@@ -120,7 +120,7 @@ export function Tela({
           </View>
         ) : null}
         {children}
-        </Animated.View>
+        </AparecerTela>
       </ScrollView>
       {rodape ? (
         <BarraInferior aoMedir={setAlturaRodape} margemInferior={margens.bottom} margem={margem}>
