@@ -13,7 +13,7 @@ function local(data: Date | string): Date {
 
 export function dinheiro(valor: number): string {
   const [inteiro, centavos] = valor.toFixed(2).split('.');
-  return `R$ ${inteiro!.replace(/\B(?=(\d{3})+(?!\d))/g, '.')},${centavos}`;
+  return `R$\u00A0${inteiro!.replace(/\B(?=(\d{3})+(?!\d))/g, '.')},${centavos}`;
 }
 
 export function hora(data: Date | string): string {
@@ -39,7 +39,31 @@ export function diaAmigavel(data: Date | string): string {
 }
 
 export function dataHora(data: Date | string): string {
-  return `${dia(data)} · ${hora(data)}`;
+  return `${diaAmigavel(data)} às ${hora(data)}`;
+}
+
+// 112 vira "1 h 52 min"
+export function duracao(minutos: number): string {
+  const h = Math.floor(minutos / 60);
+  const m = minutos % 60;
+  if (h === 0) return `${m} min`;
+  return m === 0 ? `${h} h` : `${h} h ${m} min`;
+}
+
+// partes da data pra montar as pílulas de dia (semana em cima, número embaixo)
+export function partesDoDia(chave: string): { semana: string; numero: string; mes: string; hoje: boolean } {
+  const d = local(`${chave}T12:00:00-03:00`);
+  return {
+    semana: chave === chaveDia(new Date()) ? 'Hoje' : DIAS[d.getUTCDay()]!,
+    numero: String(d.getUTCDate()),
+    mes: MESES[d.getUTCMonth()]!,
+    hoje: chave === chaveDia(new Date()),
+  };
+}
+
+export function iniciais(nome: string): string {
+  const partes = nome.trim().split(/\s+/);
+  return ((partes[0]?.[0] ?? '') + (partes.length > 1 ? (partes[partes.length - 1]?.[0] ?? '') : '')).toUpperCase();
 }
 
 export function proximosDias(n: number): { valor: string; rotulo: string }[] {

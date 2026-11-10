@@ -1,0 +1,52 @@
+// Pílulas de dia: dia da semana em cima, número embaixo.
+import { ScrollView, StyleSheet } from 'react-native';
+
+import { Texto } from '@/ui/componentes';
+import { espaco, useMargem, useTema } from '@/ui/tema';
+import { Tocavel } from '@/ui/Tocavel';
+import { partesDoDia } from '@/utils/formatar';
+
+export function SeletorDia({
+  dias,
+  valor,
+  aoMudar,
+}: {
+  dias: string[];
+  valor: string | null;
+  aoMudar: (dia: string) => void;
+}) {
+  const c = useTema();
+  const margem = useMargem();
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={[estilos.lista, { paddingHorizontal: margem }]}>
+      {dias.map((d) => {
+        const p = partesDoDia(d);
+        const ativo = d === valor;
+        return (
+          <Tocavel
+            key={d}
+            onPress={() => aoMudar(d)}
+            escala={0.92}
+            vibracao="selecao"
+            accessibilityRole="button"
+            accessibilityState={{ selected: ativo }}
+            accessibilityLabel={`${p.semana} ${p.numero} de ${p.mes}`}
+            estiloPressionado={ativo ? null : { backgroundColor: c.preenchimentoForte }}
+            style={[estilos.dia, { backgroundColor: ativo ? c.rotulo : c.fundoElevado }]}>
+            <Texto tipo="legenda" peso="600" cor={ativo ? c.fundoElevado : p.hoje ? 'vermelho' : 'secundario'}>
+              {p.semana}
+            </Texto>
+            <Texto tipo="titulo3" peso="600" cor={ativo ? c.fundoElevado : 'rotulo'} style={{ fontVariant: ['tabular-nums'] }}>
+              {p.numero}
+            </Texto>
+          </Tocavel>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
+const estilos = StyleSheet.create({
+  lista: { gap: espaco.s },
+  dia: { width: 52, height: 62, borderRadius: 12, alignItems: 'center', justifyContent: 'center', gap: 2 },
+});

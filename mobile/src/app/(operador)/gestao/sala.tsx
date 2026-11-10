@@ -1,28 +1,29 @@
+// Na criação define o tamanho da sala (o banco gera os assentos).
+// Na edição só dá pra mudar nome e se está ativa, o layout fica fixo.
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import type { SalaDetalhada } from '@/models/tipos';
 import { mensagemDe } from '@/services/api';
 import { salaService } from '@/services/cineon';
-import { Botao, Campo, Carregando, Grupo, Linha, LinhaSwitch, Tela, TextoErro } from '@/ui/componentes';
-import { cores, espaco } from '@/ui/tema';
+import { Botao, Campo, Carregando, Contador, Linha, LinhaSwitch, Secao, Tela, Texto, TextoErro } from '@/ui/componentes';
+import { espaco, useMargem, useTema } from '@/ui/tema';
 import { confirmar } from '@/utils/dialogos';
 
 const MAX_FILAS = 26;
 const MAX_POR_FILA = 30;
 
-// Na criação pede filas e assentos por fila (o banco gera os assentos).
-// Na edição só dá pra mudar nome e ativa, o layout fica fixo.
 export default function FormularioSala() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const edicao = id !== undefined;
   const router = useRouter();
+  const margem = useMargem();
 
   const [sala, setSala] = useState<SalaDetalhada | null>(null);
   const [nome, setNome] = useState('');
-  const [filas, setFilas] = useState('');
-  const [porFila, setPorFila] = useState('');
+  const [filas, setFilas] = useState(8);
+  const [porFila, setPorFila] = useState(12);
   const [ativa, setAtiva] = useState(true);
   const [carregando, setCarregando] = useState(edicao);
   const [salvando, setSalvando] = useState(false);
@@ -41,18 +42,13 @@ export default function FormularioSala() {
       .finally(() => setCarregando(false));
   }, [edicao, id]);
 
-  const nFilas = Number(filas);
-  const nPorFila = Number(porFila);
-  const layoutValido = nFilas >= 1 && nFilas <= MAX_FILAS && nPorFila >= 1 && nPorFila <= MAX_POR_FILA;
-
   async function salvar() {
-    if (!nome.trim()) return setErro('Informe o nome da sala');
-    if (!edicao && !layoutValido) return setErro(`Use de 1 a ${MAX_FILAS} filas e de 1 a ${MAX_POR_FILA} assentos por fila`);
+    if (!nome.trim()) return setErro('Dê um nome para a sala');
     setSalvando(true);
     setErro(null);
     try {
       if (edicao) await salaService.atualizar(Number(id), { nome: nome.trim(), ativa });
-      else await salaService.criar({ nome: nome.trim(), filas: nFilas, assentosPorFila: nPorFila });
+      else await salaService.criar({ nome: nome.trim(), filas, assentosPorFila: porFila });
       router.back();
     } catch (e) {
       setErro(mensagemDe(e));
@@ -62,7 +58,7 @@ export default function FormularioSala() {
   }
 
   async function excluir() {
-    if (!(await confirmar('Excluir sala?', 'Os assentos da sala também serão removidos.', 'Excluir', true))) return;
+    if (!(await confirmar('Excluir sala?', 'Os assentos da sala também são removidos. Salas com sessões não podem ser excluídas.', 'Excluir', true))) return;
     try {
       await salaService.remover(Number(id));
       router.back();
@@ -73,60 +69,73 @@ export default function FormularioSala() {
 
   if (carregando) return <Carregando />;
 
-  const filasPrevia = edicao
+  const layout = edicao
     ? [...new Set(sala?.assentos.map((a) => a.fila))].map((f) => sala!.assentos.filter((a) => a.fila === f).length)
-    : layoutValido
-      ? Array.from({ length: nFilas }, () => nPorFila)
-      : [];
+    : Array.from({ length: filas }, () => porFila);
+  const capacidade = layout.reduce((t, n) => t + n, 0);
 
   return (
     <Tela>
       <Stack.Screen options={{ title: edicao ? 'Editar sala' : 'Nova sala' }} />
-      <Grupo>
-        <Campo rotulo="Nome" value={nome} onChangeText={setNome} placeholder="Ex.: Sala 4" ultima={edicao} />
-        {!edicao ? (
-          <>
-            <Campo rotulo={`Filas (1 a ${MAX_FILAS})`} value={filas} onChangeText={(t) => setFilas(t.replace(/\D/g, ''))} teclado="number-pad" placeholder="Ex.: 8" />
-            <Campo rotulo={`Assentos por fila (1 a ${MAX_POR_FILA})`} value={porFila} onChangeText={(t) => setPorFila(t.replace(/\D/g, ''))} teclado="number-pad" placeholder="Ex.: 12" ultima />
-          </>
-        ) : null}
-      </Grupo>
 
-      {edicao && sala ? (
-        <Grupo nota="O layout de assentos é fixo depois que a sala recebe sessões.">
-          <Linha titulo="Lugares" valor={String(sala.capacidade)} />
-          <Linha titulo="Sessões cadastradas" valor={String(sala.sessoes)} />
-          <LinhaSwitch titulo="Ativa" valor={ativa} aoMudar={setAtiva} ultima />
-        </Grupo>
-      ) : null}
+      <Secao>
+        <Campo rotulo="Nome" value={nome} onChangeText={setNome} placeholder="Sala 4" ultima />
+      </Secao>
 
-      {filasPrevia.length > 0 ? (
-        <Grupo titulo={`Prévia · ${filasPrevia.reduce((t, n) => t + n, 0)} lugares`}>
-          <View style={estilos.previa}>
-            {filasPrevia.map((n, i) => (
-              <View key={i} style={estilos.fila}>
-                <Text style={estilos.letra}>{String.fromCharCode(65 + i)}</Text>
-                {Array.from({ length: n }, (_, j) => (
-                  <View key={j} style={estilos.ponto} />
-                ))}
-              </View>
-            ))}
-          </View>
-        </Grupo>
-      ) : null}
+      {edicao ? (
+        <Secao nota="O tamanho da sala não muda depois que ela recebe sessões.">
+          <Linha titulo="Lugares" valor={String(sala?.capacidade ?? 0)} />
+          <Linha titulo="Sessões cadastradas" valor={String(sala?.sessoes ?? 0)} />
+          <LinhaSwitch titulo="Recebe novas sessões" valor={ativa} aoMudar={setAtiva} ultima />
+        </Secao>
+      ) : (
+        <Secao titulo="Tamanho" nota="Os assentos são criados automaticamente, com filas A, B, C e números a partir de 1.">
+          <Contador rotulo="Filas" detalhe={`A até ${String.fromCharCode(64 + filas)}`} valor={filas} aoMudar={setFilas} minimo={1} maximo={MAX_FILAS} />
+          <Contador rotulo="Assentos por fila" valor={porFila} aoMudar={setPorFila} minimo={1} maximo={MAX_POR_FILA} ultima />
+        </Secao>
+      )}
+
+      <Secao titulo={`${capacidade} lugares`}>
+        <PreviaLayout filas={layout} />
+      </Secao>
 
       <TextoErro texto={erro} />
-      <View style={{ paddingHorizontal: espaco.l, gap: espaco.m }}>
-        <Botao titulo={edicao ? 'Salvar' : 'Criar sala'} aoTocar={salvar} carregando={salvando} />
-        {edicao ? <Botao titulo="Excluir sala" tipo="destrutivo" aoTocar={excluir} /> : null}
+      <View style={{ paddingHorizontal: margem, marginBottom: espaco.xxl }}>
+        <Botao titulo={edicao ? 'Salvar alterações' : 'Criar sala'} aoTocar={salvar} carregando={salvando} />
       </View>
+
+      {edicao ? (
+        <Secao>
+          <Linha titulo="Excluir sala" destrutivo acessorio="nenhum" aoTocar={excluir} ultima />
+        </Secao>
+      ) : null}
     </Tela>
   );
 }
 
+function PreviaLayout({ filas }: { filas: number[] }) {
+  const c = useTema();
+  const maior = Math.max(1, ...filas);
+  const tamanho = Math.max(4, Math.min(12, Math.floor(260 / maior) - 2));
+  return (
+    <View style={estilos.previa}>
+      <View style={[estilos.tela, { backgroundColor: c.rotuloTerciario }]} />
+      <Texto tipo="legenda2" cor="terciario" style={{ marginBottom: espaco.m }}>
+        Tela
+      </Texto>
+      {filas.map((n, i) => (
+        <View key={i} style={estilos.fila}>
+          {Array.from({ length: n }, (_, j) => (
+            <View key={j} style={{ width: tamanho, height: tamanho, borderRadius: tamanho / 3, backgroundColor: c.preenchimentoForte }} />
+          ))}
+        </View>
+      ))}
+    </View>
+  );
+}
+
 const estilos = StyleSheet.create({
-  previa: { padding: espaco.l, gap: 4, alignItems: 'center' },
-  fila: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  letra: { width: 14, fontSize: 10, color: cores.textoSecundario },
-  ponto: { width: 8, height: 8, borderRadius: 2, backgroundColor: cores.cinzaAssento },
+  previa: { alignItems: 'center', paddingVertical: espaco.xl, paddingHorizontal: espaco.l },
+  tela: { width: '70%', height: 3, borderRadius: 2, marginBottom: 4 },
+  fila: { flexDirection: 'row', gap: 2, marginBottom: 2 },
 });

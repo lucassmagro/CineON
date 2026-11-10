@@ -1,34 +1,33 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
+import { Arte } from '@/components/Arte';
+import { SeloClassificacao, textoClassificacao } from '@/components/SeloClassificacao';
 import type { Classificacao } from '@/models/tipos';
 import { mensagemDe } from '@/services/api';
 import { filmeService } from '@/services/cineon';
-import { Botao, Campo, Carregando, Grupo, LinhaSwitch, Segmentos, Tela, TextoErro } from '@/ui/componentes';
-import { espaco } from '@/ui/tema';
+import { Botao, Campo, Carregando, Linha, LinhaSwitch, Secao, Tela, TextoErro } from '@/ui/componentes';
+import { espaco, useMargem, useTema } from '@/ui/tema';
+import { Tocavel } from '@/ui/Tocavel';
 import { confirmar } from '@/utils/dialogos';
 
-const CLASSIFICACOES: { valor: Classificacao; rotulo: string }[] = [
-  { valor: 'L', rotulo: 'L' },
-  { valor: '10', rotulo: '10' },
-  { valor: '12', rotulo: '12' },
-  { valor: '14', rotulo: '14' },
-  { valor: '16', rotulo: '16' },
-  { valor: '18', rotulo: '18' },
-];
+const CLASSIFICACOES: Classificacao[] = ['L', '10', '12', '14', '16', '18'];
 
 // sem ?id cria um filme novo, com ?id edita
 export default function FormularioFilme() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const edicao = id !== undefined;
   const router = useRouter();
+  const c = useTema();
+  const margem = useMargem();
 
   const [titulo, setTitulo] = useState('');
   const [genero, setGenero] = useState('');
   const [duracao, setDuracao] = useState('');
   const [classificacao, setClassificacao] = useState<Classificacao | null>(null);
   const [sinopse, setSinopse] = useState('');
+  const [poster, setPoster] = useState('');
   const [ativo, setAtivo] = useState(true);
   const [carregando, setCarregando] = useState(edicao);
   const [salvando, setSalvando] = useState(false);
@@ -44,6 +43,7 @@ export default function FormularioFilme() {
         setDuracao(String(f.duracaoMin));
         setClassificacao(f.classificacao);
         setSinopse(f.sinopse);
+        setPoster(f.posterUrl ?? '');
         setAtivo(f.ativo);
       })
       .catch((e) => setErro(mensagemDe(e)))
@@ -52,14 +52,14 @@ export default function FormularioFilme() {
 
   async function salvar() {
     const duracaoMin = Number(duracao);
-    if (!titulo.trim()) return setErro('Informe o título');
+    if (!titulo.trim()) return setErro('Informe o título do filme');
     if (!genero.trim()) return setErro('Informe o gênero');
     if (!Number.isInteger(duracaoMin) || duracaoMin < 1) return setErro('Informe a duração em minutos');
     if (!classificacao) return setErro('Escolha a classificação indicativa');
     setSalvando(true);
     setErro(null);
     try {
-      const dados = { titulo: titulo.trim(), genero: genero.trim(), duracaoMin, classificacao, sinopse: sinopse.trim() };
+      const dados = { titulo: titulo.trim(), genero: genero.trim(), duracaoMin, classificacao, sinopse: sinopse.trim(), posterUrl: poster.trim() || null };
       if (edicao) await filmeService.atualizar(Number(id), { ...dados, ativo });
       else await filmeService.criar(dados);
       router.back();
@@ -71,7 +71,7 @@ export default function FormularioFilme() {
   }
 
   async function excluir() {
-    if (!(await confirmar('Excluir filme?', 'Esta ação não pode ser desfeita.', 'Excluir', true))) return;
+    if (!(await confirmar('Excluir filme?', 'O filme some do cadastro. Filmes com sessões não podem ser excluídos, só desativados.', 'Excluir', true))) return;
     try {
       await filmeService.remover(Number(id));
       router.back();
@@ -85,27 +85,87 @@ export default function FormularioFilme() {
   return (
     <Tela>
       <Stack.Screen options={{ title: edicao ? 'Editar filme' : 'Novo filme' }} />
-      <Grupo>
-        <Campo rotulo="Título" value={titulo} onChangeText={setTitulo} placeholder="Nome do filme" />
-        <Campo rotulo="Gênero" value={genero} onChangeText={setGenero} placeholder="Ex.: Drama" />
-        <Campo rotulo="Duração (minutos)" value={duracao} onChangeText={(t) => setDuracao(t.replace(/\D/g, ''))} teclado="number-pad" placeholder="Ex.: 120" ultima />
-      </Grupo>
-      <Grupo titulo="Classificação indicativa">
-        <Segmentos opcoes={CLASSIFICACOES} valor={classificacao} aoMudar={setClassificacao} />
-      </Grupo>
-      <Grupo>
-        <Campo rotulo="Sinopse (opcional)" value={sinopse} onChangeText={setSinopse} multiline ultima />
-      </Grupo>
-      {edicao ? (
-        <Grupo nota="Filmes inativos não aparecem para os clientes e não recebem novas sessões.">
-          <LinhaSwitch titulo="Ativo" valor={ativo} aoMudar={setAtivo} ultima />
-        </Grupo>
+
+      {titulo.trim() ? (
+        <View style={estilos.previa}>
+          <Arte titulo={titulo.trim()} id={edicao ? Number(id) : undefined} genero={genero.trim() || undefined} poster={poster.trim() || null} estilo={{ width: 128 }} />
+        </View>
       ) : null}
+
+      <Secao>
+        <Campo rotulo="Título" value={titulo} onChangeText={setTitulo} placeholder="Nome do filme" />
+        <Campo rotulo="Gênero" value={genero} onChangeText={setGenero} placeholder="Drama, Comédia…" />
+        <Campo
+          rotulo="Duração"
+          value={duracao}
+          onChangeText={(t) => setDuracao(t.replace(/\D/g, '').slice(0, 3))}
+          keyboardType="number-pad"
+          placeholder="Minutos"
+          ultima
+        />
+      </Secao>
+
+      <Secao titulo="Classificação indicativa" nota={classificacao ? textoClassificacao(classificacao) : 'Toque no selo correspondente.'}>
+        <View style={estilos.selos}>
+          {CLASSIFICACOES.map((cl) => {
+            const ativa = cl === classificacao;
+            return (
+              <Tocavel
+                key={cl}
+                onPress={() => setClassificacao(cl)}
+                escala={0.88}
+                vibracao="selecao"
+                accessibilityRole="radio"
+                accessibilityState={{ checked: ativa }}
+                accessibilityLabel={textoClassificacao(cl)}
+                style={[estilos.selo, { borderColor: ativa ? c.azul : 'transparent' }]}>
+                <SeloClassificacao valor={cl} tamanho={34} />
+              </Tocavel>
+            );
+          })}
+        </View>
+      </Secao>
+
+      <Secao titulo="Sinopse">
+        <Campo rotulo="Sinopse" ocultarRotulo value={sinopse} onChangeText={setSinopse} multiline placeholder="Opcional" ultima />
+      </Secao>
+
+      <Secao titulo="Pôster" nota="Endereço de uma imagem em pé (2:3). Sem pôster, a capa usa a cor do filme com o título.">
+        <Campo
+          rotulo="Pôster"
+          ocultarRotulo
+          value={poster}
+          onChangeText={setPoster}
+          placeholder="https://… ou /posteres/arquivo.jpg"
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="url"
+          ultima
+        />
+      </Secao>
+
+      {edicao ? (
+        <Secao nota="Filmes inativos não aparecem para os clientes e não recebem novas sessões.">
+          <LinhaSwitch titulo="Em exibição" valor={ativo} aoMudar={setAtivo} ultima />
+        </Secao>
+      ) : null}
+
       <TextoErro texto={erro} />
-      <View style={{ paddingHorizontal: espaco.l, gap: espaco.m }}>
-        <Botao titulo="Salvar" aoTocar={salvar} carregando={salvando} />
-        {edicao ? <Botao titulo="Excluir filme" tipo="destrutivo" aoTocar={excluir} /> : null}
+      <View style={{ paddingHorizontal: margem, marginBottom: espaco.xxl }}>
+        <Botao titulo={edicao ? 'Salvar alterações' : 'Cadastrar filme'} aoTocar={salvar} carregando={salvando} />
       </View>
+
+      {edicao ? (
+        <Secao>
+          <Linha titulo="Excluir filme" destrutivo acessorio="nenhum" aoTocar={excluir} ultima />
+        </Secao>
+      ) : null}
     </Tela>
   );
 }
+
+const estilos = StyleSheet.create({
+  previa: { alignItems: 'center', marginBottom: espaco.xxl, marginTop: espaco.s },
+  selos: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: espaco.l, paddingVertical: espaco.m },
+  selo: { padding: 3, borderRadius: 11, borderWidth: 2.5 },
+});

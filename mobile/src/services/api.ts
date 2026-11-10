@@ -1,6 +1,12 @@
 // EXPO_PUBLIC_API_URL vai junto no app compilado, então não pode ter segredo nenhum ali.
 export const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 
+// os pôsteres da seed vêm como /posteres/arquivo.jpg, servidos pela própria API
+export function urlArquivo(caminho: string | null | undefined): string | null {
+  if (!caminho) return null;
+  return caminho.startsWith('/') ? API_URL + caminho : caminho;
+}
+
 export class ErroApi extends Error {
   constructor(
     readonly status: number,

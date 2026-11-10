@@ -1,14 +1,21 @@
-import { Link, Redirect } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Marca } from '@/components/Marca';
 import { useAuth } from '@/contexts/AuthContext';
 import { mensagemDe } from '@/services/api';
-import { Botao, Campo, Grupo, TextoErro } from '@/ui/componentes';
-import { cores, espaco, fonte } from '@/ui/tema';
+import { BotaoTema } from '@/ui/BotaoTema';
+import { Botao, Campo, Secao, TextoErro } from '@/ui/componentes';
+import { espaco, useMargem, useTema } from '@/ui/tema';
 
 export default function Login() {
   const { usuario, entrar } = useAuth();
+  const router = useRouter();
+  const c = useTema();
+  const margem = useMargem();
+  const margens = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [enviando, setEnviando] = useState(false);
@@ -33,42 +40,53 @@ export default function Login() {
   }
 
   return (
-    <KeyboardAvoidingView style={estilos.tela} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={estilos.marca}>
-        <Text style={estilos.logo}>CineON</Text>
-        <Text style={estilos.slogan}>Ingressos com lugar marcado</Text>
-      </View>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.fundo }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView contentContainerStyle={estilos.conteudo} keyboardShouldPersistTaps="handled">
+        <View style={estilos.coluna}>
+          <Marca subtitulo="Escolha o seu lugar e garanta o ingresso." />
 
-      <Grupo>
-        <Campo
-          rotulo="E-mail"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          autoCorrect={false}
-          autoComplete="email"
-          teclado="email-address"
-          placeholder="voce@exemplo.com"
-        />
-        <Campo rotulo="Senha" value={senha} onChangeText={setSenha} secureTextEntry autoComplete="password" onSubmitEditing={fazerLogin} ultima />
-      </Grupo>
-      <TextoErro texto={erro} />
+          <Secao estilo={{ marginTop: espaco.xxxl, marginBottom: espaco.m }}>
+            <Campo
+              rotulo="E-mail"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="email"
+              keyboardType="email-address"
+              placeholder="voce@exemplo.com"
+              returnKeyType="next"
+            />
+            <Campo
+              rotulo="Senha"
+              value={senha}
+              onChangeText={setSenha}
+              secureTextEntry
+              autoComplete="password"
+              placeholder="Obrigatória"
+              onSubmitEditing={fazerLogin}
+              returnKeyType="go"
+              ultima
+            />
+          </Secao>
+          <TextoErro texto={erro} />
 
-      <View style={estilos.acoes}>
-        <Botao titulo="Entrar" aoTocar={fazerLogin} carregando={enviando} />
-        <Link href="/cadastro" style={estilos.link}>
-          Não tem conta? Criar conta
-        </Link>
+          <View style={[estilos.acoes, { paddingHorizontal: margem }]}>
+            <Botao titulo="Entrar" aoTocar={fazerLogin} carregando={enviando} />
+            <Botao titulo="Criar uma conta" variante="simples" compacto aoTocar={() => router.push('/cadastro')} />
+          </View>
+        </View>
+      </ScrollView>
+      <View style={[estilos.tema, { top: margens.top + espaco.m, right: margem }]}>
+        <BotaoTema />
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const estilos = StyleSheet.create({
-  tela: { flex: 1, justifyContent: 'center', backgroundColor: cores.fundo, paddingVertical: espaco.xxl },
-  marca: { alignItems: 'center', marginBottom: espaco.xxl },
-  logo: { fontSize: 40, fontWeight: '800', letterSpacing: -0.5 },
-  slogan: { ...fonte.secundario, color: cores.textoSecundario, marginTop: 4 },
-  acoes: { paddingHorizontal: espaco.l, gap: espaco.l },
-  link: { ...fonte.corpo, color: cores.azul, textAlign: 'center' },
+  conteudo: { flexGrow: 1, justifyContent: 'center', paddingVertical: espaco.xxxl },
+  coluna: { width: '100%', maxWidth: 440, alignSelf: 'center' },
+  acoes: { gap: espaco.s },
+  tema: { position: 'absolute' },
 });

@@ -1,13 +1,15 @@
 // Usada no app do cliente e na venda do balcão (que pede o nome do cliente).
 import { Stack } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
+import { Arte } from '@/components/Arte';
 import { MapaAssentos } from '@/components/MapaAssentos';
 import { useAgora } from '@/hooks/useContagem';
 import { MAX_ASSENTOS, useMapaAssentos } from '@/hooks/useMapaAssentos';
-import { Botao, Campo, Carregando, Grupo, MensagemErro, Tela, TextoErro } from '@/ui/componentes';
-import { cores, espaco, fonte } from '@/ui/tema';
+import { Pulso } from '@/ui/animacoes';
+import { Botao, Campo, Carregando, MensagemErro, Secao, Tela, Texto, TextoErro } from '@/ui/componentes';
+import { espaco, useMargem } from '@/ui/tema';
 import { dataHora, dinheiro } from '@/utils/formatar';
 
 type Props = {
@@ -18,6 +20,7 @@ type Props = {
 
 export function TelaMapaSessao({ sessaoId, balcao = false, aoReservar }: Props) {
   const vm = useMapaAssentos(sessaoId);
+  const margem = useMargem();
   const agora = useAgora(15_000);
   const [nomeCliente, setNomeCliente] = useState('');
   const [erro, setErro] = useState<string | null>(null);
@@ -38,53 +41,59 @@ export function TelaMapaSessao({ sessaoId, balcao = false, aoReservar }: Props) 
 
   return (
     <>
-      <Stack.Screen options={{ title: sessao.filme.titulo }} />
+      <Stack.Screen options={{ title: balcao ? 'Venda no balcão' : 'Escolha os lugares' }} />
       <Tela
         aoAtualizar={vm.recarregar}
         atualizando={vm.atualizando}
         rodape={
           <>
             <TextoErro texto={erro} />
-            <View style={estilos.resumoSelecao}>
-              <Text style={fonte.secundario}>
-                {quantidade === 0 ? 'Toque nos assentos livres' : `${quantidade} assento(s): ${vm.rotulos.join(', ')}`}
-              </Text>
-              {quantidade > 0 ? <Text style={fonte.subtitulo}>{dinheiro(sessao.preco * quantidade)}</Text> : null}
+            <View style={estilos.resumo}>
+              <View style={{ flex: 1 }}>
+                <Texto tipo="destaque">
+                  {quantidade === 0 ? 'Escolha seus lugares' : quantidade === 1 ? '1 lugar' : `${quantidade} lugares`}
+                </Texto>
+                <Texto tipo="nota" cor="secundario" numberOfLines={1}>
+                  {quantidade === 0 ? `Até ${MAX_ASSENTOS} por compra` : vm.rotulos.join(', ')}
+                </Texto>
+              </View>
+              {quantidade > 0 ? (
+                <Pulso chave={quantidade} intensidade={1.1}>
+                  <Texto tipo="titulo3" style={{ fontVariant: ['tabular-nums'] }}>
+                    {dinheiro(sessao.preco * quantidade)}
+                  </Texto>
+                </Pulso>
+              ) : null}
             </View>
             <Botao
-              titulo={balcao ? 'Reservar para venda' : 'Reservar assentos'}
+              titulo={comecou ? 'Sessão já começou' : 'Reservar'}
               aoTocar={reservar}
               carregando={vm.reservando}
               desabilitado={quantidade === 0 || comecou}
             />
           </>
         }>
-        <Grupo>
-          <View style={estilos.cabecalho}>
-            <Text style={fonte.subtitulo}>{sessao.filme.titulo}</Text>
-            <Text style={estilos.detalhe}>
-              {dataHora(sessao.inicio)} · {sessao.sala.nome} · {dinheiro(sessao.preco)}
-            </Text>
-            <Text style={estilos.detalhe}>
-              {resumo.livres} livres de {resumo.capacidade}
-            </Text>
+        <View style={[estilos.cabecalho, { paddingHorizontal: margem }]}>
+          <Arte titulo={sessao.filme.titulo} id={sessao.filme.id} poster={sessao.filme.posterUrl} mini />
+          <View style={{ flex: 1 }}>
+            <Texto tipo="destaque" numberOfLines={1}>
+              {sessao.filme.titulo}
+            </Texto>
+            <Texto tipo="subtitulo" cor="secundario" numberOfLines={1}>
+              {dataHora(sessao.inicio)}, {sessao.sala.nome}
+            </Texto>
           </View>
-        </Grupo>
-
-        {comecou ? <TextoErro texto="Esta sessão já começou; não é mais possível reservar." /> : null}
+          <Texto tipo="nota" cor="secundario" style={{ textAlign: 'right' }}>
+            {resumo.livres} livres
+          </Texto>
+        </View>
 
         <MapaAssentos mapa={vm.dados} selecionados={vm.selecionados} aoTocar={vm.alternar} />
 
-        <Text style={estilos.nota}>
-          Até {MAX_ASSENTOS} assentos por compra. Os assentos ficam reservados por alguns minutos enquanto você paga.
-        </Text>
-
         {balcao ? (
-          <View style={{ marginTop: espaco.xl }}>
-            <Grupo titulo="Venda no balcão" nota="Opcional: ajuda a identificar a venda.">
-              <Campo rotulo="Nome do cliente" value={nomeCliente} onChangeText={setNomeCliente} placeholder="Ex.: Maria" ultima />
-            </Grupo>
-          </View>
+          <Secao estilo={{ marginTop: espaco.xxl }} nota="Opcional. Ajuda a encontrar a venda depois.">
+            <Campo rotulo="Cliente" value={nomeCliente} onChangeText={setNomeCliente} placeholder="Nome de quem compra" ultima />
+          </Secao>
         ) : null}
       </Tela>
     </>
@@ -92,8 +101,6 @@ export function TelaMapaSessao({ sessaoId, balcao = false, aoReservar }: Props) 
 }
 
 const estilos = StyleSheet.create({
-  cabecalho: { padding: espaco.l, gap: 4 },
-  detalhe: { ...fonte.secundario, color: cores.textoSecundario },
-  resumoSelecao: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  nota: { ...fonte.rodape, color: cores.textoSecundario, textAlign: 'center', marginTop: espaco.l, marginHorizontal: espaco.xl },
+  cabecalho: { flexDirection: 'row', alignItems: 'center', gap: espaco.m, marginTop: espaco.s, marginBottom: espaco.xxl },
+  resumo: { flexDirection: 'row', alignItems: 'center', gap: espaco.m, marginBottom: espaco.xs },
 });

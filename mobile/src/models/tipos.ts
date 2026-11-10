@@ -12,17 +12,18 @@ export type Filme = {
   duracaoMin: number;
   classificacao: Classificacao;
   genero: string;
+  posterUrl: string | null;
   ativo: boolean;
 };
 
-export type DadosFilme = Pick<Filme, 'titulo' | 'sinopse' | 'duracaoMin' | 'classificacao' | 'genero'>;
+export type DadosFilme = Pick<Filme, 'titulo' | 'sinopse' | 'duracaoMin' | 'classificacao' | 'genero' | 'posterUrl'>;
 
 export type Sessao = {
   id: number;
   inicio: string;
   fim: string;
   preco: number;
-  filme: { id: number; titulo: string; duracaoMin: number; classificacao: string; genero: string };
+  filme: { id: number; titulo: string; duracaoMin: number; classificacao: string; genero: string; posterUrl: string | null };
   sala: { id: number; nome: string };
 };
 
