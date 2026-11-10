@@ -1,14 +1,14 @@
 import { Tabs } from 'expo-router';
 
-import { IconeAba } from '@/components/IconeAba';
-import { opcoesAbas } from '@/ui/navegacao';
+import { barraAbas, iconeAba, useOpcoesAbas } from '@/ui/navegacao';
 
 export default function AbasCliente() {
+  const opcoes = useOpcoesAbas();
   return (
-    <Tabs screenOptions={opcoesAbas}>
-      <Tabs.Screen name="filmes" options={{ title: 'Em cartaz', tabBarIcon: ({ color }) => <IconeAba simbolo="▶︎" cor={color} /> }} />
-      <Tabs.Screen name="ingressos" options={{ title: 'Ingressos', tabBarIcon: ({ color }) => <IconeAba simbolo="▤" cor={color} /> }} />
-      <Tabs.Screen name="perfil" options={{ title: 'Perfil', tabBarIcon: ({ color }) => <IconeAba simbolo="●" cor={color} /> }} />
+    <Tabs screenOptions={opcoes} tabBar={barraAbas}>
+      <Tabs.Screen name="filmes" options={{ title: 'Em cartaz', tabBarIcon: iconeAba('film-outline', 'film') }} />
+      <Tabs.Screen name="ingressos" options={{ title: 'Ingressos', tabBarIcon: iconeAba('ticket-outline', 'ticket') }} />
+      <Tabs.Screen name="perfil" options={{ title: 'Conta', tabBarIcon: iconeAba('person-circle-outline', 'person-circle') }} />
     </Tabs>
   );
 }

@@ -1,15 +1,15 @@
 import { Tabs } from 'expo-router';
 
-import { IconeAba } from '@/components/IconeAba';
-import { opcoesAbas } from '@/ui/navegacao';
+import { barraAbas, iconeAba, useOpcoesAbas } from '@/ui/navegacao';
 
 export default function AbasOperador() {
+  const opcoes = useOpcoesAbas();
   return (
-    <Tabs screenOptions={opcoesAbas}>
-      <Tabs.Screen name="bilheteria" options={{ title: 'Bilheteria', tabBarIcon: ({ color }) => <IconeAba simbolo="▤" cor={color} /> }} />
-      <Tabs.Screen name="validar" options={{ title: 'Validar', tabBarIcon: ({ color }) => <IconeAba simbolo="✓" cor={color} /> }} />
-      <Tabs.Screen name="gerencia" options={{ title: 'Gerência', tabBarIcon: ({ color }) => <IconeAba simbolo="▦" cor={color} /> }} />
-      <Tabs.Screen name="conta" options={{ title: 'Conta', tabBarIcon: ({ color }) => <IconeAba simbolo="●" cor={color} /> }} />
+    <Tabs screenOptions={opcoes} tabBar={barraAbas}>
+      <Tabs.Screen name="bilheteria" options={{ title: 'Bilheteria', tabBarIcon: iconeAba('storefront-outline', 'storefront') }} />
+      <Tabs.Screen name="validar" options={{ title: 'Entrada', tabBarIcon: iconeAba('checkmark-circle-outline', 'checkmark-circle') }} />
+      <Tabs.Screen name="gerencia" options={{ title: 'Gerência', tabBarIcon: iconeAba('briefcase-outline', 'briefcase') }} />
+      <Tabs.Screen name="conta" options={{ title: 'Conta', tabBarIcon: iconeAba('person-circle-outline', 'person-circle') }} />
     </Tabs>
   );
 }
