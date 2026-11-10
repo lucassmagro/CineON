@@ -33,6 +33,7 @@ erDiagram
         int duracao_min "CHECK > 0"
         varchar classificacao
         varchar genero
+        varchar poster_url "opcional"
         bool ativo
         timestamptz criado_em
     }

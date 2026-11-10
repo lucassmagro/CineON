@@ -34,9 +34,10 @@ Todas as respostas de erro têm o formato:
 | Verbo | Rota | Acesso | Corpo / Query | Resposta |
 |---|---|---|---|---|
 | GET | `/filmes` | 🔓 | `?emCartaz=true` (só ativos com sessão futura) | 200 `Filme[]` |
+| GET | `/posteres/:arquivo` | 🔓 | — | 200 imagem JPEG (pôsteres da seed, cache de 7 dias) |
 | GET | `/filmes/:id` | 🔓 | — | 200 `Filme & { sessoes: Sessao[] }` (próximas) |
-| POST | `/filmes` | 🛠 | `{ titulo, sinopse?, duracaoMin, classificacao: "L"\|"10"\|"12"\|"14"\|"16"\|"18", genero }` | 201 `Filme` |
-| PUT | `/filmes/:id` | 🛠 | campos parciais + `ativo?` | 200 `Filme` · 409 (duração com sessões) |
+| POST | `/filmes` | 🛠 | `{ titulo, sinopse?, duracaoMin, classificacao: "L"\|"10"\|"12"\|"14"\|"16"\|"18", genero, posterUrl? }` | 201 `Filme` |
+| PUT | `/filmes/:id` | 🛠 | campos parciais + `ativo?` (`posterUrl: ""` tira o pôster) | 200 `Filme` · 409 (duração com sessões) |
 | DELETE | `/filmes/:id` | 🛠 | — | 204 · 409 se tiver sessões |
 
 ### Salas
@@ -61,7 +62,7 @@ Todas as respostas de erro têm o formato:
 | DELETE | `/sessoes/:id` | 🛠 | — | 204 · 409 se já houver reservas |
 
 ```ts
-Sessao = { id, inicio, fim, preco, filme: { id, titulo, duracaoMin, classificacao, genero }, sala: { id, nome } }
+Sessao = { id, inicio, fim, preco, filme: { id, titulo, duracaoMin, classificacao, genero, posterUrl }, sala: { id, nome } }
 MapaSessao = {
   sessao: Sessao,
   filas: [{ fila: "A", assentos: [{ id, numero, status: "LIVRE"|"RESERVADO"|"VENDIDO", minhaReserva }] }],

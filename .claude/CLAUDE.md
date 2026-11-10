@@ -20,17 +20,29 @@ Trabalho Final de **Programação II + Banco de Dados II**, UNOESC Chapecó, 202
 - D1 monorepo (`backend/` + `mobile/`) · D2 cinema · D3 AWS EC2 + RDS + nginx + systemd + certbot
 - **D4: só o que o PDF pede.** SEM meia-entrada, SEM QR Code, SEM câmera, SEM método de pagamento. O pagamento é um botão "Pagar" simulado
 - D5 reserva expira em 10 min (`RESERVA_MINUTOS`). O PDF não define tempo
-- **Visual do app: extremamente simples, inspirado no iOS da Apple** (fundo `#F2F2F7`, grupos brancos, azul `#007AFF`, título grande). Será lapidado depois
+- **Visual do app (redesenho de 10/11): minimalista no estilo Apple, SEM gradientes.**
+  - Cores do sistema iOS em `src/ui/tema.ts`, modo claro/escuro automático (`useTema`), escala tipográfica do iOS (`tipos`).
+  - Uma só cor de ação: o azul do sistema (botões, assentos escolhidos, seleção). O dia escolhido é preto/branco, como no Calendário.
+  - Cada filme tem um tom sólido de uma paleta curada de 8 cores (`src/ui/arteFilme.ts`, escolhido pelo id). Ele aparece no ingresso (`Passe`, um por sessão, estilo Wallet) e como reserva da capa quando o filme não tem pôster.
+  - **Pôsteres** (10/11): coluna `filmes.poster_url` (migração `poster_filme`), opcional, com caminho `/posteres/x.jpg` ou URL http(s). A API serve `backend/public/posteres/` em `/posteres` (cache de 7 dias). São montagens da equipe sobre fotos do Pexels (créditos em `CREDITOS.md` na mesma pasta). `Arte` esmaece a imagem por cima do bloco de cor; `urlArquivo()` em `services/api.ts` resolve o caminho relativo. A miniatura (`mini`) é em pé, 40×60. O formulário de filme tem o campo "Pôster".
+  - Margem responsiva `useMargem()` (16 no celular, 20 em telas ≥ 600) e largura máxima: `larguraLeitura` 680 para listas e formulários, `larguraGrade` 1080 para a grade de filmes.
+  - Gerência no estilo Ajustes (`Linha` com `icone`), contadores −/+ (`Contador`) e formulários em modal.
+  - **Tema claro/escuro manual**: `TemaProvider` (`contexts/TemaContext.tsx`) guarda "sistema/claro/escuro" no AsyncStorage (`storage/preferenciasStorage.ts`). O `BotaoTema` fica ao lado do título das abas, no login e no cadastro. A troca é um esmaecimento cruzado calmo de 460 ms (na Web com View Transitions em `utils/transicaoTema.web.ts`, no celular um véu). A revelação circular foi descartada em 10/11 por destoar do resto. A Conta (`components/TelaConta.tsx`) tem cartão de perfil, resumo dos ingressos e próxima sessão (cliente), atalhos (operador) e o `SeletorAparencia` com miniaturas de tela, como no iOS.
+  - **Movimento**: todo toque passa pelo `Tocavel` (`ui/Tocavel.tsx`, Reanimated): mola ao apertar, crescimento leve no hover da Web, `realce` para linhas de lista e vibração no celular. `ui/animacoes.tsx` tem `Surgir` (entrada escalonada da grade), `Pulso` (pulo quando um valor muda) e `entradaTela` (a `Tela` esmaece ao montar). O `Segmentos` tem pílula deslizando. Tudo respeita o "reduzir movimento".
+  - **Navegação**: `ui/Pilha.tsx` usa a pilha nativa no celular e a pilha JS na Web, com deslize e esmaecimento. Na Web a pilha JS vem SEM animação por padrão (`animation: 'default'` liga) e o `Stack.Screen` dela é outro componente (`Pilha.Screen` resolve). As abas usam a `BarraAbas`: uma pílula flutuante centralizada (`tabBar={barraAbas}`), com destaque deslizando.
+  - Favicon: bloco preto arredondado com o ícone de filme em branco.
+- **Filmes com nomes de paródia do mundo da tecnologia** (seed e banco local): Velozes e Compilados, Procurando o Bug, Forrest Commit, O Silêncio dos Servidores, O Poderoso Chatbot, De Volta para o Backup
+- Na Web o Metro deste ambiente **não recarrega** arquivos alterados: reinicie com `npx expo start --web --clear` para ver mudanças. O Expo reescreve o `mobile/tsconfig.json` ao iniciar (`git checkout` nele)
 
 ## Status (atualizado em 10/11/2026)
 
-- [x] F0/F1 Setup + banco: schema, migrações `init` e `objetos_sql`, seed
-- [x] F2 Backend completo + 14 testes passando (unidade, integração, concorrência)
+- [x] F0/F1 Setup + banco: schema, migrações `init`, `objetos_sql` e `poster_filme`, seed
+- [x] F2 Backend completo + 15 testes passando (unidade, integração, concorrência). Corrigido em 10/11: o `AlteracaoFilme` herdava o default da sinopse e um PUT só com `ativo` apagava a sinopse
 - [x] F4 App Expo: Cliente + Bilheteria + Gerência. Typecheck e lint limpos. Fluxos testados no Chrome headless
 - [x] Docs: DER, casos de uso, API, regras, concorrência, deploy; arquivos em `deploy/`
 - [ ] **F3 Deploy na AWS: depende da conta AWS e de um domínio da equipe** (guia em `docs/deploy.md`)
 - [x] Código e docs no GitHub (`main`, 14 commits convencionais, push em 09/11)
-- [ ] Lapidação visual (pendências: rótulos das abas levemente cortados na Web em modo celular; `headerBackVisible` ignorado na Web)
+- [x] Lapidação visual: pôsteres, tema manual, animações, pílula das abas (o problema dos rótulos cortados sumiu com a barra nova)
 - [ ] Preencher as URLs de produção no README; gerar o PNG do DER/casos de uso se o professor exigir imagem
 
 ## Ambiente de desenvolvimento (atenção!)
