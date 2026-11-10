@@ -29,7 +29,7 @@ Trabalho Final de **Programação II + Banco de Dados II**, UNOESC Chapecó, 202
 - [x] F4 App Expo: Cliente + Bilheteria + Gerência. Typecheck e lint limpos. Fluxos testados no Chrome headless
 - [x] Docs: DER, casos de uso, API, regras, concorrência, deploy; arquivos em `deploy/`
 - [ ] **F3 Deploy na AWS: depende da conta AWS e de um domínio da equipe** (guia em `docs/deploy.md`)
-- [x] Commits no `main` (09/11): código + docs, e `.gitattributes` fixando LF nas migrações. Ainda **sem push**
+- [x] Código e docs no GitHub (`main`, 14 commits convencionais, push em 09/11)
 - [ ] Lapidação visual (pendências: rótulos das abas levemente cortados na Web em modo celular; `headerBackVisible` ignorado na Web)
 - [ ] Preencher as URLs de produção no README; gerar o PNG do DER/casos de uso se o professor exigir imagem
 
@@ -68,6 +68,7 @@ Trabalho Final de **Programação II + Banco de Dados II**, UNOESC Chapecó, 202
 
 - Comunicação **em português**. O usuário aprova planos em `.md` antes de implementar mudanças grandes.
 - **Não commitar nem dar push sem o usuário pedir.**
+- Commits seguem **Conventional Commits** em português: `tipo(escopo): descrição` com tipos `feat`, `fix`, `docs`, `test`, `chore`, `refactor` e escopos `api`, `db`, `mobile`, `deploy`. Um commit por assunto.
 - **Comentários no código precisam parecer escritos pela equipe, não por IA.** Nada de banners (`// ====`, `// ----`, `-- ====`), setas `->`/`→`, travessão `—`, MAIÚSCULAS de ênfase ou "(Aula X de P2)". Comentários curtos, em português informal de dev ("pra", "aqui"), só quando explicam um porquê.
 - Se editar uma migração já aplicada (mesmo só comentário), atualize o checksum em `_prisma_migrations` do banco local (sha256 do arquivo) ou o Prisma vai pedir reset.
 - Usuários da seed (senha `cineon123`): `operador@cineon.com`, `ana@cineon.com`, `bruno@cineon.com`.
