@@ -59,12 +59,12 @@ async function main() {
   // filmes
   const filmes = await Promise.all(
     [
-      { titulo: "Horizonte Vermelho", genero: "Ação", duracaoMin: 128, classificacao: "14", sinopse: "Uma piloto de resgate precisa atravessar uma tempestade de areia para salvar a equipe de uma estação isolada." },
-      { titulo: "O Jardim de Inverno", genero: "Drama", duracaoMin: 112, classificacao: "12", sinopse: "Três irmãs voltam à casa da avó no sul do Brasil e reencontram segredos guardados por décadas." },
-      { titulo: "Pixel & Pipoca", genero: "Animação", duracaoMin: 95, classificacao: "L", sinopse: "Um robô de cinema abandonado decide exibir um último filme para os animais do bairro." },
-      { titulo: "Sinal Fraco", genero: "Suspense", duracaoMin: 104, classificacao: "16", sinopse: "Um radioamador capta pedidos de socorro que parecem vir do próprio futuro." },
-      { titulo: "Café com Saudade", genero: "Comédia", duracaoMin: 99, classificacao: "10", sinopse: "Um barista desastrado tenta salvar a cafeteria da família com a ajuda de clientes nada comuns." },
-      { titulo: "Órbita Baixa", genero: "Ficção científica", duracaoMin: 141, classificacao: "12", sinopse: "A tripulação de uma estação espacial precisa decidir quem volta à Terra na única cápsula disponível." },
+      { titulo: "Velozes e Compilados", posterUrl: "/posteres/velozes-e-compilados.jpg", genero: "Ação", duracaoMin: 128, classificacao: "14", sinopse: "Um desenvolvedor tem até sexta às 18h para colocar o sistema no ar, e cada build leva quarenta minutos." },
+      { titulo: "Forrest Commit", posterUrl: "/posteres/forrest-commit.jpg", genero: "Drama", duracaoMin: 112, classificacao: "12", sinopse: "Um estagiário de bom coração faz commits direto na main e, sem querer, muda a história da empresa." },
+      { titulo: "Procurando o Bug", posterUrl: "/posteres/procurando-o-bug.jpg", genero: "Animação", duracaoMin: 95, classificacao: "L", sinopse: "Um peixinho testador atravessa um oceano de logs para encontrar o bug que derrubou a produção." },
+      { titulo: "O Silêncio dos Servidores", posterUrl: "/posteres/o-silencio-dos-servidores.jpg", genero: "Suspense", duracaoMin: 104, classificacao: "16", sinopse: "Às três da manhã todos os servidores param de responder, e o plantonista descobre que não está sozinho no datacenter." },
+      { titulo: "O Poderoso Chatbot", posterUrl: "/posteres/o-poderoso-chatbot.jpg", genero: "Comédia", duracaoMin: 99, classificacao: "10", sinopse: "O patriarca de uma família de assistentes virtuais dá respostas que ninguém consegue recusar." },
+      { titulo: "De Volta para o Backup", posterUrl: "/posteres/de-volta-para-o-backup.jpg", genero: "Ficção científica", duracaoMin: 141, classificacao: "12", sinopse: "Um técnico viaja no tempo para restaurar o backup antes que a cidade inteira perca seus arquivos." },
     ].map((f) => prisma.filme.create({ data: f })),
   );
 

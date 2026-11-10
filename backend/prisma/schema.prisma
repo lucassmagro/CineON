@@ -60,6 +60,7 @@ model Filme {
   duracaoMin    Int      @map("duracao_min")
   classificacao String   @db.VarChar(10) // L, 10, 12, 14, 16, 18
   genero        String   @db.VarChar(50)
+  posterUrl     String?  @map("poster_url") @db.VarChar(300) // caminho em /posteres ou URL externa
   ativo         Boolean  @default(true)
   criadoEm      DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
 
