@@ -20,3 +20,6 @@ dist-web/
 Thumbs.db
 .idea/
 *.log
+
+# chave SSH da EC2, nunca vai pro Git
+*.pem
