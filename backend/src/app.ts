@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { CORS_ORIGENS } from "./config.js";
 import { criarContainer, type Container } from "./container.js";
@@ -28,9 +29,12 @@ export function criarApp(container: Container = criarContainer()) {
     res.status(banco ? 200 : 503).json({ status: banco ? "ok" : "erro", banco });
   });
 
-  // pôsteres dos filmes da seed; o caminho vale tanto rodando de src/ quanto de dist/
-  const posteres = fileURLToPath(new URL("../public/posteres", import.meta.url));
-  app.use("/posteres", express.static(posteres, { maxAge: "7d" }));
+  // pôsteres dos filmes da seed. Rodando de src/ a pasta fica em ../public, mas o build
+  // compila pra dist/src/, então lá ela fica um nível acima
+  const posteres = ["../public/posteres", "../../public/posteres"]
+    .map((caminho) => fileURLToPath(new URL(caminho, import.meta.url)))
+    .find((pasta) => existsSync(pasta));
+  if (posteres) app.use("/posteres", express.static(posteres, { maxAge: "7d" }));
 
   app.use(criarRotas(container));
   app.use(rotaNaoEncontrada);
