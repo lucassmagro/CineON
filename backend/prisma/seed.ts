@@ -1,4 +1,4 @@
-// Dados de demonstração: 1 operador, 2 clientes (senha cineon123), 3 salas, 6 filmes,
+// Dados de demonstração: 1 operador, 2 clientes (senha cineon123 ou SEED_SENHA), 3 salas, 6 filmes,
 // sessões de 3 dias atrás até 7 dias à frente e algumas vendas pro relatório ter números.
 // Se já existir usuário no banco ela não faz nada.
 import bcrypt from "bcryptjs";
@@ -7,6 +7,8 @@ import { prisma } from "../src/prisma.js";
 import { gerarCodigoIngresso, multiplicarDinheiro, somarMinutos } from "../src/domain/valores.js";
 
 const LIMPEZA_MIN = Number(process.env.LIMPEZA_SALA_MIN ?? 15);
+// em produção passe SEED_SENHA, senão qualquer um que leia o repositório entra como operador
+const SENHA = process.env.SEED_SENHA || "cineon123";
 
 // aleatório com semente fixa, pra seed gerar sempre os mesmos dados
 let estado = 20261124;
@@ -31,7 +33,7 @@ async function main() {
   }
 
   // usuários
-  const senhaHash = await bcrypt.hash("cineon123", 10);
+  const senhaHash = await bcrypt.hash(SENHA, 10);
   const operador = await prisma.usuario.create({
     data: { nome: "Operador CineON", email: "operador@cineon.com", senhaHash, papel: "OPERADOR" },
   });
@@ -154,7 +156,8 @@ async function main() {
   console.log(
     `Seed concluída: 3 usuários, ${salas.length} salas, ${filmes.length} filmes, ${sessoes.length} sessões, ${totalIngressos} ingressos.`,
   );
-  console.log("Logins (senha cineon123): operador@cineon.com | ana@cineon.com | bruno@cineon.com");
+  const aviso = process.env.SEED_SENHA ? "a de SEED_SENHA" : "cineon123";
+  console.log(`Logins (senha ${aviso}): operador@cineon.com | ana@cineon.com | bruno@cineon.com`);
 }
 
 main()
