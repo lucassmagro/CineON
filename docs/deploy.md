@@ -88,7 +88,7 @@ cd CineON/backend
 
 # variáveis de ambiente FORA do repositório
 sudo tee /etc/cineon.env > /dev/null <<EOF
-DATABASE_URL=postgresql://postgres:SENHA-DO-RDS@ENDPOINT-DO-RDS:5432/cineon?schema=public&sslmode=require
+DATABASE_URL="postgresql://postgres:SENHA-DO-RDS@ENDPOINT-DO-RDS:5432/cineon?schema=public&sslmode=require"
 NODE_EXTRA_CA_CERTS=/etc/ssl/certs/rds-global-bundle.pem
 JWT_SECRET=$(openssl rand -hex 32)
 JWT_MINUTOS=120
@@ -107,6 +107,8 @@ SEED_SENHA='senha-da-demo' npm run seed   # só na primeira vez
 > **Senha da seed:** o repositório é público e a senha padrão `cineon123` está nele. Em produção a seed roda com `SEED_SENHA`, e só a equipe sabe a senha dos usuários de demonstração.
 
 > Se a senha do RDS tiver `@`, `:`, `/` ou `#`, ela precisa ir codificada na URL (`@` vira `%40`). Mais fácil escolher uma senha só com letras e números.
+
+> As **aspas** na `DATABASE_URL` são obrigatórias: sem elas o `source` lê o `&` da URL como "rodar em segundo plano", a variável fica vazia e o `migrate deploy` reclama que falta o `datasource.url`. O systemd entende as aspas.
 
 ## 6. systemd + nginx + HTTPS
 ```bash
@@ -132,10 +134,13 @@ curl https://SEU-DOMINIO/api/saude
 ```
 
 ## 7. App
-- **Web**: o build usa a API pelo caminho relativo `/api`, então o mesmo build funciona pelo IP e pelo domínio. Na máquina de desenvolvimento, dentro de `mobile/`:
+- **Web**: o build usa a API pelo caminho relativo `/api`, então o mesmo build funciona pelo IP e pelo domínio. Na máquina de desenvolvimento, dentro de `mobile/`, **pelo PowerShell**:
+  ```powershell
+  $env:EXPO_PUBLIC_API_URL = '/api'; npx expo export -p web --clear
+  ```
+  Dois cuidados: no Git Bash o `/api` vira `C:/Program Files/Git/api` (conversão de caminho do MSYS), e sem o `--clear` o Metro reaproveita o cache com a URL antiga. Pra conferir: `dist/_expo/static/js/web/entry-*.js` tem que ter `"/api".replace`. Depois, de volta no Git Bash, na raiz:
   ```bash
-  EXPO_PUBLIC_API_URL=/api npm run build:web
-  scp -i cineon.pem -r dist ubuntu@<ELASTIC-IP>:/tmp/web
+  scp -i cineon.pem -r mobile/dist ubuntu@<ELASTIC-IP>:/tmp/web
   ssh -i cineon.pem ubuntu@<ELASTIC-IP> 'sudo rm -rf /var/www/cineon/* && sudo cp -r /tmp/web/* /var/www/cineon/ && rm -rf /tmp/web'
   ```
 - **Celular**: no `mobile/.env`, `EXPO_PUBLIC_API_URL=https://SEU-DOMINIO/api`, rode `npx expo start` e abra no **Expo Go**. O app conversa com a API de produção.
