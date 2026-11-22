@@ -5,6 +5,7 @@ import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Arte } from '@/components/Arte';
 import { SeloClassificacao, textoClassificacao } from '@/components/SeloClassificacao';
 import { SeletorDia } from '@/components/SeletorDia';
+import { Trailer } from '@/components/Trailer';
 import { useCarregar } from '@/hooks/useCarregar';
 import { filmeService } from '@/services/cineon';
 import { Carregando, MensagemErro, Tela, Texto, Vazio } from '@/ui/componentes';
@@ -68,6 +69,11 @@ export default function DetalheFilme() {
           </Texto>
         </View>
       ) : null}
+
+      <View style={{ paddingHorizontal: margem, gap: espaco.m, marginBottom: espaco.xxl }}>
+        <Texto tipo="titulo2">Trailer</Texto>
+        <Trailer filme={filme} largura={disponivel} />
+      </View>
 
       <View style={[estilos.divisor, { backgroundColor: c.separador, marginHorizontal: margem }]} />
 
