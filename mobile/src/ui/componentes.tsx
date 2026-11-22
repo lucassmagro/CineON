@@ -1,7 +1,7 @@
 // Componentes base das telas, no estilo do iOS.
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { BlurView } from 'expo-blur';
-import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ComponentProps, type ReactNode, type RefObject } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -78,6 +78,7 @@ export function Tela({
   acaoTitulo,
   semBotaoTema = false,
   largura = larguraLeitura,
+  refRolagem,
 }: {
   children: ReactNode;
   titulo?: string;
@@ -91,6 +92,8 @@ export function Tela({
   semBotaoTema?: boolean;
   /** largura máxima do conteúdo em telas grandes */
   largura?: number;
+  /** pra tela rolar até um ponto (botões que levam a uma seção) */
+  refRolagem?: RefObject<ScrollView | null>;
 }) {
   const c = useTema();
   const margens = useSafeAreaInsets();
@@ -100,6 +103,7 @@ export function Tela({
   return (
     <View style={{ flex: 1, backgroundColor: c.fundo }}>
       <ScrollView
+        ref={refRolagem}
         contentContainerStyle={{
           paddingTop: (semCabecalho ? margens.top : 0) + espaco.s,
           // telas sem cabeçalho são as das abas, e a pílula das abas flutua por cima do conteúdo
