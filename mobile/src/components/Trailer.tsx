@@ -34,9 +34,14 @@ const CLAMP = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
 type Estado = 'capa' | 'tocando' | 'pausado' | 'fim';
 
-type Props = { filme: Pick<Filme, 'id' | 'titulo' | 'sinopse' | 'genero' | 'duracaoMin' | 'classificacao' | 'posterUrl'>; largura: number };
+type Props = {
+  filme: Pick<Filme, 'id' | 'titulo' | 'sinopse' | 'genero' | 'duracaoMin' | 'classificacao' | 'posterUrl'>;
+  largura: number;
+  /** cor da cena colorida e de reserva do pôster; sem ela usa o tom do filme */
+  cor?: string;
+};
 
-export function Trailer({ filme, largura }: Props) {
+export function Trailer({ filme, largura, cor: corPedida }: Props) {
   const reduzir = useReduzirMovimento();
   const t = useSharedValue(0);
   const [estado, setEstado] = useState<Estado>('capa');
@@ -48,7 +53,7 @@ export function Trailer({ filme, largura }: Props) {
 
   const altura = Math.round((largura * 9) / 16);
   const poster = urlArquivo(filme.posterUrl);
-  const cor = corDoFilme(filme.titulo, filme.id);
+  const cor = corPedida ?? corDoFilme(filme.titulo, filme.id);
   const { frases } = roteiroDoFilme(filme);
   const m = reduzir ? 0 : 1;
   // tamanhos acompanham a largura do player

@@ -10,13 +10,20 @@ export function SeletorDia({
   dias,
   valor,
   aoMudar,
+  corAtiva,
+  corTextoAtivo,
 }: {
   dias: string[];
   valor: string | null;
   aoMudar: (dia: string) => void;
+  /** na página do filme o dia escolhido usa o destaque do pôster; no resto, preto/branco */
+  corAtiva?: string;
+  corTextoAtivo?: string;
 }) {
   const c = useTema();
   const margem = useMargem();
+  const fundoAtivo = corAtiva ?? c.rotulo;
+  const textoAtivo = corTextoAtivo ?? c.fundoElevado;
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={[estilos.lista, { paddingHorizontal: margem }]}>
       {dias.map((d) => {
@@ -32,11 +39,11 @@ export function SeletorDia({
             accessibilityState={{ selected: ativo }}
             accessibilityLabel={`${p.semana} ${p.numero} de ${p.mes}`}
             estiloPressionado={ativo ? null : { backgroundColor: c.preenchimentoForte }}
-            style={[estilos.dia, { backgroundColor: ativo ? c.rotulo : c.fundoElevado }]}>
-            <Texto tipo="legenda" peso="600" cor={ativo ? c.fundoElevado : p.hoje ? 'vermelho' : 'secundario'}>
+            style={[estilos.dia, { backgroundColor: ativo ? fundoAtivo : c.fundoElevado }]}>
+            <Texto tipo="legenda" peso="600" cor={ativo ? textoAtivo : p.hoje ? 'vermelho' : 'secundario'}>
               {p.semana}
             </Texto>
-            <Texto tipo="titulo3" peso="600" cor={ativo ? c.fundoElevado : 'rotulo'} style={{ fontVariant: ['tabular-nums'] }}>
+            <Texto tipo="titulo3" peso="600" cor={ativo ? textoAtivo : 'rotulo'} style={{ fontVariant: ['tabular-nums'] }}>
               {p.numero}
             </Texto>
           </Tocavel>
