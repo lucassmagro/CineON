@@ -36,6 +36,11 @@ const subir: StackCardStyleInterpolator = ({ current }) => ({
 
 const tempo = (duracao: number) => ({ animation: 'timing' as const, config: { duration: duracao, easing: curvaApple } });
 
+// Quando a tela ocupa a janela toda, o card da pilha JS usa só minHeight 100% (espera que o
+// body role). O body do Expo não rola, então a tela crescia e o ScrollView de dentro nunca rolava.
+// Vai somado ao cardStyle de quem chama, que só define a cor de fundo.
+const cardQueRola = { flex: 1 };
+
 function opcoesWeb(reduzir: boolean) {
   if (reduzir) return { animation: 'none' as const };
   return {
@@ -57,7 +62,8 @@ type Props = { children?: ReactNode; screenOptions?: object };
 export function Pilha({ children, screenOptions }: Props) {
   const reduzir = useReduzirMovimento();
   if (Platform.OS !== 'web') return <Stack screenOptions={screenOptions as never}>{children}</Stack>;
-  return <JSStack screenOptions={{ ...opcoesWeb(reduzir), ...screenOptions }}>{children}</JSStack>;
+  const deFora = (screenOptions ?? {}) as { cardStyle?: object };
+  return <JSStack screenOptions={{ ...opcoesWeb(reduzir), ...screenOptions, cardStyle: [cardQueRola, deFora.cardStyle] }}>{children}</JSStack>;
 }
 
 // na Web o Stack.Screen é outro componente e a pilha em JS ignora as opções dele
