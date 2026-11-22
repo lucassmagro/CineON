@@ -6,6 +6,9 @@ import { Carregando } from '@/ui/componentes';
 import { useOpcoesPilha } from '@/ui/navegacao';
 import { opcoesModal, Pilha } from '@/ui/Pilha';
 
+// mesmo caso do cliente: o painel fica por baixo de qualquer tela aberta direto
+export const unstable_settings = { initialRouteName: '(painel)' };
+
 export default function LayoutOperador() {
   const { usuario, verificando } = useAuth();
   const opcoes = useOpcoesPilha();

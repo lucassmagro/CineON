@@ -6,6 +6,10 @@ import { Carregando } from '@/ui/componentes';
 import { useOpcoesPilha } from '@/ui/navegacao';
 import { opcoesModal, Pilha } from '@/ui/Pilha';
 
+// abrindo um filme direto pelo endereço (ou recarregando a página), as abas ficam por baixo
+// e a seta de voltar continua aparecendo
+export const unstable_settings = { initialRouteName: '(abas)' };
+
 export default function LayoutCliente() {
   const { usuario, verificando } = useAuth();
   const opcoes = useOpcoesPilha();
