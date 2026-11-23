@@ -6,8 +6,8 @@ Aplicativo de **bilheteria de cinema com marcação de assentos**. Trabalho Fina
 
 | | |
 |---|---|
-| App Web em produção | <http://18.226.44.216> |
-| API em produção | <http://18.226.44.216/api> (saúde: [/api/saude](http://18.226.44.216/api/saude)) |
+| App Web em produção | <https://cineon.agp.app.br> |
+| API em produção | <https://api.cineon.agp.app.br> (saúde: [/saude](https://api.cineon.agp.app.br/saude)), também em <https://cineon.agp.app.br/api> |
 
 ## O que o sistema faz
 

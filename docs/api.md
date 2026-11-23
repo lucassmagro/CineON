@@ -1,6 +1,6 @@
 # CineON — Definição da API
 
-- **Base**: `http://18.226.44.216/api` (produção) · `http://localhost:3000` (desenvolvimento)
+- **Base**: `https://api.cineon.agp.app.br` (produção, também em `https://cineon.agp.app.br/api`) · `http://localhost:3000` (desenvolvimento)
 - **Formato**: JSON (UTF-8). Datas em ISO-8601; valores em reais (`number` com 2 casas)
 - **Autenticação**: `Authorization: Bearer <accessToken>` (JWT, obtido em `POST /auth/login`)
 - **Acesso**: 🔓 público · 👤 autenticado (cliente ou operador) · 🛠 somente `OPERADOR`

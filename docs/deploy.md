@@ -4,9 +4,9 @@ Arquitetura (a mesma da Aula 12 de P2):
 
 ```
 Celular (Expo Go) / Navegador
-          │ HTTP  (http://18.226.44.216)
+          │ HTTPS  (https://cineon.agp.app.br)
           ▼
-   EC2 Ubuntu ── nginx (80) ──────────────┬─► /      app Web estático (/var/www/cineon)
+   EC2 Ubuntu ── nginx (80/443, certbot) ─┬─► /      app Web estático (/var/www/cineon)
           │                               └─► /api   Node.js API :3000 (systemd)
           │ 5432 (rede privada da VPC, com SSL)
           ▼
@@ -15,14 +15,14 @@ Celular (Expo Go) / Navegador
 
 App e API ficam no **mesmo endereço**: o app na raiz e a API em `/api` (o nginx tira o prefixo e repassa pro Node). Assim o navegador não faz CORS.
 
-**Em produção:** app em <http://18.226.44.216> e API em <http://18.226.44.216/api>. Ficamos sem domínio próprio, então é pelo Elastic IP mesmo e sem HTTPS (o enunciado não pede).
+**Em produção:** app em <https://cineon.agp.app.br> e API em <https://api.cineon.agp.app.br> (ou `/api` no endereço do app). O certificado é do Let's Encrypt e renova sozinho. Pelo IP `http://18.226.44.216` continua funcionando, sem HTTPS, de plano B.
 
 Arquivos prontos em [deploy/](../deploy): `cineon-api.service`, `nginx-cineon.conf`, `atualizar.sh` e `permissoes.sql`.
 
 ## Custo zero: o que garante
 
 - A conta é criada no **Plano Gratuito** da AWS (contas novas, desde jul/2025). Nesse plano o cartão não é cobrado: o uso sai dos créditos que a AWS dá (US$ 100 na criação, mais créditos por completar atividades como subir uma EC2, um RDS e criar um orçamento). Se os créditos acabarem ou passarem os 6 meses, a conta é pausada, não cobrada. **Não clique em "Upgrade to paid plan".**
-- Sem domínio: o acesso é pelo Elastic IP, que não muda enquanto estiver associado.
+- O domínio é o do professor (`agp.app.br`): ele criou os registros A de `cineon` e `api.cineon` apontando pro nosso Elastic IP.
 - Ficam de fora, de propósito: Secrets Manager, Multi-AZ, Load Balancer, NAT Gateway, Route 53 e snapshot final do RDS.
 - EC2 + RDS + IPv4 público consomem uns US$ 25 de crédito por mês em Ohio. Sobra bastante até a apresentação.
 
@@ -64,7 +64,9 @@ Copiar o **endpoint** (algo como `cineon-db.xxxx.us-east-2.rds.amazonaws.com`).
 > O RDS com PostgreSQL 15+ só aceita conexão com SSL. Por isso a `DATABASE_URL` leva `sslmode=require` e o Node recebe o certificado da Amazon por `NODE_EXTRA_CA_CERTS` (passo 5). A extensão `btree_gist` (da constraint EXCLUDE) é suportada no RDS e a migração cria ela com o usuário master.
 
 ## 4. Endereço
-Tudo funciona por `http://<ELASTIC-IP>` (o nosso é `18.226.44.216`). Se um dia houver um domínio apontando pro IP, o HTTPS do fim do passo 6 é opcional.
+Passar pro professor o **Elastic IP**. Ele cria os registros **A** de `cineon.agp.app.br` e `api.cineon.agp.app.br` apontando pro IP.
+
+Enquanto o DNS não fica pronto, tudo funciona por `http://<ELASTIC-IP>`. O HTTPS (fim do passo 6) entra depois.
 
 ## 5. Servidor (via SSH)
 ```bash
@@ -94,7 +96,7 @@ JWT_SECRET=$(openssl rand -hex 32)
 JWT_MINUTOS=120
 PORT=3000
 RESERVA_MINUTOS=10
-CORS_ORIGENS=http://<ELASTIC-IP>
+CORS_ORIGENS=https://cineon.agp.app.br,http://<ELASTIC-IP>
 EOF
 sudo chmod 600 /etc/cineon.env && sudo chown ubuntu:ubuntu /etc/cineon.env
 
@@ -124,13 +126,12 @@ sudo nginx -t && sudo systemctl reload nginx
 curl http://localhost/api/saude         # {"status":"ok","banco":true}
 ```
 
-HTTPS (opcional, não usamos): só funciona com um domínio apontando pro IP (`nslookup SEU-DOMINIO` mostra o Elastic IP):
+HTTPS, depois que o DNS aponta pro IP (`nslookup cineon.agp.app.br` mostra o Elastic IP). O `nginx-cineon.conf` já tem os blocos com os nomes, e o certbot põe o 443 e o redirecionamento neles. Sem e-mail no registro, a renovação automática funciona do mesmo jeito:
 ```bash
-sudo sed -i 's/server_name _;/server_name SEU-DOMINIO;/' /etc/nginx/sites-available/cineon
-sudo nginx -t && sudo systemctl reload nginx
 sudo snap install --classic certbot && sudo ln -sf /snap/bin/certbot /usr/local/bin/certbot
-sudo certbot --nginx -d SEU-DOMINIO
-curl https://SEU-DOMINIO/api/saude
+sudo certbot --nginx -d cineon.agp.app.br -d api.cineon.agp.app.br --redirect --agree-tos --register-unsafely-without-email --non-interactive
+sudo certbot renew --dry-run
+curl https://api.cineon.agp.app.br/saude
 ```
 
 ## 7. App
@@ -143,7 +144,7 @@ curl https://SEU-DOMINIO/api/saude
   scp -i cineon.pem -r mobile/dist ubuntu@<ELASTIC-IP>:/tmp/web
   ssh -i cineon.pem ubuntu@<ELASTIC-IP> 'sudo rm -rf /var/www/cineon/* && sudo cp -r /tmp/web/* /var/www/cineon/ && rm -rf /tmp/web'
   ```
-- **Celular**: no `mobile/.env`, `EXPO_PUBLIC_API_URL=http://18.226.44.216/api`, rode `npx expo start` e abra no **Expo Go**. O app conversa com a API de produção.
+- **Celular**: no `mobile/.env`, `EXPO_PUBLIC_API_URL=https://api.cineon.agp.app.br`, rode `npx expo start` e abra no **Expo Go**. O app conversa com a API de produção.
 
 ## 8. Permissões mínimas (opcional, conta pontos em BD2)
 Rode [deploy/permissoes.sql](../deploy/permissoes.sql) como master e troque a `DATABASE_URL` do `/etc/cineon.env` para o usuário `cineon_app`. As migrações futuras continuam rodando com o master.
