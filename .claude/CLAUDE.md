@@ -52,7 +52,7 @@ Trabalho Final de **Programação II + Banco de Dados II**, UNOESC Chapecó, 202
 - [x] Código e docs no GitHub (`main`, commits convencionais, último push em 10/11)
 - [x] Lapidação visual: pôsteres, tema manual, animações, pílula das abas (o problema dos rótulos cortados sumiu com a barra nova)
 - [x] URLs de produção no README (23/11)
-- [ ] Gerar imagem do diagrama de casos de uso (só existe o `.puml`, o GitHub não renderiza)
+- [x] Diagrama de casos de uso em `docs/casos-de-uso.svg` e `.png` (23/11), desenhado à mão a partir do `.puml`
 - Validação do ingresso (RN06) sem restrição de horário desde 23/11: entra a qualquer hora, só precisa estar VALIDO
 
 ## Ambiente de desenvolvimento (atenção!)

@@ -1,6 +1,8 @@
 # CineON — Casos de Uso
 
-O diagrama está em [casos-de-uso.puml](casos-de-uso.puml) (PlantUML). Para gerar a imagem, use a extensão PlantUML do VS Code ou https://www.plantuml.com/plantuml.
+![Diagrama de casos de uso do CineON](casos-de-uso.svg)
+
+Também em [PNG](casos-de-uso.png). A fonte em PlantUML está em [casos-de-uso.puml](casos-de-uso.puml).
 
 ## Atores
 
