@@ -1,6 +1,6 @@
 # CineON — Definição da API
 
-- **Base**: `https://<seu-dominio-da-api>` (produção) · `http://localhost:3000` (desenvolvimento)
+- **Base**: `http://18.226.44.216/api` (produção) · `http://localhost:3000` (desenvolvimento)
 - **Formato**: JSON (UTF-8). Datas em ISO-8601; valores em reais (`number` com 2 casas)
 - **Autenticação**: `Authorization: Bearer <accessToken>` (JWT, obtido em `POST /auth/login`)
 - **Acesso**: 🔓 público · 👤 autenticado (cliente ou operador) · 🛠 somente `OPERADOR`

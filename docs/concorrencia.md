@@ -81,7 +81,7 @@ Uma transação: `SELECT ... FROM ingressos WHERE codigo = ANY($1) ORDER BY id F
 | 4 cancelamentos simultâneos do mesmo ingresso | 1 × 200, 3 × 409, valor estornado uma vez só |
 | INSERT direto de ingresso duplicado (simulando um bug) | o banco recusa (P2002) |
 
-Demonstração ao vivo em produção: `npm run demo:concorrencia -- https://api.seu-dominio 20`
+Demonstração ao vivo em produção: `npm run demo:concorrencia -- http://18.226.44.216/api 20`
 
 ## Índices em uso (EXPLAIN ANALYZE no banco de desenvolvimento)
 

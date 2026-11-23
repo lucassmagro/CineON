@@ -48,10 +48,12 @@ Trabalho Final de **Programação II + Banco de Dados II**, UNOESC Chapecó, 202
 - [x] F2 Backend completo + 17 testes passando (unidade, integração, concorrência). Corrigido em 10/11: o `AlteracaoFilme` herdava o default da sinopse e um PUT só com `ativo` apagava a sinopse
 - [x] F4 App Expo: Cliente + Bilheteria + Gerência. Typecheck e lint limpos. Fluxos testados no Chrome headless
 - [x] Docs: DER, casos de uso, API, regras, concorrência, deploy; arquivos em `deploy/`
-- [~] **F3 Deploy na AWS (21/11): no ar em `http://18.226.44.216`**, falta o HTTPS. Conta no Plano Gratuito (créditos, sem cobrança), região **Ohio `us-east-2`**, EC2 `cineon-api` t3.micro + RDS `cineon-db` db.t4g.micro (banco `cineon`, privado, SSL com `NODE_EXTRA_CA_CERTS`). App e API no mesmo endereço: nginx serve o app na raiz e a API em `/api`; o build Web usa `EXPO_PUBLIC_API_URL=/api` (gerar pelo PowerShell com `--clear`, o Git Bash estraga o `/api`). Chave SSH: `cineon.pem` na raiz (ignorada no Git). A senha dos usuários da seed em produção NÃO é `cineon123` (`SEED_SENHA`, só a equipe sabe). **Pendente: o professor apontar `cineon.<domínio dele>` pro IP; depois `server_name` + `certbot --nginx -d` (passo 6 do guia), `CORS_ORIGENS` em `/etc/cineon.env` e URLs no README.** Atualizar o servidor: `bash deploy/atualizar.sh` na EC2
+- [x] **F3 Deploy na AWS (21/11): no ar em `http://18.226.44.216`** (app na raiz, API em `/api`). **Decidido em 23/11: fica nesse IP, sem domínio e sem HTTPS** (o professor não vai passar domínio; o PDF não pede HTTPS). Conta no Plano Gratuito (créditos, sem cobrança), região **Ohio `us-east-2`**, EC2 `cineon-api` t3.micro + RDS `cineon-db` db.t4g.micro (banco `cineon`, privado, SSL com `NODE_EXTRA_CA_CERTS`). App e API no mesmo endereço: nginx serve o app na raiz e a API em `/api`; o build Web usa `EXPO_PUBLIC_API_URL=/api` (gerar pelo PowerShell com `--clear`, o Git Bash estraga o `/api`). Chave SSH: `cineon.pem` na raiz (ignorada no Git). A senha dos usuários da seed em produção NÃO é `cineon123` (`SEED_SENHA`, só a equipe sabe). Atualizar o servidor: `bash deploy/atualizar.sh` na EC2
 - [x] Código e docs no GitHub (`main`, commits convencionais, último push em 10/11)
 - [x] Lapidação visual: pôsteres, tema manual, animações, pílula das abas (o problema dos rótulos cortados sumiu com a barra nova)
-- [ ] Preencher as URLs de produção no README; gerar o PNG do DER/casos de uso se o professor exigir imagem
+- [x] URLs de produção no README (23/11)
+- [ ] Gerar imagem do diagrama de casos de uso (só existe o `.puml`, o GitHub não renderiza)
+- Validação do ingresso (RN06) sem restrição de horário desde 23/11: entra a qualquer hora, só precisa estar VALIDO
 
 ## Ambiente de desenvolvimento (atenção!)
 

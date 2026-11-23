@@ -6,8 +6,8 @@ Aplicativo de **bilheteria de cinema com marcação de assentos**. Trabalho Fina
 
 | | |
 |---|---|
-| API em produção | _(preencher após o deploy)_ |
-| App Web | _(preencher após o deploy)_ |
+| App Web em produção | <http://18.226.44.216> |
+| API em produção | <http://18.226.44.216/api> (saúde: [/api/saude](http://18.226.44.216/api/saude)) |
 
 ## O que o sistema faz
 

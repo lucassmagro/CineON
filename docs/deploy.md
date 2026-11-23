@@ -4,23 +4,25 @@ Arquitetura (a mesma da Aula 12 de P2):
 
 ```
 Celular (Expo Go) / Navegador
-          │ HTTPS  (https://SEU-DOMINIO)
+          │ HTTP  (http://18.226.44.216)
           ▼
-   EC2 Ubuntu ── nginx (80/443, certbot) ─┬─► /      app Web estático (/var/www/cineon)
+   EC2 Ubuntu ── nginx (80) ──────────────┬─► /      app Web estático (/var/www/cineon)
           │                               └─► /api   Node.js API :3000 (systemd)
           │ 5432 (rede privada da VPC, com SSL)
           ▼
    RDS PostgreSQL (gerenciado)
 ```
 
-App e API ficam no **mesmo endereço**: o app na raiz e a API em `/api` (o nginx tira o prefixo e repassa pro Node). Assim só precisa de um nome de domínio e o navegador não faz CORS.
+App e API ficam no **mesmo endereço**: o app na raiz e a API em `/api` (o nginx tira o prefixo e repassa pro Node). Assim o navegador não faz CORS.
+
+**Em produção:** app em <http://18.226.44.216> e API em <http://18.226.44.216/api>. Ficamos sem domínio próprio, então é pelo Elastic IP mesmo e sem HTTPS (o enunciado não pede).
 
 Arquivos prontos em [deploy/](../deploy): `cineon-api.service`, `nginx-cineon.conf`, `atualizar.sh` e `permissoes.sql`.
 
 ## Custo zero: o que garante
 
 - A conta é criada no **Plano Gratuito** da AWS (contas novas, desde jul/2025). Nesse plano o cartão não é cobrado: o uso sai dos créditos que a AWS dá (US$ 100 na criação, mais créditos por completar atividades como subir uma EC2, um RDS e criar um orçamento). Se os créditos acabarem ou passarem os 6 meses, a conta é pausada, não cobrada. **Não clique em "Upgrade to paid plan".**
-- O domínio é o do professor, que cria o registro apontando pro nosso IP.
+- Sem domínio: o acesso é pelo Elastic IP, que não muda enquanto estiver associado.
 - Ficam de fora, de propósito: Secrets Manager, Multi-AZ, Load Balancer, NAT Gateway, Route 53 e snapshot final do RDS.
 - EC2 + RDS + IPv4 público consomem uns US$ 25 de crédito por mês em Ohio. Sobra bastante até a apresentação.
 
@@ -61,10 +63,8 @@ Copiar o **endpoint** (algo como `cineon-db.xxxx.us-east-2.rds.amazonaws.com`).
 
 > O RDS com PostgreSQL 15+ só aceita conexão com SSL. Por isso a `DATABASE_URL` leva `sslmode=require` e o Node recebe o certificado da Amazon por `NODE_EXTRA_CA_CERTS` (passo 5). A extensão `btree_gist` (da constraint EXCLUDE) é suportada no RDS e a migração cria ela com o usuário master.
 
-## 4. Domínio
-Passar pro professor o nome desejado (ex.: `cineon.DOMINIO-DO-PROFESSOR`) e o **Elastic IP**. Ele cria um registro **A** apontando o nome pro IP.
-
-Enquanto o DNS não fica pronto, tudo funciona por `http://<ELASTIC-IP>`. O HTTPS (passo 6) entra depois.
+## 4. Endereço
+Tudo funciona por `http://<ELASTIC-IP>` (o nosso é `18.226.44.216`). Se um dia houver um domínio apontando pro IP, o HTTPS do fim do passo 6 é opcional.
 
 ## 5. Servidor (via SSH)
 ```bash
@@ -94,7 +94,7 @@ JWT_SECRET=$(openssl rand -hex 32)
 JWT_MINUTOS=120
 PORT=3000
 RESERVA_MINUTOS=10
-CORS_ORIGENS=https://SEU-DOMINIO
+CORS_ORIGENS=http://<ELASTIC-IP>
 EOF
 sudo chmod 600 /etc/cineon.env && sudo chown ubuntu:ubuntu /etc/cineon.env
 
@@ -110,7 +110,7 @@ SEED_SENHA='senha-da-demo' npm run seed   # só na primeira vez
 
 > As **aspas** na `DATABASE_URL` são obrigatórias: sem elas o `source` lê o `&` da URL como "rodar em segundo plano", a variável fica vazia e o `migrate deploy` reclama que falta o `datasource.url`. O systemd entende as aspas.
 
-## 6. systemd + nginx + HTTPS
+## 6. systemd + nginx
 ```bash
 sudo cp ~/CineON/deploy/cineon-api.service /etc/systemd/system/
 sudo systemctl daemon-reload && sudo systemctl enable --now cineon-api
@@ -124,7 +124,7 @@ sudo nginx -t && sudo systemctl reload nginx
 curl http://localhost/api/saude         # {"status":"ok","banco":true}
 ```
 
-Quando o professor avisar que o domínio aponta pro IP (`nslookup SEU-DOMINIO` mostra o Elastic IP):
+HTTPS (opcional, não usamos): só funciona com um domínio apontando pro IP (`nslookup SEU-DOMINIO` mostra o Elastic IP):
 ```bash
 sudo sed -i 's/server_name _;/server_name SEU-DOMINIO;/' /etc/nginx/sites-available/cineon
 sudo nginx -t && sudo systemctl reload nginx
@@ -134,7 +134,7 @@ curl https://SEU-DOMINIO/api/saude
 ```
 
 ## 7. App
-- **Web**: o build usa a API pelo caminho relativo `/api`, então o mesmo build funciona pelo IP e pelo domínio. Na máquina de desenvolvimento, dentro de `mobile/`, **pelo PowerShell**:
+- **Web**: o build usa a API pelo caminho relativo `/api`, então o mesmo build funciona em qualquer endereço. Na máquina de desenvolvimento, dentro de `mobile/`, **pelo PowerShell**:
   ```powershell
   $env:EXPO_PUBLIC_API_URL = '/api'; npx expo export -p web --clear
   ```
@@ -143,7 +143,7 @@ curl https://SEU-DOMINIO/api/saude
   scp -i cineon.pem -r mobile/dist ubuntu@<ELASTIC-IP>:/tmp/web
   ssh -i cineon.pem ubuntu@<ELASTIC-IP> 'sudo rm -rf /var/www/cineon/* && sudo cp -r /tmp/web/* /var/www/cineon/ && rm -rf /tmp/web'
   ```
-- **Celular**: no `mobile/.env`, `EXPO_PUBLIC_API_URL=https://SEU-DOMINIO/api`, rode `npx expo start` e abra no **Expo Go**. O app conversa com a API de produção.
+- **Celular**: no `mobile/.env`, `EXPO_PUBLIC_API_URL=http://18.226.44.216/api`, rode `npx expo start` e abra no **Expo Go**. O app conversa com a API de produção.
 
 ## 8. Permissões mínimas (opcional, conta pontos em BD2)
 Rode [deploy/permissoes.sql](../deploy/permissoes.sql) como master e troque a `DATABASE_URL` do `/etc/cineon.env` para o usuário `cineon_app`. As migrações futuras continuam rodando com o master.
