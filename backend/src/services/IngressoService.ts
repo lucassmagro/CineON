@@ -87,18 +87,6 @@ export class IngressoService {
       if (ingresso.status === "UTILIZADO") throw new IngressoJaUtilizadoError(ingresso.utilizadoEm ?? agora);
       if (ingresso.status === "CANCELADO") throw new ConflitoError("Ingresso cancelado");
 
-      // libera a entrada um pouco antes do início e até o fim da sessão
-      const liberadoEm = somarMinutos(ingresso.sessao.inicio, -this.regras.validacaoAntecedenciaMin);
-      if (agora.getTime() < liberadoEm.getTime()) {
-        throw new RegraNegocioError(
-          `Ingresso para outra sessão: a entrada é liberada ${this.regras.validacaoAntecedenciaMin} min antes do início`,
-          { liberadoEm, inicio: ingresso.sessao.inicio },
-        );
-      }
-      if (agora.getTime() > ingresso.sessao.fim.getTime()) {
-        throw new RegraNegocioError("Esta sessão já terminou", { fim: ingresso.sessao.fim });
-      }
-
       await repos.ingressos.marcarUtilizado(ingresso.id, agora, operador.id);
     });
 

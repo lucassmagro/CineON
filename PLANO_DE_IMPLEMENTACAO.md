@@ -446,7 +446,7 @@ COMMIT → 201 { ingressos: [{ codigo, fila, numero, tipo, valor }] }
 | RN03 | Só se reserva assento `LIVRE` ou `RESERVADO` com reserva vencida |
 | RN04 | Só se paga reserva `PENDENTE` e não vencida. O cliente só paga a própria reserva. O operador paga qualquer uma (venda no balcão) |
 | RN05 | O pagamento emite 1 ingresso por assento, com código único de 10 caracteres e QR Code |
-| RN06 | Validação: o ingresso existe, está `VALIDO`, e o horário atual está entre 60 min antes do início e o fim da sessão. Marca `UTILIZADO` com data/hora e operador |
+| RN06 | Validação: o ingresso existe, está `VALIDO` (sem restrição de horário). Marca `UTILIZADO` com data/hora e operador |
 | RN07 | Sessão: não pode ser criada no passado. O preço é ≥ 0. O `fim` é calculado pelo service (`inicio + duração do filme + 15 min de limpeza`). Não pode sobrepor outra sessão ativa da mesma sala (o service checa para dar uma mensagem boa, e o `EXCLUDE` é a última barreira) |
 | RN08 | Não se reserva nem vende sessão que já começou ou foi cancelada |
 | RN09 | Máximo de 10 assentos por reserva |

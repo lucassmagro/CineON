@@ -9,7 +9,7 @@ Todas as regras estão implementadas **na camada service** do backend ([backend/
 | RN03 | Só se reserva assento LIVRE ou RESERVADO com reserva vencida/encerrada | `ReservaService.reservar` | — |
 | RN04 | Só se paga reserva PENDENTE e dentro do prazo. O cliente paga só a própria reserva; o operador paga qualquer uma (balcão) | `PagamentoService.pagar` | `UNIQUE pagamentos(reserva_id)` |
 | RN05 | O pagamento emite 1 ingresso por assento, com código único de 10 caracteres (sem caracteres ambíguos) | `PagamentoService.pagar`, `gerarCodigoIngresso` | `UNIQUE ingressos(codigo)` |
-| RN06 | Validação na entrada: o ingresso deve existir e estar VALIDO, e o horário deve estar entre 60 min antes do início e o fim da sessão. Marca UTILIZADO com data/hora e operador | `IngressoService.validar` | `CHECK` UTILIZADO ⇒ `utilizado_em` preenchido |
+| RN06 | Validação na entrada: o ingresso deve existir e estar VALIDO, em qualquer horário. Marca UTILIZADO com data/hora e operador | `IngressoService.validar` | `CHECK` UTILIZADO ⇒ `utilizado_em` preenchido |
 | RN07 | Sessão: só no futuro, preço ≥ 0, `fim = início + duração + limpeza (15 min)`, sem sobrepor outra sessão da mesma sala | `SessaoService.criar` | `EXCLUDE` (sala, intervalo), `CHECK preco >= 0`, `CHECK fim > inicio` |
 | RN08 | Não se reserva sessão que já começou | `ReservaService.reservar` | — |
 | RN09 | Máximo de 10 assentos por reserva | `ReservaService.reservar` (+ Zod no controller) | — |
