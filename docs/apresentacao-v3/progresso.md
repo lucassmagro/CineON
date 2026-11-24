@@ -2,11 +2,11 @@
 
 ## TL;DR
 
-A v3 (`docs/CineON-apresentacao-v3.pdf`, 11 slides) é a v2 enxugada: uma ideia por slide, com o peso em banco e AWS. O visual segue o `README.md` desta pasta. A v2 fica intacta em `docs/apresentacao-v2/`. Próximo passo: o Gabriel revisar a PDF.
+A v3 (`docs/CineON-apresentacao-v3.pdf`, 11 slides) é a v2 enxugada: uma ideia por slide, com o peso em banco e AWS. O visual segue o `README.md` desta pasta. As versões anteriores (a primeira e a v2) saíram do repositório em 24/11 e ficam só no histórico do Git. Próximo passo: o Gabriel revisar a PDF.
 
 ## O que mudou da v2 (24/11/2026)
 
-Plano em `docs/apresentacao-v2/plano-enxugar.md`.
+O plano ficava em `docs/apresentacao-v2/plano-enxugar.md`, que saiu junto com a v2.
 
 - O app (slides 3, 4, 6 e 7 da v2) virou um slide: três celulares, uma frase por papel.
 - A arquitetura ficou só com as camadas e o código (slide 9 da v2). O nginx, a EC2 e o RDS ficam só no slide da AWS.
