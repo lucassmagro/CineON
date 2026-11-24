@@ -1,10 +1,10 @@
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 
 import { ListaSessoesDoDia } from '@/components/ListaSessoesDoDia';
 import { useCarregar } from '@/hooks/useCarregar';
 import { sessaoService } from '@/services/cineon';
-import { Botao, BotaoCabecalho, Carregando, MensagemErro, Tela } from '@/ui/componentes';
+import { Botao, Carregando, MensagemErro, Tela } from '@/ui/componentes';
 import { espaco, useMargem } from '@/ui/tema';
 
 export default function ListaSessoes() {
@@ -18,7 +18,6 @@ export default function ListaSessoes() {
 
   return (
     <Tela aoAtualizar={vm.recarregar} atualizando={vm.atualizando}>
-      <Stack.Screen options={{ headerRight: () => <BotaoCabecalho icone="add" rotulo="Nova sessão" texto="Nova" aoTocar={nova} /> }} />
       <View style={{ paddingHorizontal: margem, marginBottom: espaco.xxl }}>
         <Botao titulo="Cadastrar nova sessão" icone="add-circle" aoTocar={nova} />
       </View>

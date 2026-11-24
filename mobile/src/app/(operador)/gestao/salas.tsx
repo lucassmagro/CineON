@@ -1,9 +1,9 @@
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 
 import { useCarregar } from '@/hooks/useCarregar';
 import { salaService } from '@/services/cineon';
-import { Botao, BotaoCabecalho, Carregando, Etiqueta, Linha, MensagemErro, Secao, Tela, Vazio } from '@/ui/componentes';
+import { Botao, Carregando, Etiqueta, Linha, MensagemErro, Secao, Tela, Vazio } from '@/ui/componentes';
 import { espaco, useMargem, useTema } from '@/ui/tema';
 
 export default function ListaSalas() {
@@ -19,7 +19,6 @@ export default function ListaSalas() {
 
   return (
     <Tela aoAtualizar={vm.recarregar} atualizando={vm.atualizando}>
-      <Stack.Screen options={{ headerRight: () => <BotaoCabecalho icone="add" rotulo="Nova sala" texto="Nova" aoTocar={nova} /> }} />
       <View style={{ paddingHorizontal: margem, marginBottom: espaco.xxl }}>
         <Botao titulo="Cadastrar nova sala" icone="add-circle" aoTocar={nova} />
       </View>

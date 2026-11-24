@@ -1,11 +1,11 @@
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 
 import { Arte } from '@/components/Arte';
 import { SeloClassificacao } from '@/components/SeloClassificacao';
 import { useCarregar } from '@/hooks/useCarregar';
 import { filmeService } from '@/services/cineon';
-import { BotaoCabecalho, Botao, Carregando, Etiqueta, Linha, MensagemErro, Secao, Tela, Vazio } from '@/ui/componentes';
+import { Botao, Carregando, Etiqueta, Linha, MensagemErro, Secao, Tela, Vazio } from '@/ui/componentes';
 import { espaco, useMargem, useTema } from '@/ui/tema';
 import { duracao } from '@/utils/formatar';
 
@@ -22,7 +22,6 @@ export default function ListaFilmes() {
 
   return (
     <Tela aoAtualizar={vm.recarregar} atualizando={vm.atualizando}>
-      <Stack.Screen options={{ headerRight: () => <BotaoCabecalho icone="add" rotulo="Novo filme" texto="Novo" aoTocar={novo} /> }} />
       <View style={{ paddingHorizontal: margem, marginBottom: espaco.xxl }}>
         <Botao titulo="Cadastrar novo filme" icone="add-circle" aoTocar={novo} />
       </View>
