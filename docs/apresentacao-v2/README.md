@@ -16,7 +16,7 @@ google-chrome --headless=new --no-pdf-header-footer --virtual-time-budget=10000 
   --print-to-pdf=docs/CineON-apresentacao-v2.pdf "file://$PWD/docs/apresentacao-v2/index.html"
 ```
 
-## Regras do visual
+## Regras do visualr
 
 As variáveis e os componentes ficam no topo do `<style>` do `index.html`. Slide novo usa só o que está aqui.
 
