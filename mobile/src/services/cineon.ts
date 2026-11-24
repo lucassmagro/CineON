@@ -37,6 +37,8 @@ export const filmeService = {
   criar: (dados: DadosFilme) => api.post<Filme>('/filmes', dados),
   atualizar: (id: number, dados: Partial<DadosFilme & { ativo: boolean }>) => api.put<Filme>(`/filmes/${id}`, dados),
   remover: (id: number) => api.del(`/filmes/${id}`),
+  // devolve o caminho (/posteres/upload-...) pra usar no posterUrl
+  enviarPoster: (imagem: Blob, tipo: string) => api.enviarArquivo<{ posterUrl: string }>('/filmes/poster', imagem, tipo),
 };
 
 export const salaService = {

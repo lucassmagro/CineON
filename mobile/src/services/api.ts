@@ -30,9 +30,13 @@ export function quandoSessaoExpirar(callback: () => void): void {
   aoExpirarSessao = callback;
 }
 
-async function requisicao<T>(metodo: string, caminho: string, corpo?: unknown): Promise<T> {
+// arquivo vai cru no corpo (o upload do pôster), o resto vai em JSON
+type Arquivo = { dados: Blob; tipo: string };
+
+async function requisicao<T>(metodo: string, caminho: string, corpo?: unknown, arquivo?: Arquivo): Promise<T> {
   const headers: Record<string, string> = { Accept: 'application/json' };
-  if (corpo !== undefined) headers['Content-Type'] = 'application/json';
+  if (arquivo) headers['Content-Type'] = arquivo.tipo;
+  else if (corpo !== undefined) headers['Content-Type'] = 'application/json';
   if (tokenAtual) headers.Authorization = `Bearer ${tokenAtual}`;
 
   let resposta: Response;
@@ -40,7 +44,7 @@ async function requisicao<T>(metodo: string, caminho: string, corpo?: unknown): 
     resposta = await fetch(`${API_URL}${caminho}`, {
       method: metodo,
       headers,
-      body: corpo !== undefined ? JSON.stringify(corpo) : undefined,
+      body: arquivo ? arquivo.dados : corpo !== undefined ? JSON.stringify(corpo) : undefined,
     });
   } catch {
     // o fetch só cai aqui quando não tem rede ou o servidor está fora
@@ -63,6 +67,7 @@ export const api = {
   post: <T>(caminho: string, corpo?: unknown) => requisicao<T>('POST', caminho, corpo ?? {}),
   put: <T>(caminho: string, corpo: unknown) => requisicao<T>('PUT', caminho, corpo),
   del: (caminho: string) => requisicao<null>('DELETE', caminho),
+  enviarArquivo: <T>(caminho: string, dados: Blob, tipo: string) => requisicao<T>('POST', caminho, undefined, { dados, tipo }),
 };
 
 export function mensagemDe(erro: unknown): string {
