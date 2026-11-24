@@ -39,6 +39,9 @@ Todas as respostas de erro têm o formato:
 | POST | `/filmes` | 🛠 | `{ titulo, sinopse?, duracaoMin, classificacao: "L"\|"10"\|"12"\|"14"\|"16"\|"18", genero, posterUrl? }` | 201 `Filme` |
 | PUT | `/filmes/:id` | 🛠 | campos parciais + `ativo?` (`posterUrl: ""` tira o pôster) | 200 `Filme` · 409 (duração com sessões) |
 | DELETE | `/filmes/:id` | 🛠 | — | 204 · 409 se tiver sessões |
+| POST | `/filmes/poster` | 🛠 | corpo **cru** com a imagem (`Content-Type: image/jpeg`, `image/png` ou `image/webp`, até 5 MB) | 201 `{ posterUrl: "/posteres/upload-….jpg" }` · 422 se não for JPG/PNG/WebP ou passar de 5 MB · 413 acima de 8 MB |
+
+O upload não mexe no banco: a imagem vai pra pasta que a API serve em `/posteres` e o caminho devolvido é usado no `posterUrl` do filme. O tipo é conferido pelos primeiros bytes do arquivo, não pelo `Content-Type`, e o nome é gerado pela API.
 
 ### Salas
 

@@ -1,4 +1,6 @@
 import "dotenv/config";
+import { existsSync, mkdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 // lê o .env e já quebra na inicialização se faltar alguma variável obrigatória
 function obrigatoria(nome: string): string {
@@ -35,6 +37,16 @@ export const REGRAS: ConfigRegras = {
   limpezaSalaMin: inteiro("LIMPEZA_SALA_MIN", 15),
   maxAssentosPorReserva: 10,
 };
+
+// pôsteres da seed e os enviados pela gerência. Rodando de src/ a pasta fica em ../public,
+// mas o build compila pra dist/src/, então lá ela fica um nível acima
+export const PASTA_POSTERES = (() => {
+  const opcoes = ["../public/posteres", "../../public/posteres"].map((caminho) => fileURLToPath(new URL(caminho, import.meta.url)));
+  const existente = opcoes.find((pasta) => existsSync(pasta));
+  if (existente) return existente;
+  mkdirSync(opcoes[0]!, { recursive: true });
+  return opcoes[0]!;
+})();
 
 export const CORS_ORIGENS = (process.env.CORS_ORIGENS ?? "")
   .split(",")

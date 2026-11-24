@@ -37,6 +37,12 @@ export const tratarErros: ErrorRequestHandler = (erro, _req, res, _next) => {
     return;
   }
 
+  // corpo maior que o limite do express.json/express.raw
+  if (typeof erro === "object" && erro !== null && "type" in erro && erro.type === "entity.too.large") {
+    res.status(413).json({ message: "O arquivo enviado é grande demais", codigo: "CONTEUDO_GRANDE_DEMAIS" });
+    return;
+  }
+
   // corpo com JSON inválido
   if (erro instanceof SyntaxError && "body" in erro) {
     res.status(400).json({ message: "JSON inválido", codigo: "JSON_INVALIDO" });

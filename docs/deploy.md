@@ -154,6 +154,14 @@ Rode [deploy/permissoes.sql](../deploy/permissoes.sql) como master e troque a `D
 cd ~/CineON && bash deploy/atualizar.sh
 ```
 
+O `atualizar.sh` cuida só da API. O app Web é o build do passo 7, copiado por cima de `/var/www/cineon` (`sudo cp -r ~/pasta-do-build/. /var/www/cineon/`).
+
+**Upload de pôster:** a gerência envia a imagem pra `POST /filmes/poster` e a API grava em `backend/public/posteres/upload-*` (fora do Git, pelo `.gitignore`). O nginx aceita só 1 MB por padrão; o `nginx-cineon.conf` já sobe pra 8 MB. Num servidor em que o certbot já mexeu na config, dá pra pôr o limite à parte:
+```bash
+echo 'client_max_body_size 8m;' | sudo tee /etc/nginx/conf.d/cineon-upload.conf
+sudo nginx -t && sudo systemctl reload nginx
+```
+
 ## 10. Depois da avaliação
 1. RDS → `cineon-db` → *Delete*, **desmarcar** "Create final snapshot" (snapshot guardado consome crédito).
 2. EC2 → *Terminate* na `cineon-api`.

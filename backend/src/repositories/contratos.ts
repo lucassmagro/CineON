@@ -128,3 +128,9 @@ export type Repositorios = {
 export interface UnidadeDeTrabalho {
   executar<T>(trabalho: (repos: Repositorios) => Promise<T>): Promise<T>;
 }
+
+// Esse não é banco: a imagem vai pro disco e no filme fica só o caminho (poster_url).
+// Fica fora do Repositorios porque não entra em transação.
+export interface PosterRepository {
+  salvar(nome: string, conteudo: Uint8Array): Promise<void>;
+}

@@ -1,6 +1,6 @@
 // Monta repositories, services e controllers passando as dependências pelo construtor.
 // Os testes usam isso pra trocar o relógio e simular a passagem do tempo.
-import { JWT_MINUTOS, JWT_SECRET, REGRAS, type ConfigRegras } from "./config.js";
+import { JWT_MINUTOS, JWT_SECRET, PASTA_POSTERES, REGRAS, type ConfigRegras } from "./config.js";
 import { AuthController } from "./controllers/AuthController.js";
 import { FilmeController } from "./controllers/FilmeController.js";
 import { IngressoController } from "./controllers/IngressoController.js";
@@ -11,10 +11,12 @@ import { SessaoController } from "./controllers/SessaoController.js";
 import type { Relogio } from "./domain/modelos.js";
 import { prisma } from "./prisma.js";
 import { criarRepositorios, PrismaUnidadeDeTrabalho } from "./repositories/index.js";
+import { PosterDiscoRepository } from "./repositories/PosterDiscoRepository.js";
 import { AuthService } from "./services/AuthService.js";
 import { FilmeService } from "./services/FilmeService.js";
 import { IngressoService } from "./services/IngressoService.js";
 import { PagamentoService } from "./services/PagamentoService.js";
+import { PosterService } from "./services/PosterService.js";
 import { RelatorioService } from "./services/RelatorioService.js";
 import { ReservaService } from "./services/ReservaService.js";
 import { SalaService } from "./services/SalaService.js";
@@ -38,11 +40,12 @@ export function criarContainer(opcoes: OpcoesContainer = {}) {
     pagamentos: new PagamentoService(uow, repos.reservas, agora),
     ingressos: new IngressoService(uow, repos.ingressos, regras, agora),
     relatorios: new RelatorioService(repos.relatorios),
+    posteres: new PosterService(new PosterDiscoRepository(PASTA_POSTERES)),
   };
 
   const controllers = {
     auth: new AuthController(services.auth),
-    filmes: new FilmeController(services.filmes),
+    filmes: new FilmeController(services.filmes, services.posteres),
     salas: new SalaController(services.salas),
     sessoes: new SessaoController(services.sessoes),
     reservas: new ReservaController(services.reservas, services.pagamentos),

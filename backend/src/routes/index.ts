@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express, { Router } from "express";
 import type { Container } from "../container.js";
 import { criarMiddlewaresAuth } from "../middlewares/autenticacao.js";
 
@@ -17,6 +17,8 @@ export function criarRotas({ controllers: c, services }: Container): Router {
   r.get("/filmes", c.filmes.listar);
   r.get("/filmes/:id", c.filmes.buscar);
   r.post("/filmes", ...operador, c.filmes.criar);
+  // a imagem vem crua no corpo; o limite aqui é folgado e o service confere os 5 MB com uma mensagem melhor
+  r.post("/filmes/poster", ...operador, express.raw({ type: "image/*", limit: "8mb" }), c.filmes.enviarPoster);
   r.put("/filmes/:id", ...operador, c.filmes.atualizar);
   r.delete("/filmes/:id", ...operador, c.filmes.remover);
 

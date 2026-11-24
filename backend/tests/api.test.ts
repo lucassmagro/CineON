@@ -1,6 +1,9 @@
 // Testes de integração. Usam o banco do .env, então rode o seed antes.
 import assert from "node:assert/strict";
+import { unlink } from "node:fs/promises";
+import { join } from "node:path";
 import { after, before, test } from "node:test";
+import { PASTA_POSTERES } from "../src/config.js";
 import { type Api, cenario, chamar, encerrar, novoCliente, subirApi, sufixo, tokenOperador } from "./apoio.js";
 
 let api: Api;
@@ -64,6 +67,46 @@ test("filme: pôster opcional e alteração parcial não apaga a sinopse", async
   const img = await fetch(`${api.base}/posteres/forrest-commit.jpg`);
   assert.equal(img.status, 200);
   assert.equal(img.headers.get("content-type"), "image/jpeg");
+});
+
+test("filme: upload do pôster salva a imagem e devolve o caminho", async () => {
+  // um PNG de 1x1
+  const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+  const enviar = (corpo: Buffer, tipo: string, token?: string) =>
+    fetch(`${api.base}/filmes/poster`, {
+      method: "POST",
+      headers: { "Content-Type": tipo, ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: new Uint8Array(corpo),
+    });
+
+  let r = await enviar(png, "image/png", operador);
+  assert.equal(r.status, 201);
+  const { posterUrl } = (await r.json()) as { posterUrl: string };
+  assert.match(posterUrl, /^\/posteres\/upload-[a-z0-9-]+\.png$/);
+  try {
+    const img = await fetch(`${api.base}${posterUrl}`);
+    assert.equal(img.status, 200);
+    assert.deepEqual(Buffer.from(await img.arrayBuffer()), png);
+
+    // o caminho devolvido serve direto no cadastro do filme
+    const f = await chamar(api, "POST", "/filmes", {
+      token: operador,
+      corpo: { titulo: `Filme Upload ${sufixo()}`, duracaoMin: 90, classificacao: "L", genero: "Teste", posterUrl },
+    });
+    assert.equal(f.status, 201);
+    assert.equal(f.corpo.posterUrl, posterUrl);
+  } finally {
+    await unlink(join(PASTA_POSTERES, posterUrl.replace("/posteres/", "")));
+  }
+
+  // texto fingindo ser imagem, cliente e sem login são recusados
+  r = await enviar(Buffer.from("isso não é imagem"), "image/png", operador);
+  assert.equal(r.status, 422);
+  const cliente = await novoCliente(api);
+  r = await enviar(png, "image/png", cliente.token);
+  assert.equal(r.status, 403);
+  r = await enviar(png, "image/png");
+  assert.equal(r.status, 401);
 });
 
 test("gerência: sala gera assentos (procedure), sessão gera mapa (trigger), sem sobreposição", async () => {
