@@ -4,7 +4,7 @@
 
 A PDF da apresentação sai do `index.html` pelo Chrome. As regras do visual estão no fim deste arquivo e o andamento em `progresso.md`.
 
-- `index.html`: fonte da `docs/CineON-apresentacao-v3.pdf`.
+- `index.html`: fonte da `docs/CineON-apresentacao.pdf`.
 - `progresso.md`: onde paramos e o que falta (ler primeiro numa sessão nova).
 - `img/`: telas extraídas da PDF original, sem perda. `fonts/`: fontes locais. Títulos em Inter Display (Inter com o eixo `opsz` em 32, peso 700), texto em Inter, código em JetBrains Mono. Instrument Serif (itálico) só nas taglines dos filmes.
 
@@ -12,7 +12,7 @@ Gerar a PDF (slides de 1920×1080, Chrome sem cabeçalho):
 
 ```bash
 google-chrome --headless=new --no-pdf-header-footer --virtual-time-budget=10000 \
-  --print-to-pdf=docs/CineON-apresentacao-v3.pdf "file://$PWD/docs/apresentacao-v3/index.html"
+  --print-to-pdf=docs/CineON-apresentacao.pdf "file://$PWD/docs/apresentacao-v3/index.html"
 ```
 
 ## Regras do visualr

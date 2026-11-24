@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-A v3 (`docs/CineON-apresentacao-v3.pdf`, 11 slides) é a v2 enxugada: uma ideia por slide, com o peso em banco e AWS. O visual segue o `README.md` desta pasta. As versões anteriores (a primeira e a v2) saíram do repositório em 24/11 e ficam só no histórico do Git. Próximo passo: o Gabriel revisar a PDF.
+A v3 (`docs/CineON-apresentacao.pdf`, 11 slides) é a v2 enxugada: uma ideia por slide, com o peso em banco e AWS. O visual segue o `README.md` desta pasta. As versões anteriores (a primeira e a v2) saíram do repositório em 24/11 e ficam só no histórico do Git. Próximo passo: o Gabriel revisar a PDF.
 
 ## O que mudou da v2 (24/11/2026)
 
