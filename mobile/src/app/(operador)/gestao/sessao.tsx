@@ -3,7 +3,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Arte } from '@/components/Arte';
 import { SeletorDia } from '@/components/SeletorDia';
@@ -11,6 +11,7 @@ import type { Filme, Sala, Sessao } from '@/models/tipos';
 import { mensagemDe } from '@/services/api';
 import { filmeService, salaService, sessaoService } from '@/services/cineon';
 import { Botao, Campo, Carregando, Linha, MensagemErro, Secao, Tela, Texto, TextoErro } from '@/ui/componentes';
+import { RolagemComSetas } from '@/ui/RolagemComSetas';
 import { espaco, useMargem, useTema } from '@/ui/tema';
 import { confirmar } from '@/utils/dialogos';
 import { dataHora, dinheiro, hora, isoLocal, proximosDias } from '@/utils/formatar';
@@ -92,7 +93,8 @@ function NovaSessao() {
       <Texto tipo="destaque" style={[estilos.rotulo, { marginLeft: margem + espaco.xs }]}>
         Filme
       </Texto>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={[estilos.cartazes, { paddingHorizontal: margem }]}>
+      {/* setas no meio do pôster, não no meio da faixa (que inclui o título) */}
+      <RolagemComSetas centroSetas={76} contentContainerStyle={[estilos.cartazes, { paddingHorizontal: margem }]}>
         {filmes.map((f) => {
           const ativo = f.id === filmeId;
           return (
@@ -119,7 +121,7 @@ function NovaSessao() {
             </Tocavel>
           );
         })}
-      </ScrollView>
+      </RolagemComSetas>
 
       <Secao titulo="Sala" estilo={{ marginTop: espaco.xl }}>
         {salas.map((s, i) => (

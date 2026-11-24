@@ -1,7 +1,8 @@
 // Pílulas de dia: dia da semana em cima, número embaixo.
-import { ScrollView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { Texto } from '@/ui/componentes';
+import { RolagemComSetas } from '@/ui/RolagemComSetas';
 import { espaco, useMargem, useTema } from '@/ui/tema';
 import { Tocavel } from '@/ui/Tocavel';
 import { partesDoDia } from '@/utils/formatar';
@@ -25,7 +26,7 @@ export function SeletorDia({
   const fundoAtivo = corAtiva ?? c.rotulo;
   const textoAtivo = corTextoAtivo ?? c.fundoElevado;
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={[estilos.lista, { paddingHorizontal: margem }]}>
+    <RolagemComSetas contentContainerStyle={[estilos.lista, { paddingHorizontal: margem }]}>
       {dias.map((d) => {
         const p = partesDoDia(d);
         const ativo = d === valor;
@@ -49,7 +50,7 @@ export function SeletorDia({
           </Tocavel>
         );
       })}
-    </ScrollView>
+    </RolagemComSetas>
   );
 }
 
