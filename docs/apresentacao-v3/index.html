@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>CineON</title>
+<style>
+@font-face { font-family: Inter; src: url(fonts/inter-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; font-display: block; }
+@font-face { font-family: "Inter Display"; src: url(fonts/inter-latin-opsz-normal.woff2) format("woff2"); font-weight: 100 900; font-display: block; }
+@font-face { font-family: "Instrument Serif"; src: url(fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); font-style: italic; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url(fonts/jetbrains-mono-latin-wght-normal.woff2) format("woff2"); font-weight: 100 800; font-display: block; }
+
+/* regras do visual: docs/apresentacao-v3/README.md */
+
+@page { size: 1920px 1080px; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #2a2a2a; }
+body { font-family: Inter, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+ol, ul { list-style: none; }
+
+/* fundos: alternados, slide ímpar escuro e par claro */
+.s { width: 1920px; height: 1080px; position: relative; overflow: hidden; break-after: page;
+  --bg: #f5f5f7; --fg: #1d1d1f; --mut: #6e6e73; --sup: #fff; --sup2: #f5f5f7; --traco: #c7c7cc;
+  --azul: #0a84ff; --ok: #248a3d; --erro: #d70015;
+  --r-peq: 12px; --r-card: 24px; --sombra: 0 40px 70px -35px rgba(0,0,0,.35);
+  background: var(--bg); color: var(--fg); }
+.s.escuro { --bg: #000; --fg: #f5f5f7; --mut: #a1a1a6; --sup: #1c1c1e; --sup2: #2c2c2e; --traco: #3a3a3c;
+  --ok: #30d158; --erro: #ff453a; --sombra: 0 60px 80px -35px rgba(0,0,0,.9); }
+
+/* escala de texto: 18 rótulo, 22 pequeno, 26 texto, 30 item e destaque, 44 subtítulo, 84 título, 104 display, 200 herói */
+.a { position: absolute; white-space: nowrap; line-height: normal; }
+.disp { font-family: "Inter Display", Inter, sans-serif; font-weight: 700; font-variation-settings: "opsz" 32; }
+.t-rotulo { font-size: 18px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--mut); }
+.t-peq { font-size: 22px; line-height: 32px; }
+.t-texto { font-size: 26px; line-height: 38px; }
+.t-lead { font-size: 30px; line-height: 42px; }
+.t-item { font-size: 30px; line-height: 38px; font-weight: 600; letter-spacing: -0.01em; }
+.t-sub { font-size: 34px; line-height: 56px; font-weight: 500; letter-spacing: -0.02em; }
+.t-display { font-size: 104px; line-height: 112px; letter-spacing: -0.035em; }
+.t-heroi { font-size: 200px; line-height: 1; letter-spacing: -0.04em; }
+.mut { color: var(--mut); }
+.mono { font-family: "JetBrains Mono", monospace; font-variant-ligatures: none; font-size: .9em; }
+.link { font-family: "JetBrains Mono", monospace; color: var(--azul); }
+b { font-weight: 600; }
+.ic { width: 1em; height: 1em; vertical-align: -0.14em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* grade: margem de 140, rótulo em 112, título em 157 (segunda linha em 247), conteúdo em 380 (ou 470 com título de duas linhas) */
+.rotulo { position: absolute; left: 140px; top: 112px; font-size: 18px; font-weight: 600; letter-spacing: .16em; color: var(--azul); white-space: nowrap; }
+.titulo { position: absolute; left: 140px; top: 157px; font-family: "Inter Display", Inter, sans-serif; font-variation-settings: "opsz" 32; font-size: 84px; line-height: 90px; font-weight: 700; letter-spacing: -0.03em; white-space: nowrap; }
+.rodape { position: absolute; top: 1009px; font-size: 18px; color: var(--mut); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rodape.e { left: 140px; }
+.rodape.d { right: 140px; }
+
+/* item: título + descrição, sem cartão */
+.item h3 { font-size: 30px; line-height: 38px; font-weight: 600; letter-spacing: -0.01em; }
+.item p { margin-top: 8px; font-size: 26px; line-height: 38px; color: var(--mut); white-space: nowrap; }
+
+/* lista numerada: número azul é ordem */
+.lista { position: absolute; left: 140px; display: flex; flex-direction: column; gap: 36px; font-size: 26px; line-height: 38px; white-space: nowrap; }
+.lista li { display: grid; grid-template-columns: 64px auto; }
+.n { color: var(--azul); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* grupo de itens paralelos (item ou número) fica em cartões iguais */
+.cartao.bloco { padding: 32px; }
+.cartao.item p { font-size: 22px; line-height: 32px; }
+
+/* número com legenda */
+.stat .v { font-family: "Inter Display", Inter, sans-serif; font-variation-settings: "opsz" 32; font-weight: 700; font-size: 104px; line-height: 112px; letter-spacing: -0.035em; }
+.stat .l { margin-top: 6px; font-size: 22px; line-height: 32px; color: var(--mut); white-space: nowrap; }
+
+/* pílula */
+.pilula { display: inline-flex; align-items: center; height: 48px; padding: 0 22px; border-radius: 24px; font-size: 22px; font-weight: 600; white-space: nowrap; }
+
+/* cartão: só pra coisas reais (caixa de diagrama, tabela, código, tela) */
+.cartao { position: absolute; background: var(--sup); border-radius: var(--r-card); text-box: trim-both cap alphabetic; }
+.destaque { --fg: #fff; --mut: rgba(255,255,255,.78); background: var(--azul) !important; color: #fff; }
+
+/* celular */
+.cel { position: absolute; padding: 11px; border-radius: 42px; background: #1d1d1f; box-shadow: var(--sombra); }
+.cel .tela { width: 100%; height: 100%; border-radius: 31px; overflow: hidden; }
+.cel img { display: block; width: 100%; }
+.escuro .cel { background: #2c2c2e; box-shadow: 0 0 0 1px rgba(255,255,255,.08), var(--sombra); }
+
+/* código: sempre escuro */
+.codigo { position: absolute; padding: 40px; background: #1c1c1e; border-radius: var(--r-card); box-shadow: var(--sombra); text-box: trim-both cap alphabetic; }
+.codigo .cap { font-size: 18px; line-height: 22px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #a1a1a6; white-space: nowrap; text-box: trim-both cap alphabetic; }
+.codigo pre { margin-top: 30px; font-family: "JetBrains Mono", monospace; font-variant-ligatures: none; font-size: 21px; line-height: 32px; color: #f5f5f7; white-space: pre; text-box: trim-both cap alphabetic; }
+.codigo pre.sem-cap { margin-top: 0; }
+.k { color: #fc5fa3; } .f { color: #67b7a4; } .t { color: #5dd8ff; } .str { color: #fc6a5d; } .c { color: #6c7986; } .n2 { color: #d0bf69; }
+.real { background: rgba(10,132,255,.25); box-shadow: 0 0 0 4px rgba(10,132,255,.25); border-radius: 6px; }
+
+/* diagrama: caixa, camada interna e seta */
+.caixa .nome { position: absolute; left: 36px; top: 28px; font-size: 30px; line-height: 38px; font-weight: 600; white-space: nowrap; }
+.caixa .desc { position: absolute; left: 36px; font-size: 22px; line-height: 32px; color: var(--mut); white-space: nowrap; }
+.caixa .tag { position: absolute; left: 36px; bottom: 32px; }
+.camada { position: absolute; background: var(--sup2); border-radius: var(--r-peq); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.camada .cn { font-size: 18px; font-weight: 600; }
+.camada .cs { font-size: 18px; color: var(--mut); }
+.seta { position: absolute; height: 2px; background: var(--traco); }
+.seta::after { content: ""; position: absolute; right: -1px; top: -5px; border-left: 9px solid var(--traco); border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
+.seta-rot { position: absolute; font-size: 18px; font-weight: 600; letter-spacing: .16em; color: var(--mut); white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<!-- 1 capa -->
+<section class="s escuro">
+  <style>
+    .ficha { white-space: nowrap; }
+    .ficha .t-rotulo { font-size: 14px; }
+    .ficha p { margin-top: 10px; font-size: 18px; line-height: 28px; }
+  </style>
+  <div style="position:absolute;left:140px;top:0;height:1080px;display:flex;flex-direction:column;justify-content:center;gap:120px;padding-bottom:18px;box-sizing:border-box">
+    <div>
+      <div class="disp t-heroi" style="white-space:nowrap">CineON</div>
+      <div class="t-sub mut" style="margin-top:40px;font-weight:400;white-space:nowrap">Compra de ingressos com escolha<br>do assento, no app e na bilheteria.</div>
+    </div>
+    <div style="display:flex;gap:64px">
+    <div class="ficha"><div class="t-rotulo">Disciplinas</div><p>Programação II<br>Banco de Dados II</p></div>
+    <div class="ficha"><div class="t-rotulo">Orientação</div><p>Prof. Álvaro G. Pagliari<br>UNOESC Chapecó</p></div>
+    <div class="ficha"><div class="t-rotulo">Equipe</div><p>Alexandre Reitemeyer, Beatriz Miranda,<br>Gabriel Nassinger, Lucas Santos Magro</p></div>
+    </div>
+  </div>
+  <div style="position:absolute;inset:0;transform:scale(.82);transform-origin:1750px 520px">
+  <div class="cel" style="left:1009.5px;top:249.5px;width:330px;height:692px;transform:rotate(-4deg)"><div class="tela"><img src="img/filme-velozes.png"></div></div>
+  <div class="cel" style="left:1469.5px;top:269.5px;width:330px;height:692px;transform:rotate(4deg)"><div class="tela"><img src="img/ingressos.png"></div></div>
+  <div class="cel" style="left:1232px;top:150px;width:356px;height:748px"><div class="tela"><img src="img/mapa-escuro.png"></div></div>
+  </div>
+</section>
+
+<!-- 2 um assento -->
+<section class="s">
+  <div class="rotulo">O PROBLEMA</div>
+  <div class="a disp t-display" style="left:140px;top:281px">Nenhum assento<br>vendido duas vezes</div>
+  <div class="a t-sub mut" style="left:140px;top:640px;font-weight:400">Mesmo que duas pessoas cliquem no mesmo instante.</div>
+  <style>
+    .assentos { position: absolute; left: 1250px; top: 300px; display: grid; grid-template-columns: repeat(5,90px); gap: 17.5px; }
+    .ass { display: flex; width: 90px; height: 90px; border-radius: var(--r-peq); box-shadow: inset 0 0 0 2px var(--traco); align-items: center; justify-content: center; font-style: normal; font-size: 26px; font-weight: 700; }
+    .ass.oc { background: var(--traco); }
+    .ass.c4 { background: var(--azul); color: #fff; box-shadow: 0 0 0 9px rgba(10,132,255,.2); }
+    .pedido { top: 652px; width: 251px; height: 142px; padding: 28px 28px 20px; }
+    .pedido .t-rotulo { line-height: 22px; }
+    .pedido p { margin-top: 6px; font-size: 22px; line-height: 32px; white-space: nowrap; }
+  </style>
+  <div class="assentos">
+    <i class="ass"></i><i class="ass oc"></i><i class="ass"></i><i class="ass oc"></i><i class="ass"></i>
+    <i class="ass oc"></i><i class="ass"></i><i class="ass c4">C4</i><i class="ass"></i><i class="ass oc"></i>
+    <i class="ass"></i><i class="ass oc"></i><i class="ass oc"></i><i class="ass"></i><i class="ass"></i>
+  </div>
+  <div class="cartao pedido" style="left:1250px"><div class="t-rotulo">Ana</div><p class="mono">21:00:00.000</p><p style="color:var(--ok);font-weight:600"><span class="mono">201</span>&nbsp; reservado</p></div>
+  <div class="cartao pedido" style="left:1519px"><div class="t-rotulo">Bruno</div><p class="mono">21:00:00.000</p><p style="color:var(--erro);font-weight:600"><span class="mono">409</span>&nbsp; indisponível</p></div>
+  <div class="rodape d">02</div>
+</section>
+
+<!-- 3 três papéis -->
+<section class="s escuro">
+  <div class="rotulo">O APP</div>
+  <div class="titulo">Cliente, bilheteria e gerência</div>
+  <style>
+    .papel { position: absolute; top: 380px; width: 400px; text-align: center; white-space: nowrap; }
+    .papel h3 { font-size: 30px; line-height: 38px; font-weight: 600; letter-spacing: -0.01em; }
+    .papel p { margin-top: 4px; font-size: 22px; line-height: 32px; color: var(--mut); }
+  </style>
+  <div class="papel" style="left:140px"><h3>Cliente</h3><p>Escolhe o filme e os lugares,<br>paga em até 10 min.</p></div>
+  <div class="papel" style="left:700px"><h3>Bilheteria</h3><p>Vende no mesmo mapa e<br>valida o código na entrada.</p></div>
+  <div class="papel" style="left:1260px"><h3>Gerência</h3><p>Monta a programação e<br>lê o relatório de vendas.</p></div>
+  <div class="cel" style="left:140px;top:540px;width:400px;height:700px"><div class="tela"><img src="img/papel-cliente.png"></div></div>
+  <div class="cel" style="left:700px;top:540px;width:400px;height:700px"><div class="tela"><img src="img/papel-bilheteria.png"></div></div>
+  <div class="cel" style="left:1260px;top:540px;width:400px;height:700px"><div class="tela"><img src="img/papel-gerencia.png"></div></div>
+  <div class="rodape d">03</div>
+</section>
+
+<!-- 4 dez tabelas -->
+<section class="s">
+  <div class="rotulo">BANCO DE DADOS</div>
+  <div class="titulo">Modelo do banco: dez tabelas</div>
+  <div class="a t-lead mut" style="left:140px;top:262px">Criado em 4 migrações: <span class="mono" style="color:var(--fg)">init</span>, <span class="mono" style="color:var(--fg)">objetos_sql</span>, <span class="mono" style="color:var(--fg)">poster_filme</span> e <span class="mono" style="color:var(--fg)">cancelamento_ingresso</span>.</div>
+  <svg class="a" style="left:0;top:0" width="1920" height="1080" fill="none" stroke-width="2.5">
+    <g style="stroke:var(--traco)">
+      <path d="M440 455H586M886 455H1032M736 540V595M440 670H586M440 885H586"/>
+      <path d="M440 845H513V720H586"/>
+      <path d="M886 885H959V720H1032"/>
+      <path d="M839 540V567H1628V595" stroke-dasharray="6 6"/>
+    </g>
+    <path d="M886 670H1032M1332 670H1478" stroke="#0a84ff"/>
+  </svg>
+  <style>
+    .tab { width: 300px; height: 160px; padding: 24px; }
+    .tab h4 { font-family: "JetBrains Mono", monospace; font-size: 22px; font-weight: 500; line-height: 22px; margin-bottom: 10px; }
+    .tab p { font-family: "JetBrains Mono", monospace; font-size: 18px; line-height: 30px; white-space: nowrap; }
+    .tab p em { display: inline-block; width: 28px; font-family: Inter, sans-serif; font-style: normal; font-size: 13px; font-weight: 600; color: var(--mut); }
+  </style>
+  <div class="cartao tab" style="left:140px;top:380px"><h4>usuarios</h4><p><em>PK</em> id</p><p><em>UQ</em> email</p><p>papel</p></div>
+  <div class="cartao tab" style="left:586px;top:380px"><h4>reservas</h4><p><em>FK</em> usuario_id</p><p><em>FK</em> sessao_id</p><p>status, expira_em</p></div>
+  <div class="cartao tab" style="left:1032px;top:380px"><h4>pagamentos</h4><p><em>UQ</em> reserva_id</p><p><em>UQ</em> transacao</p><p>valor</p></div>
+  <div class="cartao tab" style="left:1478px;top:380px"><h4>log_auditoria</h4><p>tabela, operacao</p><p>dados (jsonb)</p><p>via triggers</p></div>
+  <div class="cartao tab" style="left:140px;top:595px"><h4>filmes</h4><p><em>PK</em> id</p><p>titulo</p><p>duracao_min</p></div>
+  <div class="cartao tab" style="left:586px;top:595px"><h4>sessoes</h4><p><em>FK</em> filme_id</p><p><em>FK</em> sala_id</p><p>inicio, fim, preco</p></div>
+  <div class="cartao tab destaque" style="left:1032px;top:595px"><h4>assentos_sessao</h4><p><em>PK</em> sessao_id, assento_id</p><p><em>FK</em> reserva_id</p><p>status</p></div>
+  <div class="cartao tab destaque" style="left:1478px;top:595px"><h4>ingressos</h4><p><em>UQ</em> codigo</p><p><em>FK</em> sessao_id, assento_id</p><p>status, valor</p></div>
+  <div class="cartao tab" style="left:140px;top:810px;height:131px"><h4>salas</h4><p><em>PK</em> id</p><p><em>UQ</em> nome</p></div>
+  <div class="cartao tab" style="left:586px;top:810px;height:131px"><h4>assentos</h4><p><em>FK</em> sala_id</p><p><em>UQ</em> sala, fila, numero</p></div>
+  <div class="a t-texto" style="left:1032px;top:806px;font-weight:600">Unicidade do assento por sessão</div>
+  <div class="a t-peq mut" style="left:1032px;top:850px"><span class="mono">PRIMARY KEY (sessao_id, assento_id)<br>UNIQUE ux_ingressos_assento_ativo<br><span style="color:var(--azul)">&nbsp;&nbsp;WHERE status &lt;&gt; 'CANCELADO'</span></span></div>
+  <div class="rodape d">04</div>
+</section>
+
+<!-- 5 regras que o banco garante -->
+<section class="s escuro">
+  <div class="rotulo">BANCO DE DADOS</div>
+  <div class="titulo">Regras escritas em SQL</div>
+  <style>
+    .grade-sql { position: absolute; left: 140px; top: 380px; display: grid; grid-template-columns: repeat(2, 808px); gap: 24px; }
+    .grade-sql .codigo { position: relative; padding: 32px; color: #f5f5f7; }
+    .grade-sql .codigo:nth-child(n+3) { padding-bottom: 24px; }
+    .sql-cab { display: flex; align-items: center; gap: 16px; height: 32px; white-space: nowrap; }
+    .sql-tipo { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 8px; font-size: 15px; font-weight: 700; letter-spacing: .12em; }
+    .sql-cab b { font-size: 22px; }
+    .sql-corpo { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 16px; }
+    .sql-corpo pre { margin-top: 0; font-size: 17px; line-height: 24px; }
+    .ef { width: 200px; font-size: 16px; line-height: 20px; white-space: nowrap; }
+    .ef .m { font-family: "JetBrains Mono", monospace; font-variant-ligatures: none; }
+    .ef .cap2 { margin-bottom: 10px; color: #a1a1a6; }
+    .ef .lin { display: flex; justify-content: space-between; align-items: center; height: 30px; margin-top: 4px; padding: 0 12px; border-radius: 8px; background: #2c2c2e; }
+    .ef .mais { padding: 8px 12px 0; color: #a1a1a6; }
+    .ef .horas { position: relative; height: 20px; color: #a1a1a6; }
+    .ef .horas span { position: absolute; transform: translateX(-50%); }
+    .ef .faixa { position: relative; height: 40px; margin-top: 12px; }
+    .ef .bar { position: absolute; top: 0; height: 40px; padding: 0 12px; border-radius: 8px; display: flex; align-items: center; }
+    .ef .mapa { display: grid; grid-template-columns: repeat(12, 9px); grid-template-rows: repeat(8, 9px); height: 88px; gap: 2.29px 3px; }
+    .ef .mapa i { width: 9px; height: 9px; border-radius: 2px; background: #3a3a3c; }
+    .ef .rel { display: grid; grid-template-columns: 64px 1fr 40px; align-items: center; column-gap: 12px; height: 28px; margin-top: 4px; }
+    .ef .rel u { display: block; height: 8px; border-radius: 4px; background: #3a3a3c; }
+    .ef .rel u i { display: block; height: 100%; border-radius: 4px; background: var(--azul); }
+  </style>
+  <div class="grade-sql">
+    <div class="codigo">
+      <div class="sql-cab"><span class="sql-tipo" style="background:rgba(252,95,163,.18);color:#fc5fa3">TRIGGER</span><b>Cria o mapa de cada sessão</b></div>
+      <div class="sql-corpo">
+<pre><span class="k">CREATE TRIGGER</span> trg_sessao_gera_mapa
+<span class="k">AFTER INSERT ON</span> sessoes
+<span class="k">FOR EACH ROW</span>
+<span class="k">EXECUTE FUNCTION</span> <span class="f">fn_trg_sessao_gera_mapa</span>();
+
+<span class="c">-- dentro da função</span>
+<span class="k">INSERT INTO</span> assentos_sessao (sessao_id, assento_id, status)
+<span class="k">SELECT</span> NEW.id, a.id, <span class="str">'LIVRE'</span>
+  <span class="k">FROM</span> assentos a <span class="k">WHERE</span> a.sala_id = NEW.sala_id;</pre>
+      </div>
+    </div>
+    <div class="codigo">
+      <div class="sql-cab"><span class="sql-tipo" style="background:rgba(103,183,164,.2);color:#67b7a4">EXCLUDE</span><b>Sala sem duas sessões juntas</b></div>
+      <div class="sql-corpo">
+<pre><span class="k">ALTER TABLE</span> sessoes
+  <span class="k">ADD CONSTRAINT</span> ex_sessoes_sala_sem_sobreposicao
+  <span class="k">EXCLUDE USING</span> gist (
+    sala_id <span class="k">WITH</span> =,
+    <span class="f">tstzrange</span>(inicio, fim, <span class="str">'[)'</span>) <span class="k">WITH</span> &amp;&amp;
+  );
+
+<span class="k">CREATE INDEX</span> ix_reservas_pendentes_expira_em
+  <span class="k">ON</span> reservas (expira_em) <span class="k">WHERE</span> status = <span class="str">'PENDENTE'</span>;</pre>
+      </div>
+    </div>
+    <div class="codigo">
+      <div class="sql-cab"><span class="sql-tipo" style="background:rgba(208,191,105,.2);color:#d0bf69">PROCEDURE</span><b>Gera os assentos da sala</b></div>
+      <div class="sql-corpo">
+<pre><span class="k">CALL</span> <span class="f">sp_gerar_assentos_sala</span>(p_sala_id, <span class="n2">8</span>, <span class="n2">12</span>);
+<span class="c">-- valida o layout e cria fila A..H, 1..12</span>
+<span class="k">RAISE EXCEPTION</span> <span class="str">'Layout inválido: % filas x %'</span>
+  <span class="k">USING</span> ERRCODE = <span class="str">'check_violation'</span>;</pre>
+        <div class="ef"><div class="mapa" id="mapa96"></div></div>
+      </div>
+    </div>
+    <div class="codigo">
+      <div class="sql-cab"><span class="sql-tipo" style="background:rgba(93,216,255,.18);color:#5dd8ff">FUNÇÃO</span><b>Relatório que junta 5 tabelas</b></div>
+      <div class="sql-corpo">
+<pre><span class="k">SELECT</span> * <span class="k">FROM</span> <span class="f">fn_relatorio_ocupacao</span>(inicio, fim);
+<span class="c">-- sessões + filmes + salas
+-- + assentos (capacidade) + ingressos (vendas)
+-- receita, vendidos e % de ocupação por sessão</span></pre>
+        <div class="ef">
+          <div class="rel"><span>Velozes</span><u><i style="width:82%"></i></u><span class="m" style="text-align:right">82%</span></div>
+          <div class="rel"><span>Bug</span><u><i style="width:64%"></i></u><span class="m" style="text-align:right">64%</span></div>
+          <div class="rel"><span>Chatbot</span><u><i style="width:41%"></i></u><span class="m" style="text-align:right">41%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>document.getElementById("mapa96").innerHTML = "<i></i>".repeat(96);</script>
+  <div class="rodape d">05</div>
+</section>
+
+<!-- 6 concorrência -->
+<section class="s">
+  <div class="rotulo">BANCO DE DADOS</div>
+  <div class="titulo">Quando 20 pessoas querem o mesmo assento</div>
+  <style>
+    .multidao { position: absolute; top: 432px; display: grid; grid-template-columns: repeat(5, 52px); gap: 12px; }
+    .multidao i { display: flex; width: 52px; height: 52px; border-radius: var(--r-peq); align-items: center; justify-content: center; font-style: normal; font-family: "JetBrains Mono", monospace; font-size: 16px; font-weight: 600; }
+    .multidao.pedidos i { box-shadow: inset 0 0 0 2px var(--traco); color: var(--mut); }
+    .multidao.pedidos svg { width: 24px; height: 24px; }
+    .multidao.resposta i { background: var(--sup); color: var(--mut); }
+    .multidao.resposta i.ok { background: var(--azul); color: #fff; box-shadow: 0 0 0 6px rgba(10,132,255,.25); }
+    .leg7 { position: absolute; top: 712px; font-size: 22px; line-height: 32px; color: var(--mut); white-space: nowrap; }
+    .leg7 b { color: var(--fg); }
+  </style>
+  <div class="a t-rotulo" style="left:140px;top:380px">Pedidos</div>
+  <div class="multidao pedidos" style="left:140px" id="pedidos20"></div>
+  <div class="leg7" style="left:140px">no mesmo assento,<br>ao mesmo tempo</div>
+  <div class="seta" style="left:456px;top:556px;width:60px"></div>
+  <div class="a t-rotulo" style="left:540px;top:380px">Respostas</div>
+  <div class="multidao resposta" style="left:540px" id="respostas20"></div>
+  <div class="leg7" style="left:540px"><b>1</b> reservado <span class="mono" style="color:var(--azul)">201</span><br><b>19</b> recusados <span class="mono">409</span></div>
+  <div class="a t-peq mut" style="left:140px;top:900px">Um dos 17 testes automatizados, em <span class="mono" style="color:var(--fg)">tests/concorrencia.test.ts</span></div>
+
+  <div class="a pilula" style="left:960px;top:380px;background:rgba(255,69,58,.16);color:var(--erro)">Antes<span style="font-weight:400;margin-left:12px">20 de 20 aceitas</span></div>
+  <div class="codigo" style="left:960px;top:452px;width:820px">
+<pre class="sem-cap" style="font-size:22px;line-height:32px"><span class="k">SELECT</span> a.*, r.status
+  <span class="k">FROM</span> assentos_sessao a
+  <span class="k">LEFT JOIN</span> reservas r <span class="k">ON</span> ...
+  <span class="k">FOR UPDATE OF</span> a;  <span class="c">-- o JOIN lê reservas antigas</span></pre>
+  </div>
+  <div class="a pilula" style="left:960px;top:676px;background:rgba(48,209,88,.16);color:var(--ok)">Depois<span style="font-weight:400;margin-left:12px">1 aceita, 19 recusadas</span></div>
+  <div class="codigo" style="left:960px;top:748px;width:820px">
+<pre class="sem-cap" style="font-size:22px;line-height:32px"><span class="k">SELECT</span> ... <span class="real"><span class="k">ORDER BY</span> assento_id <span class="k">FOR UPDATE</span></span>;
+<span class="c">-- só depois de travar, lê de novo</span>
+<span class="k">SELECT</span> a.*, r.status <span class="k">FROM</span> assentos_sessao a
+  <span class="k">LEFT JOIN</span> reservas r <span class="k">ON</span> ...;</pre>
+  </div>
+  <script>
+    document.getElementById("pedidos20").innerHTML = '<i><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></i>'.repeat(20);
+    document.getElementById("respostas20").innerHTML = '<i class="ok">201</i>' + "<i>409</i>".repeat(19);
+  </script>
+  <div class="rodape d">06</div>
+</section>
+
+<!-- 7 dez minutos -->
+<section class="s escuro">
+  <div class="rotulo">BANCO DE DADOS</div>
+  <div class="titulo">A reserva expira em 10 min<br>e o assento é liberado</div>
+  <ol class="lista" style="top:470px">
+    <li style="display:block"><b>Na hora exata:</b> reserva vencida já conta como livre<br>no mapa, mesmo antes do job passar.</li>
+    <li style="display:block"><b>Job a cada 30 s</b> fecha as vencidas com <span class="mono">SKIP LOCKED</span>,<br>sem brigar com um pagamento em andamento.</li>
+    <li style="display:block"><b>Índice parcial</b> só nas pendentes deixa essa busca leve.</li>
+  </ol>
+  <div class="cel" style="left:1380px;top:157px;width:400px;height:811px"><div class="tela"><img src="img/pagamento-timer.png"></div></div>
+  <div class="rodape d">07</div>
+</section>
+
+<!-- 8 segurança -->
+<section class="s">
+  <div class="rotulo">PRODUÇÃO E QUALIDADE</div>
+  <div class="titulo">Como protegemos<br>senhas e dados</div>
+  <style>
+    .grade-itens { position: absolute; left: 140px; top: 470px; display: grid; grid-template-columns: repeat(2, 380px); gap: 24px; }
+    .grade-itens .cartao { position: relative; }
+    .grade-itens .ic { display: block; width: 40px; height: 40px; color: var(--azul); }
+    .grade-itens h3 { margin-top: 28px; }
+    .grade-itens p { margin-top: 6px; }
+  </style>
+  <div class="grade-itens">
+    <div class="cartao bloco item"><svg class="ic" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><h3>Senhas com bcrypt</h3><p>Nunca guardadas em texto.</p></div>
+    <div class="cartao bloco item"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><h3>JWT com prazo</h3><p>Vencido, encerra a sessão.</p></div>
+    <div class="cartao bloco item"><svg class="ic" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg><h3>Banco privado</h3><p>Sem acesso público, só SSL.</p></div>
+    <div class="cartao bloco item"><svg class="ic" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg><h3>Papel conferido</h3><p>O app esconde, a API recusa.</p></div>
+  </div>
+  <div class="codigo" style="left:1000px;top:470px;width:780px">
+    <div class="cap">SERVICES E MIDDLEWARES</div>
+<pre style="line-height:35px"><span class="c">// login: mesma mensagem nos dois casos</span>
+<span class="k">if</span> (!usuario || !(<span class="k">await</span> <span class="real">bcrypt.<span class="f">compare</span>(senha, hash)</span>))
+  <span class="k">throw new</span> <span class="t">CredenciaisInvalidasError</span>();
+jwt.<span class="f">sign</span>({ sub, papel }, segredo,
+  { <span class="real">expiresIn: jwtMinutos * <span class="n2">60</span></span> });
+
+<span class="c">// rotas da bilheteria e da gerência</span>
+<span class="k">if</span> (<span class="real">usuario.papel !== <span class="str">"OPERADOR"</span></span>)
+  <span class="f">next</span>(<span class="k">new</span> <span class="t">AcessoNegadoError</span>());  <span class="c">// 403</span></pre>
+  </div>
+  <div class="rodape d">08</div>
+</section>
+
+<!-- 9 em produção -->
+<section class="s escuro">
+  <div class="rotulo">PRODUÇÃO E QUALIDADE</div>
+  <div class="titulo">No ar na AWS, sem custo</div>
+  <div class="cartao caixa" style="left:140px;top:380px;width:300px;height:330px"><div class="nome">Navegador<br>e celular</div><div class="desc" style="top:116px">mesmo app na Web<br>e no Expo Go</div><div class="tag t-rotulo">Cliente</div></div>
+  <div class="cartao caixa" style="left:660px;top:380px;width:560px;height:330px"><div class="nome">EC2 <span class="mono mut" style="font-weight:400;margin-left:8px">t3.micro</span></div><div class="tag t-rotulo">Ubuntu 24.04 em Ohio</div></div>
+  <div class="camada" style="left:694px;top:478px;width:157px;height:146px"><span class="cn">nginx</span><span class="cs">app em /</span></div>
+  <div class="camada" style="left:861px;top:478px;width:158px;height:146px"><span class="cn">nginx</span><span class="cs">API em /api</span></div>
+  <div class="camada destaque" style="left:1029px;top:478px;width:157px;height:146px"><span class="cn">Node.js</span><span class="cs">systemd</span></div>
+  <div class="cartao caixa" style="left:1440px;top:380px;width:340px;height:330px"><div class="nome">RDS<br>PostgreSQL</div><div class="desc" style="top:116px">gerenciado, privado,<br>backup automático</div><div class="tag t-rotulo">db.t4g.micro</div></div>
+  <div class="seta-rot" style="left:440px;top:505px;width:220px;text-align:center">HTTPS</div><div class="seta" style="left:454px;top:545px;width:188px"></div>
+  <div class="seta-rot" style="left:1220px;top:505px;width:220px;text-align:center">SSL</div><div class="seta" style="left:1234px;top:545px;width:188px"></div>
+  <div class="a t-peq mut" style="left:140px;top:784px"><b style="color:var(--fg)">HTTPS</b> com Let's Encrypt, renovação automática</div>
+  <div class="a t-peq mut" style="left:140px;top:830px"><b style="color:var(--fg)">Segredos</b> em <span class="mono">/etc/cineon.env</span>, fora do Git</div>
+  <div class="a link t-peq" style="left:140px;top:888px">cineon.agp.app.br</div>
+  <div class="rodape d">09</div>
+</section>
+
+<!-- 10 avaliação -->
+<section class="s">
+  <div class="rotulo">AVALIAÇÃO</div>
+  <style>
+    .crit { position: absolute; top: 316px; width: 780px; box-sizing: border-box; padding: 0; overflow: hidden; }
+    .crit-rot { position: absolute; top: 280px; }
+    .crit { --hl: color-mix(in srgb, var(--fg) 10%, transparent); --col: 224px 1fr; }
+    .crit .cab { padding: 0 32px; border-bottom: 2px solid var(--hl); display: grid; grid-template-columns: var(--col); column-gap: 20px; height: 64px; margin-bottom: 0; align-items: center; }
+    .crit .cab .t-rotulo { font-size: 18px; }
+    .crit .ln { display: grid; grid-template-columns: var(--col); column-gap: 20px; align-items: center; height: 76px; padding: 0 32px; white-space: nowrap; }
+    .crit .cn { font-size: 25px; line-height: 30px; font-weight: 600; }
+    .crit .cd { font-size: 20px; line-height: 26px; color: var(--mut); }
+    .crit .ln:nth-child(even) { background: color-mix(in srgb, var(--fg) 3%, transparent); }
+    .alem { position: absolute; left: 140px; top: 900px; display: flex; align-items: center; gap: 12px; }
+    .alem .t-rotulo { margin-right: 12px; }
+    .alem .pilula { background: var(--sup); font-weight: 500; }
+  </style>
+  <div class="t-rotulo crit-rot" style="left:140px">Programação II</div>
+  <div class="cartao crit" style="left:140px"><div class="cab"><span class="t-rotulo">Item</span><span class="t-rotulo">Descrição</span></div>
+    <div class="ln"><span class="cn">Acesso a dados</span><span class="cd">repositories/, único lugar com Prisma</span></div>
+    <div class="ln"><span class="cn">Regras de negócio</span><span class="cd">services/, venda única e expiração</span></div>
+    <div class="ln"><span class="cn">Interface gráfica</span><span class="cd">3 papéis, sem IDs nem totais</span></div>
+    <div class="ln"><span class="cn">Arquitetura</span><span class="cd">Express + Prisma + Expo, JSON</span></div>
+    <div class="ln"><span class="cn">Produção</span><span class="cd">AWS EC2 + RDS gerenciado</span></div>
+    <div class="ln"><span class="cn">Responsividade</span><span class="cd">Web e celular, layout adaptável</span></div>
+  </div>
+  <div class="t-rotulo crit-rot" style="left:1000px">Banco de Dados II</div>
+  <div class="cartao crit" style="left:1000px"><div class="cab"><span class="t-rotulo">Item</span><span class="t-rotulo">Descrição</span></div>
+    <div class="ln"><span class="cn">Modelagem</span><span class="cd">PK composta e único parcial</span></div>
+    <div class="ln"><span class="cn">Migração</span><span class="cd">4 migrações Prisma Migrate</span></div>
+    <div class="ln"><span class="cn">SQL</span><span class="cd">3 triggers, procedure, 27 índices</span></div>
+    <div class="ln"><span class="cn">Concorrência</span><span class="cd">FOR UPDATE ordenado, 20 <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> 1</span></div>
+    <div class="ln"><span class="cn">Relatório</span><span class="cd">fn_relatorio_ocupacao, 5 tabelas</span></div>
+    <div class="ln"><span class="cn">ORM</span><span class="cd">schema tipado, $transaction</span></div>
+  </div>
+  <div class="alem"><span class="t-rotulo">Além do enunciado</span><span class="pilula">Trailer por filme</span><span class="pilula">Página na cor do pôster</span><span class="pilula">Cancelamento com estorno</span><span class="pilula">Tema claro e escuro</span></div>
+  <div class="rodape d">10</div>
+</section>
+
+<!-- 11 obrigado -->
+<section class="s escuro">
+  <div class="a disp t-heroi" style="left:140px;top:340px">Obrigado.</div>
+  <style>
+    .fim { position: absolute; top: 700px; }
+    .fim p { margin-top: 14px; font-size: 22px; line-height: 38px; }
+  </style>
+  <div class="fim" style="left:140px"><div class="t-rotulo">Equipe</div><p>Alexandre Reitemeyer<br>Beatriz Miranda<br>Gabriel Nassinger<br>Lucas Santos Magro</p></div>
+  <div class="fim" style="left:487px"><div class="t-rotulo">Produção</div><p class="mono" style="font-size:22px">cineon.agp.app.br</p></div>
+  <div class="fim" style="left:822px"><div class="t-rotulo">Código</div><p class="mono" style="font-size:22px">github.com/lucassmagro/CineON</p></div>
+  <div class="rodape d">11</div>
+</section>
+
+</body>
+</html>
