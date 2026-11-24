@@ -60,7 +60,7 @@ b { font-weight: 600; }
 
 /* caixas escuras (9, 19) */
 .caixa { position: absolute; background: #1c1c1e; border-radius: 24px; box-shadow: 0 0 0 1px rgba(255,255,255,.07); }
-.caixa .nome { position: absolute; left: 34px; top: 40px; font-size: 30px; font-weight: 600; line-height: 30px; color: #f5f5f7; white-space: nowrap; }
+.caixa .nome { position: absolute; left: 34px; top: 40px; font-size: 30px; font-weight: 600; line-height: 36px; color: #f5f5f7; white-space: nowrap; }
 .caixa .desc { position: absolute; left: 34px; font-size: 21px; line-height: 32px; color: #a1a1a6; white-space: nowrap; }
 .caixa .tag { position: absolute; left: 34px; bottom: 40px; font-size: 16px; font-weight: 600; letter-spacing: .14em; line-height: 20px; color: #64b5ff; }
 .camada { position: absolute; background: #2c2c2e; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
@@ -94,7 +94,7 @@ b { font-weight: 600; }
 <section class="s escuro">
   <div class="a rotulo">O PONTO CRÍTICO DO NEGÓCIO</div>
   <div class="a serif" style="left:140px;top:206px;font-size:190px;line-height:181px;color:#f5f5f7">Um assento.<br><span style="color:#0a84ff">Uma venda.</span></div>
-  <div class="a" style="left:140px;top:634px;font-size:30px;color:#a1a1a6">Mesmo que duas pessoas cliquem no mesmo instante.</div>
+  <div class="a" style="left:140px;top:634px;font-size:36px;color:#a1a1a6">Nem que duas pessoas cliquem no mesmo instante.</div>
 
   <div id="assentos" class="a" style="left:1250px;top:300px;display:grid;grid-template-columns:repeat(5,90px);gap:17.5px">
     <i class="ass"></i><i class="ass oc"></i><i class="ass"></i><i class="ass oc"></i><i class="ass"></i>
@@ -238,9 +238,9 @@ b { font-weight: 600; }
   <div class="caixa" style="left:473px;top:470px;width:270px;height:330px"><div class="nome">nginx</div><div class="desc" style="top:91px">proxy reverso<br>certificado TLS</div><div class="tag">EC2</div></div>
   <div class="caixa" style="left:807px;top:470px;width:640px;height:330px"><div class="nome">API Express</div><div class="tag">NODE.JS · SYSTEMD</div></div>
   <div class="camada" style="left:841px;top:568px;width:135px;height:146px"><span class="cn">routes</span></div>
-  <div class="camada" style="left:986px;top:568px;width:130px;height:146px"><span class="cn">controllers</span><span class="cs">Zod + DTO</span></div>
+  <div class="camada" style="left:986px;top:568px;width:136px;height:146px"><span class="cn">controllers</span><span class="cs">Zod + DTO</span></div>
   <div class="camada azul" style="left:1132px;top:568px;width:135px;height:146px"><span class="cn">services</span><span class="cs">regras</span></div>
-  <div class="camada" style="left:1277px;top:568px;width:130px;height:146px"><span class="cn">repositories</span><span class="cs">Prisma</span></div>
+  <div class="camada" style="left:1277px;top:568px;width:136px;height:146px"><span class="cn">repositories</span><span class="cs">Prisma</span></div>
   <div class="caixa" style="left:1510px;top:470px;width:270px;height:330px"><div class="nome">PostgreSQL</div><div class="desc" style="top:91px">gerenciado<br>rede privada</div><div class="tag">RDS</div></div>
   <div class="seta-rot" style="left:412px;top:605px">HTTPS</div><div class="seta" style="left:424px;top:635px;width:31px"></div>
   <div class="seta-rot" style="left:756px;top:605px">/API</div><div class="seta" style="left:757px;top:635px;width:32px"></div>
@@ -466,13 +466,13 @@ b { font-weight: 600; }
   <div class="a titulo uma">Tudo versionado <span class="serif">no Prisma Migrate.</span></div>
   <style>
     .mig { position: absolute; left: 194px; margin-top: -2px; }
-    .mig .mn { font-family: "JetBrains Mono", monospace; font-size: 30px; font-weight: 500; line-height: 30px; }
+    .mig .mn { font-family: "JetBrains Mono", monospace; font-size: 30px; font-weight: 500; line-height: 36px; }
     .mig .md { margin-top: 13px; font-size: 25px; line-height: 30px; color: #6e6e73; white-space: nowrap; }
     .ponto { position: absolute; left: 144px; width: 18px; height: 18px; border-radius: 50%; background: #0a84ff; }
     .fio { position: absolute; left: 152px; width: 2px; background: #e5e5ea; }
   </style>
   <div class="ponto" style="top:382px"></div><div class="fio" style="top:410px;height:88px"></div>
-  <div class="ponto" style="top:508px"></div><div class="fio" style="top:530px;height:118px"></div>
+  <div class="ponto" style="top:508px"></div><div class="fio" style="top:536px;height:118px"></div>
   <div class="ponto" style="top:664px"></div><div class="fio" style="top:692px;height:88px"></div>
   <div class="ponto" style="top:790px"></div>
   <div class="mig" style="top:374px"><div class="mn">init</div><div class="md">tabelas, PKs, FKs e índices do schema</div></div>
@@ -502,7 +502,7 @@ b { font-weight: 600; }
   <div class="a rotulo">SEGURANÇA E USABILIDADE</div>
   <div class="a titulo uma">Nada sensível <span class="serif">fica exposto.</span></div>
   <style>
-    .seg { position: absolute; width: 389px; height: 262px; border-radius: 20px; background: #fff; padding: 40px 30px 0; }
+    .seg { position: absolute; width: 389px; height: 262px; border-radius: 20px; background: #fff; padding: 40px 36px 0; }
     .seg h4 { font-size: 28px; font-weight: 600; line-height: 34px; letter-spacing: -0.01em; }
     .seg p { margin-top: 16px; font-size: 23px; line-height: 33px; color: #6e6e73; }
   </style>
@@ -567,7 +567,7 @@ b { font-weight: 600; }
     .crit h5 { font-size: 17px; font-weight: 600; letter-spacing: .17em; color: #86868b; height: 32px; border-bottom: 1px solid #e5e5ea; }
     .crit .ln { position: relative; height: 79px; border-bottom: 1px solid #e5e5ea; }
     .crit .ln:last-child { border-bottom: 0; }
-    .crit .pe { position: absolute; font-style: normal; left: 0; top: 28px; width: 30px; height: 30px; border-radius: 50%; background: #f5f5f7; color: #0071e3; font-size: 17px; font-weight: 600; text-align: center; line-height: 30px; }
+    .crit .pe { position: absolute; font-style: normal; left: 0; top: 28px; width: 36px; height: 36px; border-radius: 50%; background: #f5f5f7; color: #0071e3; font-size: 17px; font-weight: 600; text-align: center; line-height: 36px; }
     .crit .cn { position: absolute; left: 56px; top: 23px; font-size: 24px; font-weight: 600; }
     .crit .cd { position: absolute; left: 316px; top: 26px; font-size: 21px; color: #6e6e73; white-space: nowrap; }
     .alem { position: absolute; left: 140px; top: 935px; display: flex; align-items: center; gap: 12px; }
@@ -620,7 +620,7 @@ b { font-weight: 600; }
   </div>
   <div class="a serif" style="left:140px;top:310px;font-size:230px;color:#f5f5f7">Obrigado.</div>
   <style>
-    .fim { position: absolute; top: 730px; }
+    .fim { position: absolute; top: 736px; }
     .fim h6 { font-size: 16px; font-weight: 600; letter-spacing: .18em; color: #a1a1a6; }
     .fim p { margin-top: 13px; font-size: 23px; line-height: 40.5px; color: #f5f5f7; }
     .fim .mono { margin-top: 15px; font-size: 22px; }

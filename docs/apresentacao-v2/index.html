@@ -165,14 +165,24 @@ b { font-weight: 600; }
 <section class="s">
   <div class="rotulo">O APP</div>
   <div class="titulo">Como o cliente compra um ingresso</div>
-  <div class="a t-texto" style="left:140px;top:380px"><span class="n" style="margin-right:14px">01</span>Escolhe o filme</div>
-  <div class="a t-texto" style="left:556px;top:380px"><span class="n" style="margin-right:14px">02</span>Marca os lugares</div>
-  <div class="a t-texto" style="left:972px;top:380px"><span class="n" style="margin-right:14px">03</span>Paga em até 10 min</div>
-  <div class="a t-texto" style="left:1388px;top:380px"><span class="n" style="margin-right:14px">04</span>Recebe código único</div>
-  <div class="cel" style="left:140px;top:460px;width:356px;height:770px"><div class="tela"><img src="img/filme-bug.png"></div></div>
-  <div class="cel" style="left:556px;top:460px;width:356px;height:770px"><div class="tela"><img src="img/mapa.png"></div></div>
-  <div class="cel" style="left:972px;top:460px;width:356px;height:770px"><div class="tela"><img src="img/pagamento.png"></div></div>
-  <div class="cel" style="left:1388px;top:460px;width:356px;height:770px"><div class="tela"><img src="img/ingressos-claro.png"></div></div>
+  <style>
+    .tl-fio { position: absolute; top: 404px; height: 2px; background: var(--traco); }
+    .tl-n { position: absolute; top: 380px; width: 50px; height: 50px; border-radius: 50%; background: var(--azul); color: #fff; font-size: 24px; font-weight: 600; display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
+    .tl-t { position: absolute; top: 450px; width: 356px; text-align: center; }
+  </style>
+  <div class="tl-fio" style="left:318px;width:1248px"></div>
+  <div class="tl-n" style="left:293px">01</div>
+  <div class="a t-texto tl-t" style="left:140px">Escolhe o filme</div>
+  <div class="tl-n" style="left:709px">02</div>
+  <div class="a t-texto tl-t" style="left:556px">Marca os lugares</div>
+  <div class="tl-n" style="left:1125px">03</div>
+  <div class="a t-texto tl-t" style="left:972px">Paga em até 10 min</div>
+  <div class="tl-n" style="left:1541px">04</div>
+  <div class="a t-texto tl-t" style="left:1388px">Recebe código único</div>
+  <div class="cel" style="left:140px;top:530px;width:356px;height:770px"><div class="tela"><img src="img/filme-bug.png"></div></div>
+  <div class="cel" style="left:556px;top:530px;width:356px;height:770px"><div class="tela"><img src="img/mapa.png"></div></div>
+  <div class="cel" style="left:972px;top:530px;width:356px;height:770px"><div class="tela"><img src="img/pagamento.png"></div></div>
+  <div class="cel" style="left:1388px;top:530px;width:356px;height:770px"><div class="tela"><img src="img/ingressos-claro.png"></div></div>
   <div class="rodape d">04</div>
 </section>
 
@@ -340,14 +350,13 @@ b { font-weight: 600; }
     .grade-stat .cat { font-size: 18px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--azul); }
     .grade-stat .v { font-size: 124px; line-height: 124px; }
     .grade-stat .l { margin-top: 14px; }
-    .grade-stat .destaque .cat, .grade-stat .destaque .l { color: rgba(255,255,255,.85); }
   </style>
   <div class="grade-stat">
     <div class="cartao stat"><div class="cat">Relações</div><div><div class="v">12</div><div class="l">chaves estrangeiras</div></div></div>
     <div class="cartao stat"><div class="cat">Domínio</div><div><div class="v">11</div><div class="l">CHECKs de domínio</div></div></div>
     <div class="cartao stat"><div class="cat">Desempenho</div><div><div class="v">27</div><div class="l">índices, 7 únicos e 2 parciais</div></div></div>
     <div class="cartao stat"><div class="cat">Automação</div><div><div class="v">3</div><div class="l">triggers</div></div></div>
-    <div class="cartao stat destaque"><div class="cat">Concorrência</div><div><div class="v">1</div><div class="l">EXCLUDE contra sobreposição</div></div></div>
+    <div class="cartao stat"><div class="cat">Concorrência</div><div><div class="v">1</div><div class="l">EXCLUDE contra sobreposição</div></div></div>
     <div class="cartao stat"><div class="cat">Rotina</div><div><div class="v">1</div><div class="l">stored procedure</div></div></div>
     <div class="cartao stat"><div class="cat">Relatório</div><div><div class="v">1</div><div class="l">função com CTEs</div></div></div>
     <div class="cartao stat"><div class="cat">Estrutura</div><div><div class="v">10</div><div class="l">tabelas com chave primária</div></div></div>
@@ -361,13 +370,13 @@ b { font-weight: 600; }
   <div class="titulo">Regras escritas em SQL</div>
   <style>
     .grade-sql { position: absolute; left: 140px; top: 380px; display: grid; grid-template-columns: repeat(2, 808px); gap: 24px; }
-    .grade-sql .codigo { position: relative; padding: 36px; color: #f5f5f7; }
+    .grade-sql .codigo { position: relative; padding: 32px; color: #f5f5f7; }
     .sql-cab { display: flex; align-items: center; gap: 16px; height: 32px; white-space: nowrap; }
     .sql-tipo { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 8px; font-size: 15px; font-weight: 700; letter-spacing: .12em; }
     .sql-cab b { font-size: 22px; }
-    .sql-corpo { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 24px; }
-    .sql-corpo pre { margin-top: 0; font-size: 18px; line-height: 28px; }
-    .ef { width: 280px; font-size: 16px; line-height: 20px; white-space: nowrap; }
+    .sql-corpo { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 16px; }
+    .sql-corpo pre { margin-top: 0; font-size: 17px; line-height: 24px; }
+    .ef { width: 200px; font-size: 16px; line-height: 20px; white-space: nowrap; }
     .ef .m { font-family: "JetBrains Mono", monospace; font-variant-ligatures: none; }
     .ef .cap2 { margin-bottom: 10px; color: #a1a1a6; }
     .ef .lin { display: flex; justify-content: space-between; align-items: center; height: 30px; margin-top: 4px; padding: 0 12px; border-radius: 8px; background: #2c2c2e; }
@@ -378,7 +387,7 @@ b { font-weight: 600; }
     .ef .bar { position: absolute; top: 0; height: 40px; padding: 0 12px; border-radius: 8px; display: flex; align-items: center; }
     .ef .mapa { display: grid; grid-template-columns: repeat(12, 12px); gap: 5px; }
     .ef .mapa i { width: 12px; height: 12px; border-radius: 3px; background: #3a3a3c; }
-    .ef .rel { display: grid; grid-template-columns: 76px 1fr 44px; align-items: center; column-gap: 12px; height: 30px; margin-top: 6px; }
+    .ef .rel { display: grid; grid-template-columns: 64px 1fr 40px; align-items: center; column-gap: 12px; height: 30px; margin-top: 6px; }
     .ef .rel u { display: block; height: 8px; border-radius: 4px; background: #3a3a3c; }
     .ef .rel u i { display: block; height: 100%; border-radius: 4px; background: var(--azul); }
   </style>
@@ -387,50 +396,46 @@ b { font-weight: 600; }
       <div class="sql-cab"><span class="sql-tipo" style="background:rgba(252,95,163,.18);color:#fc5fa3">TRIGGER</span><b>Cria o mapa de cada sessão</b></div>
       <div class="sql-corpo">
 <pre><span class="k">CREATE TRIGGER</span> trg_sessao_gera_mapa
-  <span class="k">AFTER INSERT ON</span> sessoes
-  <span class="k">FOR EACH ROW</span>
-  <span class="k">EXECUTE FUNCTION</span>
-    <span class="f">fn_trg_sessao_gera_mapa</span>();</pre>
-        <div class="ef">
-          <div class="cap2 m">assentos_sessao</div>
-          <div class="lin m"><span>A1</span><span style="color:#30d158">LIVRE</span></div>
-          <div class="lin m"><span>A2</span><span style="color:#30d158">LIVRE</span></div>
-          <div class="lin m"><span>A3</span><span style="color:#30d158">LIVRE</span></div>
-        </div>
+<span class="k">AFTER INSERT ON</span> sessoes <span class="k">FOR EACH ROW</span>
+<span class="k">EXECUTE FUNCTION</span> <span class="f">fn_trg_sessao_gera_mapa</span>();
+
+<span class="c">-- dentro da função</span>
+<span class="k">INSERT INTO</span> assentos_sessao (sessao_id, assento_id, status)
+<span class="k">SELECT</span> NEW.id, a.id, <span class="str">'LIVRE'</span>
+  <span class="k">FROM</span> assentos a <span class="k">WHERE</span> a.sala_id = NEW.sala_id;</pre>
       </div>
     </div>
     <div class="codigo">
       <div class="sql-cab"><span class="sql-tipo" style="background:rgba(103,183,164,.2);color:#67b7a4">EXCLUDE</span><b>Sala sem duas sessões juntas</b></div>
       <div class="sql-corpo">
-<pre><span class="k">EXCLUDE USING</span> gist (
-  sala_id <span class="k">WITH</span> =,
-  <span class="f">tstzrange</span>(inicio, fim)
-    <span class="k">WITH</span> &amp;&amp;
-)</pre>
-        <div class="ef">
-          <div class="horas m"><span style="left:14px">19h</span><span style="left:77px">20h</span><span style="left:140px">21h</span><span style="left:203px">22h</span><span style="left:266px">23h</span></div>
-          <div class="faixa"><span class="bar" style="left:14px;width:126px;background:#2c2c2e">Sessão 1</span></div>
-          <div class="faixa"><span class="bar" style="left:108px;width:126px;background:rgba(255,69,58,.2);color:#ff453a;box-shadow:inset 0 0 0 2px #ff453a">recusada</span></div>
-        </div>
+<pre><span class="k">ALTER TABLE</span> sessoes
+  <span class="k">ADD CONSTRAINT</span> ex_sessoes_sala_sem_sobreposicao
+  <span class="k">EXCLUDE USING</span> gist (
+    sala_id <span class="k">WITH</span> =,
+    <span class="f">tstzrange</span>(inicio, fim, <span class="str">'[)'</span>) <span class="k">WITH</span> &amp;&amp;
+  );
+
+<span class="k">CREATE INDEX</span> ix_reservas_pendentes_expira_em
+  <span class="k">ON</span> reservas (expira_em) <span class="k">WHERE</span> status = <span class="str">'PENDENTE'</span>;</pre>
       </div>
     </div>
     <div class="codigo">
       <div class="sql-cab"><span class="sql-tipo" style="background:rgba(208,191,105,.2);color:#d0bf69">PROCEDURE</span><b>Gera os assentos da sala</b></div>
       <div class="sql-corpo">
-<pre><span class="k">CALL</span> <span class="f">sp_gerar_assentos_sala</span>(
-  p_sala_id, <span class="n2">8</span>, <span class="n2">12</span>
-);
-<span class="c">-- filas A a H, 1 a 12</span></pre>
+<pre><span class="k">CALL</span> <span class="f">sp_gerar_assentos_sala</span>(p_sala_id, <span class="n2">8</span>, <span class="n2">12</span>);
+<span class="c">-- valida o layout e cria fila A..H, 1..12</span>
+<span class="k">RAISE EXCEPTION</span> <span class="str">'Layout inválido: % filas x %'</span>
+  <span class="k">USING</span> ERRCODE = <span class="str">'check_violation'</span>;</pre>
         <div class="ef"><div class="mapa" id="mapa96"></div></div>
       </div>
     </div>
     <div class="codigo">
       <div class="sql-cab"><span class="sql-tipo" style="background:rgba(93,216,255,.18);color:#5dd8ff">FUNÇÃO</span><b>Relatório que junta 5 tabelas</b></div>
       <div class="sql-corpo">
-<pre><span class="k">SELECT</span> *
-  <span class="k">FROM</span> <span class="f">fn_relatorio_ocupacao</span>(
-         inicio, fim
-       );</pre>
+<pre><span class="k">SELECT</span> * <span class="k">FROM</span> <span class="f">fn_relatorio_ocupacao</span>(inicio, fim);
+<span class="c">-- sessões + filmes + salas
+-- + assentos (capacidade) + ingressos (vendas)
+-- receita, vendidos e % de ocupação por sessão</span></pre>
         <div class="ef">
           <div class="rel"><span>Velozes</span><u><i style="width:82%"></i></u><span class="m" style="text-align:right">82%</span></div>
           <div class="rel"><span>Bug</span><u><i style="width:64%"></i></u><span class="m" style="text-align:right">64%</span></div>
@@ -531,12 +536,21 @@ b { font-weight: 600; }
 <section class="s">
   <div class="rotulo">BANCO DE DADOS</div>
   <div class="titulo">Quatro migrações no Prisma Migrate</div>
-  <ol class="lista" style="top:380px">
-    <li><span class="n">01</span><span><span class="mono" style="font-weight:500">init</span><br><span class="t-peq mut">tabelas, PKs, FKs e índices do schema</span></span></li>
-    <li><span class="n">02</span><span><span class="mono" style="font-weight:500">objetos_sql</span><br><span class="t-peq mut">CHECKs, EXCLUDE, triggers, procedure e função</span></span></li>
-    <li><span class="n">03</span><span><span class="mono" style="font-weight:500">poster_filme</span><br><span class="t-peq mut">pôster opcional do filme</span></span></li>
-    <li><span class="n">04</span><span><span class="mono" style="font-weight:500">cancelamento_ingresso</span><br><span class="t-peq mut">índice único parcial no lugar do único simples</span></span></li>
-  </ol>
+  <style>
+    .linha { position: absolute; left: 140px; top: 380px; }
+    .linha li { position: relative; padding: 0 0 52px 56px; }
+    .linha li:last-child { padding-bottom: 0; }
+    .linha li::before { content: ""; position: absolute; left: 6px; top: 12px; width: 18px; height: 18px; border-radius: 50%; background: var(--azul); }
+    .linha li:not(:last-child)::after { content: ""; position: absolute; left: 14px; top: 38px; bottom: 6px; width: 2px; background: var(--traco); }
+    .linha .mn { font-family: "JetBrains Mono", monospace; font-size: 30px; line-height: 38px; font-weight: 500; }
+    .linha .md { margin-top: 6px; font-size: 22px; line-height: 32px; color: var(--mut); white-space: nowrap; }
+  </style>
+  <ul class="linha">
+    <li><div class="mn">init</div><div class="md">tabelas, PKs, FKs e índices do schema</div></li>
+    <li><div class="mn">objetos_sql</div><div class="md">CHECKs, EXCLUDE, triggers, procedure e função</div></li>
+    <li><div class="mn">poster_filme</div><div class="md">pôster opcional do filme</div></li>
+    <li><div class="mn">cancelamento_ingresso</div><div class="md">índice único parcial no lugar do único simples</div></li>
+  </ul>
   <div class="codigo" style="left:1000px;top:380px;width:780px">
     <div class="cap">PRISMA/SCHEMA.PRISMA</div>
 <pre style="font-size:22px;line-height:34px"><span class="k">model</span> <span class="t">AssentoSessao</span> {
@@ -624,7 +638,7 @@ b { font-weight: 600; }
   <style>
     .crit { position: absolute; top: 340px; width: 780px; height: 560px; box-sizing: border-box; padding: 28px 36px 20px; }
     .crit .t-rotulo { margin-bottom: 10px; }
-    .crit .ln { display: grid; grid-template-columns: 1fr auto; align-items: center; height: 82px; white-space: nowrap; }
+    .crit .ln { display: grid; grid-template-columns: 1fr auto; align-items: center; align-content: center; grid-template-rows: auto auto; height: 82px; white-space: nowrap; }
     .crit .cn { font-size: 26px; line-height: 32px; font-weight: 600; }
     .crit .cd { grid-column: 1; font-size: 22px; line-height: 28px; color: var(--mut); }
     .crit .pe { grid-column: 2; grid-row: 1 / span 2; font-size: 22px; color: var(--mut); text-align: right; font-variant-numeric: tabular-nums; }
@@ -654,9 +668,9 @@ b { font-weight: 600; }
 <!-- 21 demonstração -->
 <section class="s escuro">
   <div class="rotulo">AVALIAÇÃO</div>
-  <div class="a disp t-display" style="left:140px;top:157px">Demonstração</div>
-  <div class="a link" style="left:140px;top:300px;font-size:30px">cineon.agp.app.br</div>
-  <ol class="lista" style="top:420px">
+  <div class="a disp t-heroi" style="left:140px;top:300px">Agora,<br>ao vivo.</div>
+  <div class="a link" style="left:140px;top:760px;font-size:30px">cineon.agp.app.br</div>
+  <ol class="lista" style="left:1100px;top:360px">
     <li><span class="n">01</span><span>Cliente abre um filme e vê o trailer</span></li>
     <li><span class="n">02</span><span>Escolhe dois lugares e paga</span></li>
     <li><span class="n">03</span><span>Duas abas disputam o mesmo assento</span></li>
