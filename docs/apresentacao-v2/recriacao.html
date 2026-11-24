@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>CineON</title>
+<style>
+@font-face { font-family: Inter; src: url(fonts/inter-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url(fonts/jetbrains-mono-latin-wght-normal.woff2) format("woff2"); font-weight: 100 800; font-display: block; }
+@font-face { font-family: "Instrument Serif"; src: url(fonts/instrument-serif-latin-400-italic.woff2) format("woff2"); font-style: italic; font-display: block; }
+
+@page { size: 1920px 1080px; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #2a2a2a; }
+body { font-family: Inter, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+.s { width: 1920px; height: 1080px; position: relative; overflow: hidden; break-after: page;
+  --fg: #1d1d1f; --mut: #6e6e73; --ft: #86868b; --azul: #0a84ff; background: #fff; color: var(--fg); }
+.s.cinza { background: #f5f5f7; }
+.s.escuro { background: #000; --fg: #f5f5f7; --mut: #a1a1a6; --ft: #6e6e73; }
+
+.a { position: absolute; white-space: nowrap; line-height: normal; }
+.serif { font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
+.mono { font-family: "JetBrains Mono", monospace; font-variant-ligatures: none; }
+b { font-weight: 600; }
+
+.rotulo { left: 140px; top: 112px; font-size: 21px; font-weight: 600; letter-spacing: .18em; color: var(--azul); }
+.titulo { left: 140px; font-size: 84px; font-weight: 700; letter-spacing: -0.039em; }
+.titulo .serif { font-size: 96px; letter-spacing: -0.01em; }
+.titulo.l1 { top: 155px; }
+.titulo.l2 { top: 235px; }
+.titulo.uma { top: 149px; }
+.rodape { top: 1009px; font-size: 17px; color: var(--ft); letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.rodape.e { left: 140px; }
+.rodape.d { right: 140px; }
+
+/* celulares */
+.cel { position: absolute; padding: 11px; border-radius: 54px; background: #1d1d1f;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 50px 80px -35px rgba(0,0,0,.35); }
+.cel .tela { width: 100%; height: 100%; border-radius: 43px; overflow: hidden; }
+.cel img { display: block; width: 100%; }
+.escuro .cel { background: #2c2c2e; box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 60px 80px -35px rgba(0,0,0,.9); }
+
+/* código */
+.codigo { position: absolute; background: #1c1c1e; border-radius: 24px; box-shadow: 0 40px 80px -37px rgba(0,0,0,.35); }
+.codigo .cap { position: absolute; font-size: 16px; font-weight: 600; letter-spacing: .14em; color: #8e8e93; white-space: nowrap; }
+.codigo pre { position: absolute; font-family: "JetBrains Mono", monospace; font-variant-ligatures: none; color: #e5e5ea; white-space: pre; }
+.k { color: #fc5fa3; } .f { color: #67b7a4; } .t { color: #5dd8ff; } .str { color: #fc6a5d; } .c { color: #6c7986; } .n { color: #d0bf69; }
+.real { background: rgba(10,132,255,.22); box-shadow: 0 0 0 4px rgba(10,132,255,.22); border-radius: 6px; }
+
+/* listas numeradas (7, 16) */
+.lista .div { position: absolute; left: 140px; height: 1px; background: #d2d2d7; }
+.item { position: absolute; left: 140px; font-size: 28px; line-height: 41px; white-space: nowrap; }
+.item .num { display: inline-block; width: 56px; color: var(--azul); font-weight: 600; }
+.item .cont { padding-left: 56px; }
+
+/* setas desenhadas */
+.seta { position: absolute; height: 2px; background: #3a3a3c; }
+.seta::after { content: ""; position: absolute; right: -1px; top: -5px; border-left: 9px solid #3a3a3c; border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
+.seta-rot { position: absolute; font-size: 15px; font-weight: 600; letter-spacing: .12em; color: #6e6e73; }
+
+/* caixas escuras (9, 19) */
+.caixa { position: absolute; background: #1c1c1e; border-radius: 24px; box-shadow: 0 0 0 1px rgba(255,255,255,.07); }
+.caixa .nome { position: absolute; left: 34px; top: 40px; font-size: 30px; font-weight: 600; line-height: 36px; color: #f5f5f7; white-space: nowrap; }
+.caixa .desc { position: absolute; left: 34px; font-size: 21px; line-height: 32px; color: #a1a1a6; white-space: nowrap; }
+.caixa .tag { position: absolute; left: 34px; bottom: 40px; font-size: 16px; font-weight: 600; letter-spacing: .14em; line-height: 20px; color: #64b5ff; }
+.camada { position: absolute; background: #2c2c2e; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+.camada .cn { font-size: 18px; font-weight: 600; color: #f5f5f7; }
+.camada .cs { font-size: 14px; color: #8e8e93; }
+.camada.azul { background: #0a84ff; }
+.camada.azul .cs { color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- 1 capa -->
+<section class="s escuro">
+  <div class="a" style="left:140px;top:150px;width:88px;height:88px;border-radius:22px;background:#1c1c1e;box-shadow:0 0 0 1px rgba(255,255,255,.1)">
+    <svg style="position:absolute;left:21px;top:21px" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></svg>
+  </div>
+  <div class="a" style="left:140px;top:277px;font-size:196px;font-weight:700;letter-spacing:-0.054em;color:#f5f5f7">CineON</div>
+  <div class="a serif" style="left:140px;top:513px;font-size:64px;line-height:71px;color:#e5e5ea">Bilheteria com marcação<br>de assentos.</div>
+  <div class="a" style="left:140px;top:739px;font-size:23px;line-height:39px;color:#a1a1a6">Programação II + Banco de Dados II<br>UNOESC Chapecó · Prof. Álvaro G. Pagliari</div>
+  <div class="a" style="left:140px;top:856px;font-size:21px;color:#6e6e73">Alexandre Reitemeyer · Beatriz Miranda · Gabriel Nassinger · Lucas Santos Magro</div>
+
+  <div class="cel" style="left:1009.5px;top:249.5px;width:330px;height:692px;transform:rotate(-4deg)"><div class="tela"><img src="img/filme-velozes.png"></div></div>
+  <div class="cel" style="left:1469.5px;top:269.5px;width:330px;height:692px;transform:rotate(4deg)"><div class="tela"><img src="img/ingressos.png"></div></div>
+  <div class="cel" style="left:1232px;top:150px;width:356px;height:748px"><div class="tela"><img src="img/mapa-escuro.png"></div></div>
+
+  <div class="a rodape e" style="letter-spacing:.03em">24 de novembro de 2026</div>
+  <div class="a rodape d" style="letter-spacing:.032em">cineon.agp.app.br</div>
+</section>
+
+<!-- 2 um assento -->
+<section class="s escuro">
+  <div class="a rotulo">O PONTO CRÍTICO DO NEGÓCIO</div>
+  <div class="a serif" style="left:140px;top:206px;font-size:190px;line-height:181px;color:#f5f5f7">Um assento.<br><span style="color:#0a84ff">Uma venda.</span></div>
+  <div class="a" style="left:140px;top:634px;font-size:36px;color:#a1a1a6">Nem que duas pessoas cliquem no mesmo instante.</div>
+
+  <div id="assentos" class="a" style="left:1250px;top:300px;display:grid;grid-template-columns:repeat(5,90px);gap:17.5px">
+    <i class="ass"></i><i class="ass oc"></i><i class="ass"></i><i class="ass oc"></i><i class="ass"></i>
+    <i class="ass oc"></i><i class="ass"></i><i class="ass c4">C4</i><i class="ass"></i><i class="ass oc"></i>
+    <i class="ass"></i><i class="ass oc"></i><i class="ass oc"></i><i class="ass"></i><i class="ass"></i>
+  </div>
+  <style>
+    .ass { display: flex; width: 90px; height: 90px; border-radius: 16px; border: 2px solid #3a3a3c; font-style: normal; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: #f5f5f7; }
+    .ass.oc { background: #2c2c2e; border-color: #2c2c2e; }
+    .ass.c4 { background: #0a84ff; border-color: #0a84ff; box-shadow: 0 0 0 9px rgba(10,132,255,.18); }
+    .cli { position: absolute; top: 652px; width: 251px; height: 142px; border-radius: 26px; background: #1c1c1e; }
+    .cli .q { position: absolute; left: 25px; top: 23px; font-size: 16px; font-weight: 600; letter-spacing: .14em; color: #a1a1a6; }
+    .cli .h { position: absolute; left: 25px; top: 52px; font-size: 21px; color: #f5f5f7; }
+    .cli .r { position: absolute; left: 25px; top: 91px; font-size: 21px; font-weight: 600; }
+  </style>
+  <div class="cli" style="left:1250px"><div class="q">ANA</div><div class="h mono">21:00:00.000</div><div class="r" style="color:#30d158">201 · reservado</div></div>
+  <div class="cli" style="left:1519px"><div class="q">BRUNO</div><div class="h mono">21:00:00.000</div><div class="r" style="color:#ff453a">409 · indisponível</div></div>
+
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">02</div>
+</section>
+
+<!-- 3 três papéis -->
+<section class="s cinza">
+  <div class="a rotulo">TELAS POR PAPEL</div>
+  <div class="a titulo uma">Três papéis. <span class="serif">Um só app.</span></div>
+  <style>
+    .papel { position: absolute; top: 340px; }
+    .papel h3 { font-size: 34px; font-weight: 700; letter-spacing: -0.01em; line-height: normal; }
+    .papel p { margin-top: 10px; font-size: 24px; line-height: 35px; color: #6e6e73; letter-spacing: .01em; }
+  </style>
+  <div class="papel" style="left:140px"><h3>Cliente</h3><p>Navega, escolhe o lugar, paga<br>e guarda os ingressos.</p></div>
+  <div class="papel" style="left:706px"><h3>Bilheteria</h3><p>Vende no balcão e<br>valida na entrada.</p></div>
+  <div class="papel" style="left:1273px"><h3>Gerência</h3><p>Monta a programação<br>e lê os resultados.</p></div>
+  <div class="cel" style="left:140px;top:560px;width:400px;height:640px"><div class="tela"><img src="img/papel-cliente.png"></div></div>
+  <div class="cel" style="left:707px;top:560px;width:400px;height:640px"><div class="tela"><img src="img/papel-bilheteria.png"></div></div>
+  <div class="cel" style="left:1273px;top:560px;width:400px;height:640px"><div class="tela"><img src="img/papel-gerencia.png"></div></div>
+</section>
+
+<!-- 4 jornada -->
+<section class="s">
+  <div class="a rotulo">JORNADA DO CLIENTE</div>
+  <div class="a titulo l1" style="top:154px">Do cartaz ao ingresso.</div>
+  <style>
+    .passo { position: absolute; top: 330px; display: flex; align-items: center; gap: 16px; font-size: 27px; font-weight: 500; white-space: nowrap; }
+    .passo i { display: flex; width: 44px; height: 44px; border-radius: 50%; background: #1d1d1f; color: #fff; font-style: normal; font-size: 20px; font-weight: 600; align-items: center; justify-content: center; }
+  </style>
+  <div class="passo" style="left:140px"><i>1</i>Escolhe o filme</div>
+  <div class="passo" style="left:560px"><i>2</i>Marca os lugares</div>
+  <div class="passo" style="left:980px"><i>3</i>Paga em até 10 min</div>
+  <div class="passo" style="left:1400px"><i>4</i>Recebe código único</div>
+  <div class="cel" style="left:140px;top:430px;width:356px;height:770px"><div class="tela"><img src="img/filme-bug.png"></div></div>
+  <div class="cel" style="left:556px;top:430px;width:356px;height:770px"><div class="tela"><img src="img/mapa.png"></div></div>
+  <div class="cel" style="left:972px;top:430px;width:356px;height:770px"><div class="tela"><img src="img/pagamento.png"></div></div>
+  <div class="cel" style="left:1388px;top:430px;width:356px;height:770px"><div class="tela"><img src="img/ingressos-claro.png"></div></div>
+</section>
+
+<!-- 5 cada filme, sua cor -->
+<section class="s cinza">
+  <div class="a rotulo">PÁGINA DO FILME</div>
+  <div class="a titulo l1" style="top:154px">Cada filme,</div>
+  <div class="a titulo l2" style="top:234px"><span class="serif">sua cor.</span></div>
+  <div class="a" style="left:140px;top:376px;font-size:26px;line-height:37px;color:#6e6e73">A paleta sai dos pixels de cada pôster: um<br>fundo escuro e um destaque vivo.</div>
+  <style>
+    .pal { position: absolute; left: 140px; display: flex; align-items: center; gap: 9px; font-size: 22px; color: #6e6e73; }
+    .pal i { width: 34px; height: 34px; border-radius: 9px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+    .pal span { margin-left: 11px; }
+  </style>
+  <div class="pal" style="top:498px"><i style="background:#260e0b"></i><i style="background:#ff6b5b"></i><span>Velozes e Compilados</span></div>
+  <div class="pal" style="top:550px"><i style="background:#0c2434"></i><i style="background:#ffd23f"></i><span>Procurando o Bug</span></div>
+  <div class="pal" style="top:602px"><i style="background:#1c2023"></i><i style="background:#8cc3f7"></i><span>O Poderoso Chatbot</span></div>
+  <div class="pal" style="top:654px"><i style="background:#13202b"></i><i style="background:#f5a524"></i><span>De Volta para o Backup</span></div>
+  <div class="cel" style="left:760px;top:150px;width:330px;height:692px"><div class="tela"><img src="img/filme-velozes.png"></div></div>
+  <div class="cel" style="left:1115px;top:210px;width:330px;height:692px"><div class="tela"><img src="img/filme-bug.png"></div></div>
+  <div class="cel" style="left:1470px;top:150px;width:330px;height:692px"><div class="tela"><img src="img/filme-chatbot.png"></div></div>
+</section>
+
+<!-- 6 trailers -->
+<section class="s escuro">
+  <div class="a rotulo" style="top:96px">TRAILERS</div>
+  <div class="a titulo" style="top:135px;font-size:72px">Cada filme, <span class="serif" style="font-size:84px;color:#a1a1a6">seu trailer.</span></div>
+  <div class="a" style="left:140px;top:252px;font-size:24px;color:#a1a1a6">30 segundos de motion design feitos em código, sem nenhum arquivo de vídeo. Um estilo por gênero.</div>
+  <style>
+    .tr { position: absolute; width: 496px; }
+    .tr img { display: block; width: 496px; height: 279px; border-radius: 14px; box-shadow: 0 0 0 1px rgba(255,255,255,.1); }
+    .tr p { margin-top: 12px; font-size: 21px; font-weight: 600; color: #f5f5f7; white-space: nowrap; }
+    .tr p span { margin-left: 7px; font-size: 19px; font-weight: 400; color: #8e8e93; }
+  </style>
+  <div class="tr" style="left:190px;top:318px"><img src="img/trailer-corrida.png"><p>Corrida <span>Velozes e Compilados</span></p></div>
+  <div class="tr" style="left:712px;top:318px"><img src="img/trailer-oceano.png"><p>Oceano <span>Procurando o Bug</span></p></div>
+  <div class="tr" style="left:1234px;top:318px"><img src="img/trailer-diario.png"><p>Diário <span>Forrest Commit</span></p></div>
+  <div class="tr" style="left:190px;top:656px"><img src="img/trailer-silencio.png"><p>Silêncio <span>O Silêncio dos Servidores</span></p></div>
+  <div class="tr" style="left:712px;top:656px"><img src="img/trailer-conversa.png"><p>Conversa <span>O Poderoso Chatbot</span></p></div>
+  <div class="tr" style="left:1234px;top:656px"><img src="img/trailer-tempo.png"><p>Tempo <span>De Volta para o Backup</span></p></div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">06</div>
+</section>
+
+<!-- 7 bilheteria -->
+<section class="s cinza lista">
+  <div class="a rotulo">BILHETERIA</div>
+  <div class="a titulo l1">Balcão e porta,</div>
+  <div class="a titulo l2"><span class="serif">a mesma regra.</span></div>
+  <div class="div" style="top:417px;width:820px"></div>
+  <div class="item" style="top:437px"><span class="num">01</span><b>Venda no balcão</b> usa o mesmo mapa e o mesmo service<br><span class="cont">da compra pelo app.</span></div>
+  <div class="div" style="top:540px;width:820px"></div>
+  <div class="item" style="top:560px"><span class="num">02</span><b>Validação</b> marca o ingresso como UTILIZADO, e só uma<br><span class="cont">vez.</span></div>
+  <div class="div" style="top:663px;width:820px"></div>
+  <div class="item" style="top:683px"><span class="num">03</span><b>Código errado, já usado ou cancelado</b> é recusado com o<br><span class="cont">motivo.</span></div>
+  <div class="div" style="top:787px;width:820px"></div>
+  <div class="cel" style="left:1050px;top:150px;width:380px;height:800px"><div class="tela"><img src="img/balcao.png"></div></div>
+  <div class="cel" style="left:1460px;top:230px;width:380px;height:800px"><div class="tela"><img src="img/entrada.png"></div></div>
+  <div class="a rodape e">CineON</div>
+</section>
+
+<!-- 8 gerência -->
+<section class="s">
+  <div class="a rotulo">GERÊNCIA</div>
+  <div class="a titulo l1">Vendas e ocupação</div>
+  <div class="a titulo l2"><span class="serif">por sessão.</span></div>
+  <div class="a" style="left:140px;top:392px;font-size:27px;line-height:39px;color:#6e6e73">O relatório sai da função<br><span class="mono" style="font-size:24px;color:#1d1d1f">fn_relatorio_ocupacao</span>, que junta 5 tabelas<br>com CTEs.</div>
+  <div class="a" style="left:140px;top:531px;font-size:27px;line-height:39px;color:#6e6e73">Formulários pedem só o necessário: nada de<br>IDs, nada de totais.</div>
+  <div class="a" style="left:950px;top:170px;width:830px;height:565px;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.07),0 50px 80px -35px rgba(0,0,0,.28)">
+    <div style="height:46px;background:#ececee;position:relative">
+      <i style="position:absolute;left:20px;top:17px;width:13px;height:13px;border-radius:50%;background:#d1d1d6"></i>
+      <i style="position:absolute;left:42px;top:17px;width:13px;height:13px;border-radius:50%;background:#d1d1d6"></i>
+      <i style="position:absolute;left:64px;top:17px;width:13px;height:13px;border-radius:50%;background:#d1d1d6"></i>
+      <div style="position:absolute;left:104px;top:9px;width:222px;height:29px;border-radius:8px;background:#fff;font-size:15px;line-height:29px;padding-left:16px;color:#86868b">cineon / gestão / relatórios</div>
+    </div>
+    <img src="img/relatorio.png" style="display:block;width:830px">
+  </div>
+  <div class="cel" style="left:830px;top:540px;width:280px;height:660px"><div class="tela"><img src="img/nova-sessao.png"></div></div>
+</section>
+
+<!-- 9 arquitetura -->
+<section class="s escuro">
+  <div class="a rotulo">ARQUITETURA</div>
+  <div class="a titulo l1">Dois programas.</div>
+  <div class="a titulo l2"><span class="serif" style="color:#a1a1a6">Uma conversa em JSON.</span></div>
+  <div class="caixa" style="left:140px;top:470px;width:270px;height:330px"><div class="nome">App</div><div class="desc" style="top:91px">Expo · React Native<br>TypeScript</div><div class="tag">WEB · ANDROID ·<br>IOS</div></div>
+  <div class="caixa" style="left:473px;top:470px;width:270px;height:330px"><div class="nome">nginx</div><div class="desc" style="top:91px">proxy reverso<br>certificado TLS</div><div class="tag">EC2</div></div>
+  <div class="caixa" style="left:807px;top:470px;width:640px;height:330px"><div class="nome">API Express</div><div class="tag">NODE.JS · SYSTEMD</div></div>
+  <div class="camada" style="left:841px;top:568px;width:135px;height:146px"><span class="cn">routes</span></div>
+  <div class="camada" style="left:986px;top:568px;width:136px;height:146px"><span class="cn">controllers</span><span class="cs">Zod + DTO</span></div>
+  <div class="camada azul" style="left:1132px;top:568px;width:135px;height:146px"><span class="cn">services</span><span class="cs">regras</span></div>
+  <div class="camada" style="left:1277px;top:568px;width:136px;height:146px"><span class="cn">repositories</span><span class="cs">Prisma</span></div>
+  <div class="caixa" style="left:1510px;top:470px;width:270px;height:330px"><div class="nome">PostgreSQL</div><div class="desc" style="top:91px">gerenciado<br>rede privada</div><div class="tag">RDS</div></div>
+  <div class="seta-rot" style="left:412px;top:605px">HTTPS</div><div class="seta" style="left:424px;top:635px;width:31px"></div>
+  <div class="seta-rot" style="left:756px;top:605px">/API</div><div class="seta" style="left:757px;top:635px;width:32px"></div>
+  <div class="seta-rot" style="left:1462px;top:605px">SSL</div><div class="seta" style="left:1461px;top:635px;width:31px"></div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">09</div>
+</section>
+
+<!-- 10 regra no service -->
+<section class="s cinza">
+  <div class="a rotulo">PROGRAMAÇÃO II</div>
+  <div class="a titulo l1">Cada regra mora</div>
+  <div class="a titulo l2"><span class="serif">no service.</span></div>
+  <style>
+    .camd { position: absolute; left: 140px; width: 720px; border-radius: 20px; background: #fff; }
+    .camd .cn { position: absolute; left: 32px; top: 25px; font-size: 26px; font-weight: 600; }
+    .camd .cd { position: absolute; left: 228px; top: 27px; font-size: 23px; line-height: 33px; color: #6e6e73; white-space: nowrap; }
+    .camd.esc { background: #1d1d1f; color: #fff; }
+    .camd.esc .cd { color: #c7c7cc; }
+  </style>
+  <div class="camd" style="top:470px;height:120px"><div class="cn">Controller</div><div class="cd">Valida a entrada com Zod e devolve DTO.<br>Nenhuma regra.</div></div>
+  <div class="camd esc" style="top:606px;height:153px"><div class="cn">Service</div><div class="cd">Todas as regras: venda única, expiração,<br>prazos, papéis. Sem Express e sem<br>Prisma.</div></div>
+  <div class="camd" style="top:775px;height:119px"><div class="cn">Repository</div><div class="cd">Único lugar com Prisma. Transação por<br>Unidade de Trabalho.</div></div>
+  <div class="codigo" style="left:960px;top:200px;width:820px;height:562px">
+    <div class="cap" style="left:44px;top:41px">SERVICES/REGRASASSENTO.TS</div>
+<pre style="left:44px;top:84px;font-size:21px;line-height:34px"><span class="k">export function</span> <span class="f">estaDisponivel</span>(
+  a: <span class="t">AssentoDaSessao</span>, agora: <span class="t">Date</span>
+): <span class="t">boolean</span> {
+  <span class="k">if</span> (a.status === <span class="str">"LIVRE"</span>) <span class="k">return true</span>;
+  <span class="k">if</span> (a.status === <span class="str">"VENDIDO"</span>) <span class="k">return false</span>;
+  <span class="k">if</span> (a.reservaStatus === <span class="str">"EXPIRADA"</span>
+   || a.reservaStatus === <span class="str">"CANCELADA"</span>) <span class="k">return true</span>;
+  <span class="c">// reservado sem dados visíveis: ocupado</span>
+  <span class="k">if</span> (a.reservaStatus !== <span class="str">"PENDENTE"</span>
+   || a.reservaExpiraEm === <span class="k">null</span>) <span class="k">return false</span>;
+  <span class="c">// reserva vencida já conta como livre</span>
+  <span class="k">return</span> <span class="real">a.reservaExpiraEm.<span class="f">getTime</span>() &lt;= agora.<span class="f">getTime</span>();</span>
+}</pre>
+  </div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">10</div>
+</section>
+
+<!-- 11 dez tabelas -->
+<section class="s">
+  <div class="a rotulo">BANCO DE DADOS II · MODELAGEM</div>
+  <div class="a titulo uma">Dez tabelas, <span class="serif">chaves no lugar.</span></div>
+  <svg class="a" style="left:0;top:0" width="1920" height="1080" fill="none" stroke-width="2.5">
+    <g stroke="#c7c7cc">
+      <path d="M440 405H586M886 405H1032M736 490V565M440 640H586M440 875H586"/>
+      <path d="M440 835H513V690H586"/>
+      <path d="M886 875H959V690H1032"/>
+      <path d="M839 490V522H1628V565" stroke-dasharray="6 6"/>
+    </g>
+    <path d="M886 640H1032M1332 640H1478" stroke="#0a84ff"/>
+  </svg>
+  <style>
+    .tab { position: absolute; width: 300px; height: 160px; border-radius: 16px; background: #f5f5f7; padding: 22px 22px; }
+    .tab h4 { font-family: "JetBrains Mono", monospace; font-size: 21px; font-weight: 500; line-height: 21px; color: #1d1d1f; margin-bottom: 10px; }
+    .tab p { font-family: "JetBrains Mono", monospace; font-size: 17px; line-height: 30px; color: #3a3a3c; white-space: nowrap; }
+    .tab p em { display: inline-block; width: 20px; font-family: Inter, sans-serif; font-style: normal; font-size: 12px; font-weight: 600; color: #8e8e93; }
+    .tab.au { background: #fff; box-shadow: inset 0 0 0 2px #e5e5ea; }
+    .tab.dest { background: #fff; box-shadow: 0 0 0 3px #0a84ff; }
+    .tab.dest p em { color: #0a84ff; }
+  </style>
+  <div class="tab" style="left:140px;top:330px"><h4>usuarios</h4><p><em>PK</em> id</p><p><em>UQ</em> email</p><p>papel</p></div>
+  <div class="tab" style="left:586px;top:330px"><h4>reservas</h4><p><em>FK</em> usuario_id</p><p><em>FK</em> sessao_id</p><p>status · expira_em</p></div>
+  <div class="tab" style="left:1032px;top:330px"><h4>pagamentos</h4><p><em>UQ</em> reserva_id</p><p><em>UQ</em> transacao</p><p>valor</p></div>
+  <div class="tab au" style="left:1478px;top:330px"><h4>log_auditoria</h4><p>tabela · operação</p><p>dados (jsonb)</p><p>via triggers</p></div>
+  <div class="tab" style="left:140px;top:565px"><h4>filmes</h4><p><em>PK</em> id</p><p>titulo</p><p>duracao_min</p></div>
+  <div class="tab" style="left:586px;top:565px"><h4>sessoes</h4><p><em>FK</em> filme_id</p><p><em>FK</em> sala_id</p><p>inicio · fim · preco</p></div>
+  <div class="tab dest" style="left:1032px;top:565px"><h4>assentos_sessao</h4><p><em>PK</em> sessao_id, assento_id</p><p><em>FK</em> reserva_id</p><p>status</p></div>
+  <div class="tab dest" style="left:1478px;top:565px"><h4>ingressos</h4><p><em>UQ</em> codigo</p><p><em>FK</em> sessao_id, assento_id</p><p>status · valor</p></div>
+  <div class="tab" style="left:140px;top:800px;height:131px"><h4>salas</h4><p><em>PK</em> id</p><p><em>UQ</em> nome</p></div>
+  <div class="tab" style="left:586px;top:800px;height:131px"><h4>assentos</h4><p><em>FK</em> sala_id</p><p><em>UQ</em> sala, fila, numero</p></div>
+  <div class="a" style="left:1032px;top:801px;font-size:24px;font-weight:600">Unicidade do assento por sessão</div>
+  <div class="a mono" style="left:1032px;top:846px;font-size:19px;line-height:30px;color:#6e6e73">PRIMARY KEY (sessao_id, assento_id)<br>UNIQUE ux_ingressos_assento_ativo<br><span style="color:#0a84ff">&nbsp;&nbsp;WHERE status &lt;&gt; 'CANCELADO'</span></div>
+</section>
+
+<!-- 12 o banco se defende -->
+<section class="s escuro">
+  <div class="a rotulo">BANCO DE DADOS II · SQL</div>
+  <div class="a titulo uma">O banco também <span class="serif" style="color:#a1a1a6">se defende.</span></div>
+  <style>
+    .st { position: absolute; width: 389px; border-top: 1px solid #3a3a3c; }
+    .st .v { position: absolute; top: 14px; font-size: 104px; font-weight: 700; letter-spacing: -0.04em; color: #f5f5f7; line-height: normal; }
+    .st .l { position: absolute; top: 145px; font-size: 23px; line-height: 32px; color: #a1a1a6; white-space: nowrap; }
+  </style>
+  <div class="st" style="left:140px;top:390px"><div class="v">12</div><div class="l">chaves estrangeiras</div></div>
+  <div class="st" style="left:557px;top:390px"><div class="v">11</div><div class="l">CHECKs de domínio</div></div>
+  <div class="st" style="left:974px;top:390px"><div class="v">27</div><div class="l">índices, 7 únicos e 2 parciais</div></div>
+  <div class="st" style="left:1391px;top:390px"><div class="v">3</div><div class="l">triggers</div></div>
+  <div class="st" style="left:140px;top:595px"><div class="v">1</div><div class="l">EXCLUDE contra sessões<br>sobrepostas</div></div>
+  <div class="st" style="left:557px;top:595px"><div class="v">1</div><div class="l">stored procedure</div></div>
+  <div class="st" style="left:974px;top:595px"><div class="v">1</div><div class="l">função de relatório com CTEs</div></div>
+  <div class="st" style="left:1391px;top:595px"><div class="v">10</div><div class="l">tabelas com chave primária</div></div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">12</div>
+</section>
+
+<!-- 13 regras que o banco garante -->
+<section class="s cinza">
+  <div class="a rotulo">BANCO DE DADOS II · TRIGGER, PROCEDURE, RELATÓRIO</div>
+  <div class="a titulo uma">Regras que <span class="serif">o banco garante.</span></div>
+  <div class="codigo" style="left:140px;top:318px;width:807px;height:382px">
+    <div class="cap" style="left:38px;top:37px">TRIGGER · CRIA O MAPA DA SESSÃO</div>
+<pre style="left:38px;top:80px;font-size:18.5px;line-height:30px"><span class="k">CREATE TRIGGER</span> trg_sessao_gera_mapa
+<span class="k">AFTER INSERT ON</span> sessoes <span class="k">FOR EACH ROW</span>
+<span class="k">EXECUTE FUNCTION</span> <span class="f">fn_trg_sessao_gera_mapa</span>();
+
+<span class="c">-- dentro da função</span>
+<span class="k">INSERT INTO</span> assentos_sessao (sessao_id, assento_id, status)
+<span class="k">SELECT</span> NEW.id, a.id, <span class="str">'LIVRE'</span>
+  <span class="k">FROM</span> assentos a <span class="k">WHERE</span> a.sala_id = NEW.sala_id;</pre>
+  </div>
+  <div class="codigo" style="left:973px;top:318px;width:807px;height:382px">
+    <div class="cap" style="left:38px;top:37px">CONSTRAINT · SALA NÃO TEM DUAS SESSÕES JUNTAS</div>
+<pre style="left:38px;top:80px;font-size:18.5px;line-height:30px"><span class="k">ALTER TABLE</span> sessoes
+  <span class="k">ADD CONSTRAINT</span> ex_sessoes_sala_sem_sobreposicao
+  <span class="k">EXCLUDE USING</span> gist (
+    sala_id <span class="k">WITH</span> =,
+    <span class="f">tstzrange</span>(inicio, fim, <span class="str">'[)'</span>) <span class="k">WITH</span> &amp;&amp;
+  );
+
+<span class="k">CREATE INDEX</span> ix_reservas_pendentes_expira_em
+  <span class="k">ON</span> reservas (expira_em) <span class="k">WHERE</span> status = <span class="str">'PENDENTE'</span>;</pre>
+  </div>
+  <div class="codigo" style="left:140px;top:726px;width:807px;height:231px">
+    <div class="cap" style="left:38px;top:37px">STORED PROCEDURE · GERA OS ASSENTOS DA SALA</div>
+<pre style="left:38px;top:80px;font-size:18.5px;line-height:30px"><span class="k">CALL</span> <span class="f">sp_gerar_assentos_sala</span>(p_sala_id, <span class="n">8</span>, <span class="n">12</span>);
+<span class="c">-- valida o layout e cria fila A..H, 1..12</span>
+<span class="k">RAISE EXCEPTION</span> <span class="str">'Layout inválido: % filas x %'</span>
+  <span class="k">USING ERRCODE</span> = <span class="str">'check_violation'</span>;</pre>
+  </div>
+  <div class="codigo" style="left:973px;top:726px;width:807px;height:231px">
+    <div class="cap" style="left:38px;top:37px">RELATÓRIO · 5 TABELAS</div>
+<pre style="left:38px;top:80px;font-size:18.5px;line-height:30px"><span class="k">SELECT</span> * <span class="k">FROM</span> <span class="f">fn_relatorio_ocupacao</span>(inicio, fim);
+<span class="c">-- sessoes · filmes · salas</span>
+<span class="c">-- + assentos (capacidade) + ingressos (vendas)</span>
+<span class="c">-- receita, vendidos e % de ocupação por sessão</span></pre>
+  </div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">13</div>
+</section>
+
+<!-- 14 concorrência -->
+<section class="s escuro">
+  <div class="a rotulo">TRANSAÇÕES E CONCORRÊNCIA</div>
+  <div class="a" style="left:140px;top:201px;font-size:270px;font-weight:700;letter-spacing:-0.05em;color:#f5f5f7">20</div>
+  <div class="a" style="left:488px;top:438px;font-size:30px;line-height:39px;color:#a1a1a6">pedidos no mesmo<br>assento, ao mesmo tempo</div>
+  <div class="a" style="left:140px;top:567px;width:760px;height:2px;background:#2c2c2e"></div>
+  <div class="a" style="left:140px;top:604px;font-size:120px;font-weight:700;letter-spacing:-0.04em;color:#0a84ff">1</div>
+  <div class="a" style="left:140px;top:747px;font-size:24px;color:#a1a1a6">reserva · <span class="mono">201</span></div>
+  <div class="a" style="left:359px;top:604px;font-size:120px;font-weight:700;letter-spacing:-0.04em;color:#f5f5f7">19</div>
+  <div class="a" style="left:359px;top:747px;font-size:24px;color:#a1a1a6">recusadas · <span class="mono">409</span></div>
+  <div class="a" style="left:140px;top:838px;font-size:22px;color:#6e6e73">Teste automatizado em <span class="mono">tests/concorrencia.test.ts</span></div>
+  <div class="codigo" style="left:1000px;top:250px;width:780px;height:562px;background:#141416;box-shadow:0 0 0 1px rgba(255,255,255,.08)">
+    <div class="cap" style="left:44px;top:41px">REPOSITORIES/MAPAASSENTOSPRISMAREPOSITORY.TS</div>
+<pre style="left:44px;top:84px;font-size:21px;line-height:34px"><span class="c">-- 1. trava, em ordem fixa (sem deadlock)</span>
+<span class="k">SELECT</span> assento_id
+  <span class="k">FROM</span> assentos_sessao
+ <span class="k">WHERE</span> sessao_id = $1
+   <span class="k">AND</span> assento_id = <span class="k">ANY</span>($2)
+ <span class="real"><span class="k">ORDER BY</span> assento_id</span>
+   <span class="real"><span class="k">FOR UPDATE</span></span>;   <span class="c">-- quem chega depois espera</span>
+
+<span class="c">-- 2. lê de novo, já com snapshot novo</span>
+<span class="k">SELECT</span> status, reserva_id, expira_em ...
+
+<span class="c">-- 3. o service decide: livre? reserva.</span>
+<span class="c">--    ocupado? AssentoIndisponivel, 409</span></pre>
+  </div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">14</div>
+</section>
+
+<!-- 15 travar e ler -->
+<section class="s">
+  <div class="a rotulo">O TESTE QUE PEGOU UM BUG</div>
+  <div class="a titulo uma">Travar e ler <span class="serif">não é a mesma coisa.</span></div>
+  <style>
+    .pil { position: absolute; top: 430px; height: 52px; border-radius: 26px; padding: 0 24px; font-size: 23px; font-weight: 600; line-height: 52px; white-space: nowrap; }
+    .leg { position: absolute; top: 795px; font-size: 27px; line-height: 39px; color: #6e6e73; white-space: nowrap; }
+  </style>
+  <div class="pil" style="left:140px;background:rgba(255,69,58,.12);color:#d70015">Antes · 20 de 20 aceitas</div>
+  <div class="pil" style="left:984px;background:rgba(48,209,88,.15);color:#248a3d">Depois · 1 aceita, 19 recusadas</div>
+  <div class="codigo" style="left:140px;top:510px;width:796px;height:250px">
+<pre style="left:48px;top:45px;font-size:25px;line-height:40.7px"><span class="k">SELECT</span> a.*, r.status
+  <span class="k">FROM</span> assentos_sessao a
+  <span class="k">LEFT JOIN</span> reservas r <span class="k">ON</span> ...
+  <span class="k">FOR UPDATE OF</span> a;   <span class="c">-- um comando só</span></pre>
+  </div>
+  <div class="codigo" style="left:984px;top:510px;width:796px;height:250px">
+<pre style="left:48px;top:45px;font-size:25px;line-height:40.7px"><span class="k">SELECT</span> ... <span class="k">FOR UPDATE</span>;   <span class="c">-- 1. trava</span>
+<span class="k">SELECT</span> a.*, r.status       <span class="c">-- 2. lê</span>
+  <span class="k">FROM</span> assentos_sessao a
+  <span class="k">LEFT JOIN</span> reservas r <span class="k">ON</span> ...;</pre>
+  </div>
+  <div class="leg" style="left:140px">Em READ COMMITTED, a linha travada volta atualizada, mas o<br>JOIN ainda lê <b style="color:#1d1d1f;font-weight:600">reservas</b> no snapshot antigo.</div>
+  <div class="leg" style="left:984px">Dois comandos: o segundo enxerga o que já foi confirmado. E<br>reservado sem dados visíveis conta como ocupado.</div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">15</div>
+</section>
+
+<!-- 16 dez minutos -->
+<section class="s cinza lista">
+  <div class="a rotulo">RESERVA TEMPORÁRIA</div>
+  <div class="a titulo l1">Dez minutos.</div>
+  <div class="a titulo l2"><span class="serif">Depois, o lugar volta.</span></div>
+  <div class="div" style="top:417px;width:900px"></div>
+  <div class="item" style="top:437px"><span class="num">01</span><b>Na hora exata:</b> reserva vencida já conta como livre no mapa,<br><span class="cont">mesmo antes do job passar.</span></div>
+  <div class="div" style="top:540px;width:900px"></div>
+  <div class="item" style="top:560px"><span class="num">02</span><b>Job a cada 30 s</b> fecha as vencidas com <span class="mono" style="font-size:24px">FOR UPDATE SKIP</span><br><span class="cont"><span class="mono" style="font-size:24px">LOCKED</span>, sem brigar com um pagamento em andamento.</span></div>
+  <div class="div" style="top:663px;width:900px"></div>
+  <div class="item" style="top:683px"><span class="num">03</span><b>Índice parcial</b> só nas pendentes deixa essa busca leve.</div>
+  <div class="div" style="top:748px;width:900px"></div>
+  <div class="cel" style="left:1310px;top:130px;width:400px;height:844px"><div class="tela"><img src="img/pagamento-timer.png"></div></div>
+</section>
+
+<!-- 17 migrações -->
+<section class="s">
+  <div class="a rotulo">MIGRAÇÃO E ORM</div>
+  <div class="a titulo uma">Tudo versionado <span class="serif">no Prisma Migrate.</span></div>
+  <style>
+    .mig { position: absolute; left: 194px; margin-top: -2px; }
+    .mig .mn { font-family: "JetBrains Mono", monospace; font-size: 30px; font-weight: 500; line-height: 36px; }
+    .mig .md { margin-top: 13px; font-size: 25px; line-height: 30px; color: #6e6e73; white-space: nowrap; }
+    .ponto { position: absolute; left: 144px; width: 18px; height: 18px; border-radius: 50%; background: #0a84ff; }
+    .fio { position: absolute; left: 152px; width: 2px; background: #e5e5ea; }
+  </style>
+  <div class="ponto" style="top:382px"></div><div class="fio" style="top:410px;height:88px"></div>
+  <div class="ponto" style="top:508px"></div><div class="fio" style="top:536px;height:118px"></div>
+  <div class="ponto" style="top:664px"></div><div class="fio" style="top:692px;height:88px"></div>
+  <div class="ponto" style="top:790px"></div>
+  <div class="mig" style="top:374px"><div class="mn">init</div><div class="md">tabelas, PKs, FKs e índices do schema</div></div>
+  <div class="mig" style="top:500px"><div class="mn">objetos_sql</div><div class="md">CHECKs, EXCLUDE, triggers, procedure, função do<br>relatório</div></div>
+  <div class="mig" style="top:656px"><div class="mn">poster_filme</div><div class="md">pôster opcional do filme</div></div>
+  <div class="mig" style="top:782px"><div class="mn">cancelamento_ingresso</div><div class="md">índice único parcial no lugar do único simples</div></div>
+  <div class="codigo" style="left:1000px;top:360px;width:780px;height:530px">
+    <div class="cap" style="left:44px;top:41px">PRISMA/SCHEMA.PRISMA</div>
+<pre style="left:44px;top:84px;font-size:23px;line-height:37.2px"><span class="k">model</span> <span class="t">AssentoSessao</span> {
+  sessaoId  <span class="t">Int</span>
+  assentoId <span class="t">Int</span>
+  status    <span class="t">StatusAssento</span> @default(LIVRE)
+  sessao    <span class="t">Sessao</span>   @relation(...)
+  assento   <span class="t">Assento</span>  @relation(...)
+  reserva   <span class="t">Reserva</span>? @relation(...)
+
+  <span class="real">@@id([sessaoId, assentoId])</span>
+  @@map(<span class="str">"assentos_sessao"</span>)
+}</pre>
+  </div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">17</div>
+</section>
+
+<!-- 18 segurança -->
+<section class="s cinza">
+  <div class="a rotulo">SEGURANÇA E USABILIDADE</div>
+  <div class="a titulo uma">Nada sensível <span class="serif">fica exposto.</span></div>
+  <style>
+    .seg { position: absolute; width: 389px; height: 262px; border-radius: 20px; background: #fff; padding: 40px 36px 0; }
+    .seg h4 { font-size: 28px; font-weight: 600; line-height: 34px; letter-spacing: -0.01em; }
+    .seg p { margin-top: 16px; font-size: 23px; line-height: 33px; color: #6e6e73; }
+  </style>
+  <div class="seg" style="left:140px;top:390px"><h4>Senhas com bcrypt</h4><p>Nunca guardadas em texto.</p></div>
+  <div class="seg" style="left:557px;top:390px"><h4>JWT com prazo</h4><p>Token vencido encerra a<br>sessão no app.</p></div>
+  <div class="seg" style="left:974px;top:390px"><h4>Cofre do aparelho</h4><p>Token no SecureStore do<br>celular.</p></div>
+  <div class="seg" style="left:1391px;top:390px"><h4>HTTPS</h4><p>Certificado Let's Encrypt no<br>nginx.</p></div>
+  <div class="seg" style="left:140px;top:680px"><h4>Segredos fora do Git</h4><p>/etc/cineon.env com<br>permissão 600.</p></div>
+  <div class="seg" style="left:557px;top:680px"><h4>Banco privado</h4><p>RDS sem acesso público,<br>conexão SSL verificada.</p></div>
+  <div class="seg" style="left:974px;top:680px"><h4>Papel conferido duas<br>vezes</h4><p>O app esconde, a API recusa<br>com 403.</p></div>
+  <div class="seg" style="left:1391px;top:680px"><h4>Formulário enxuto</h4><p>Sem IDs nem totais: quem<br>calcula é o servidor.</p></div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">18</div>
+</section>
+
+<!-- 19 em produção -->
+<section class="s escuro">
+  <div class="a rotulo">EM PRODUÇÃO</div>
+  <div class="a titulo uma">Na nuvem. <span class="serif" style="color:#a1a1a6">De verdade.</span></div>
+  <div class="caixa" style="left:140px;top:430px;width:300px;height:330px"><div class="nome">Navegador<br>e celular</div><div class="desc" style="top:126px">o mesmo app, Web ou<br>Expo Go</div><div class="tag">CLIENTE</div></div>
+  <div class="caixa" style="left:660px;top:430px;width:560px;height:330px"><div class="nome">EC2 · t3.micro</div><div class="tag">UBUNTU 24.04 · OHIO</div></div>
+  <div class="camada" style="left:694px;top:528px;width:157px;height:146px"><span class="cn">nginx</span><span class="cs">app em /</span></div>
+  <div class="camada" style="left:861px;top:528px;width:158px;height:146px"><span class="cn">nginx</span><span class="cs">API em /api</span></div>
+  <div class="camada azul" style="left:1029px;top:528px;width:157px;height:146px"><span class="cn">Node.js</span><span class="cs">systemd</span></div>
+  <div class="caixa" style="left:1440px;top:430px;width:340px;height:330px"><div class="nome">RDS<br>PostgreSQL</div><div class="desc" style="top:126px">gerenciado, privado,<br>backup automático</div><div class="tag">DB.T4G.MICRO</div></div>
+  <div class="seta-rot" style="left:520px;top:565px">HTTPS</div><div class="seta" style="left:454px;top:595px;width:188px"></div>
+  <div class="seta-rot" style="left:1313px;top:565px">SSL</div><div class="seta" style="left:1234px;top:595px;width:188px"></div>
+  <div class="a" style="left:140px;top:873px;font-size:64px;font-weight:700;letter-spacing:-0.03em;color:#f5f5f7">R$ 0,00 <span style="font-size:22px;font-weight:400;letter-spacing:0;color:#a1a1a6">no plano gratuito da AWS</span></div>
+  <div class="a mono" style="left:728px;top:906px;font-size:30px;color:#64b5ff">cineon.agp.app.br</div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">19</div>
+</section>
+
+<!-- 20 qualidade -->
+<section class="s">
+  <div class="a rotulo">QUALIDADE</div>
+  <div class="a" style="left:140px;top:188px;font-size:300px;font-weight:700;letter-spacing:-0.06em">17</div>
+  <div class="a serif" style="left:140px;top:520px;font-size:72px">testes automatizados.</div>
+  <style>
+    .barra { position: absolute; left: 1000px; width: 780px; }
+    .barra .bl { display: flex; justify-content: space-between; font-size: 26px; font-weight: 600; }
+    .barra i { display: block; margin-top: 15px; height: 12px; border-radius: 6px; background: #0a84ff; }
+    .nota { position: absolute; left: 1000px; font-size: 23px; color: #6e6e73; }
+    .nota .mono { font-size: 20px; }
+  </style>
+  <div class="barra" style="top:251px"><div class="bl"><span>Integração da API</span><span>8</span></div><i style="width:780px"></i></div>
+  <div class="barra" style="top:346px"><div class="bl"><span>Concorrência</span><span>6</span></div><i style="width:585px"></i></div>
+  <div class="barra" style="top:441px"><div class="bl"><span>Unidade</span><span>3</span></div><i style="width:293px"></i></div>
+  <div class="nota" style="top:562px">TypeScript strict + <span class="mono">noUncheckedIndexedAccess</span></div>
+  <div class="nota" style="top:608px">Relógio injetável: os testes avançam o tempo</div>
+  <div class="nota" style="top:654px">Commits convencionais, documentação em <span class="mono">docs/</span></div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">20</div>
+</section>
+
+<!-- 21 avaliação -->
+<section class="s cinza">
+  <div class="a rotulo" style="top:96px">AVALIAÇÃO</div>
+  <div class="a titulo" style="top:140px;font-size:70px">Onde ver cada critério.</div>
+  <style>
+    .crit { position: absolute; top: 290px; width: 802px; height: 566px; border-radius: 24px; background: #fff; padding: 30px 38px 0; }
+    .crit h5 { font-size: 17px; font-weight: 600; letter-spacing: .17em; color: #86868b; height: 32px; border-bottom: 1px solid #e5e5ea; }
+    .crit .ln { position: relative; height: 79px; border-bottom: 1px solid #e5e5ea; }
+    .crit .ln:last-child { border-bottom: 0; }
+    .crit .pe { position: absolute; font-style: normal; left: 0; top: 28px; width: 36px; height: 36px; border-radius: 50%; background: #f5f5f7; color: #0071e3; font-size: 17px; font-weight: 600; text-align: center; line-height: 36px; }
+    .crit .cn { position: absolute; left: 56px; top: 23px; font-size: 24px; font-weight: 600; }
+    .crit .cd { position: absolute; left: 316px; top: 26px; font-size: 21px; color: #6e6e73; white-space: nowrap; }
+    .alem { position: absolute; left: 140px; top: 935px; display: flex; align-items: center; gap: 12px; }
+    .alem span { font-size: 17px; font-weight: 600; letter-spacing: .17em; color: #86868b; margin-right: 9px; }
+    .alem i { font-style: normal; height: 41px; line-height: 41px; padding: 0 18px; border-radius: 21px; background: #fff; font-size: 19px; font-weight: 500; }
+  </style>
+  <div class="crit" style="left:140px"><h5>PROGRAMAÇÃO II</h5>
+    <div class="ln"><i class="pe">2</i><span class="cn">Acesso a dados</span><span class="cd">repositories/, único lugar com Prisma</span></div>
+    <div class="ln"><i class="pe">4</i><span class="cn">Regras de negócio</span><span class="cd">services/, venda única e expiração</span></div>
+    <div class="ln"><i class="pe">3</i><span class="cn">Interface gráfica</span><span class="cd">3 papéis, sem IDs nem totais</span></div>
+    <div class="ln"><i class="pe">1</i><span class="cn">Arquitetura</span><span class="cd">Express + Prisma + Expo, JSON</span></div>
+    <div class="ln"><i class="pe">+</i><span class="cn">Produção</span><span class="cd">AWS EC2 + RDS gerenciado</span></div>
+  </div>
+  <div class="crit" style="left:978px"><h5>BANCO DE DADOS II</h5>
+    <div class="ln"><i class="pe">2</i><span class="cn">Modelagem</span><span class="cd">PK composta e único parcial</span></div>
+    <div class="ln"><i class="pe">1</i><span class="cn">Migração</span><span class="cd">4 migrações Prisma Migrate</span></div>
+    <div class="ln"><i class="pe">3</i><span class="cn">SQL</span><span class="cd">3 triggers, procedure, 27 índices</span></div>
+    <div class="ln"><i class="pe">2</i><span class="cn">Concorrência</span><span class="cd">FOR UPDATE ordenado, 20 → 1</span></div>
+    <div class="ln"><i class="pe">1</i><span class="cn">Relatório</span><span class="cd">fn_relatorio_ocupacao, 5 tabelas</span></div>
+    <div class="ln"><i class="pe">1</i><span class="cn">ORM</span><span class="cd">schema tipado, $transaction</span></div>
+  </div>
+  <div class="alem"><span>ALÉM DO ENUNCIADO</span><i>Trailer animado por filme</i><i>Página na cor do pôster</i><i>Cancelamento com estorno</i><i>Tema claro e escuro</i><i>Web e celular</i></div>
+  <div class="a rodape e">CineON · o número é o peso de cada critério</div>
+  <div class="a rodape d">21</div>
+</section>
+
+<!-- 22 demonstração -->
+<section class="s escuro">
+  <div class="a rotulo">DEMONSTRAÇÃO</div>
+  <div class="a serif" style="left:140px;top:196px;font-size:190px;line-height:181px;color:#f5f5f7">Agora,<br>ao vivo.</div>
+  <div class="a mono" style="left:140px;top:630px;font-size:40px;color:#64b5ff">cineon.agp.app.br</div>
+  <style>
+    .demo { position: absolute; left: 1080px; width: 700px; height: 84px; border-top: 1px solid #2c2c2e; font-size: 28px; color: #f5f5f7; padding-top: 26px; white-space: nowrap; }
+    .demo b { display: inline-block; width: 56px; color: #0a84ff; }
+  </style>
+  <div class="demo" style="top:250px"><b>01</b>Cliente abre um filme e vê o trailer</div>
+  <div class="demo" style="top:334px"><b>02</b>Escolhe dois lugares e paga</div>
+  <div class="demo" style="top:418px"><b>03</b>Duas abas disputam o mesmo assento</div>
+  <div class="demo" style="top:503px"><b>04</b>Bilheteria vende no balcão</div>
+  <div class="demo" style="top:587px"><b>05</b>Entrada valida o ingresso</div>
+  <div class="demo" style="top:671px;border-bottom:1px solid #2c2c2e"><b>06</b>Gerência abre o relatório</div>
+  <div class="a rodape e">CineON</div>
+  <div class="a rodape d">22</div>
+</section>
+
+<!-- 23 obrigado -->
+<section class="s escuro">
+  <div class="a" style="left:140px;top:190px;width:96px;height:96px;border-radius:24px;background:#1c1c1e;box-shadow:0 0 0 1px rgba(255,255,255,.1)">
+    <svg style="position:absolute;left:23px;top:23px" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></svg>
+  </div>
+  <div class="a serif" style="left:140px;top:310px;font-size:230px;color:#f5f5f7">Obrigado.</div>
+  <style>
+    .fim { position: absolute; top: 736px; }
+    .fim h6 { font-size: 16px; font-weight: 600; letter-spacing: .18em; color: #a1a1a6; }
+    .fim p { margin-top: 13px; font-size: 23px; line-height: 40.5px; color: #f5f5f7; }
+    .fim .mono { margin-top: 15px; font-size: 22px; }
+  </style>
+  <div class="fim" style="left:140px"><h6>EQUIPE</h6><p>Alexandre Reitemeyer<br>Beatriz Miranda<br>Gabriel Nassinger<br>Lucas Santos Magro</p></div>
+  <div class="fim" style="left:487px"><h6>PRODUÇÃO</h6><p class="mono">cineon.agp.app.br</p></div>
+  <div class="fim" style="left:822px"><h6>CÓDIGO</h6><p class="mono">github.com/lucassmagro/CineON</p></div>
+</section>
+
+</body>
+</html>
