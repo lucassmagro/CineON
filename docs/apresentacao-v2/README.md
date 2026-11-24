@@ -27,7 +27,7 @@ As variáveis e os componentes ficam no topo do `<style>` do `index.html`. Slide
 - **Título:** uma linha sempre que couber. Duas só quando o conteúdo fica numa coluna à esquerda.
 - **Cartão:** grupo de itens paralelos (título + descrição, ou número + legenda) fica sempre em cartões iguais (`.cartao.bloco`): papéis (3), restrições (11), segurança (17), critérios (20). Também ganha cartão o que é coisa real: caixa de diagrama, tabela, código, tela, filme. Lista numerada (`.lista`) não tem cartão. Dentro do cartão a descrição é 22.
 - **Destaque:** fundo azul com texto branco (`.destaque`), igual em camada, cartão e tabela.
-- **Números:** azul `01`, `02`… é ordem (`.lista`). Peso de critério são estrelas cinzas.
+- **Números:** azul `01`, `02`… é ordem (`.lista`). Peso de critério é um número cinza.
 - **Cantos:** 12 pra peças pequenas ou internas, 24 pra cartões e código, 42 pro celular. Pílula é sempre a mesma (`.pilula`, 48 de altura).
 - **Sem separadores:** nada de linha entre itens. Linha só em diagrama (setas e ligações entre tabelas).
 - **Rodapé:** número da página em todo slide, menos na capa.
