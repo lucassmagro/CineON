@@ -36,6 +36,7 @@ deploy/    systemd, nginx, script de atualização e permissões do banco (AWS E
 - [Regras de negócio](docs/regras-de-negocio.md)
 - [Transações e concorrência](docs/concorrencia.md)
 - [Deploy na AWS](docs/deploy.md)
+- [Backup do banco](docs/banco/README.md) (`pg_dump` com estrutura e dados)
 
 ## Como rodar localmente
 
