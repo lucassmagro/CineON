@@ -3,20 +3,29 @@
 import * as Haptics from 'expo-haptics';
 import { useRef, useState, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import { useReduzirMovimento } from './movimento';
 
 const PressableAnimado = Animated.createAnimatedComponent(Pressable);
+const naWeb = Platform.OS === 'web';
 
 // apertar é rápido; soltar tem um pouco de balanço, como no iOS
 const molaApertar = { damping: 22, stiffness: 520, mass: 0.6 };
-const molaSoltar = { damping: 14, stiffness: 260, mass: 0.7 };
+// na Web o mouse continua em cima depois do clique, e o balanço parecia tremido
+const molaSoltar = naWeb ? { damping: 26, stiffness: 300, mass: 0.8 } : { damping: 14, stiffness: 260, mass: 0.7 };
+// hover é curva, não mola: entra rápido e assenta devagar
+const curva = Easing.bezier(0.22, 1, 0.36, 1);
+const entrarHover = { duration: 260, easing: curva };
+const sairHover = { duration: 340, easing: curva };
+
+// quanto a linha de lista acende com o mouse em cima (no toque vai até 1)
+const REALCE_HOVER = 0.55;
 
 export type Vibracao = 'leve' | 'media' | 'selecao' | 'nenhuma';
 
 export function vibrar(tipo: Vibracao) {
-  if (Platform.OS === 'web' || tipo === 'nenhuma') return;
+  if (naWeb || tipo === 'nenhuma') return;
   if (tipo === 'selecao') void Haptics.selectionAsync();
   else void Haptics.impactAsync(tipo === 'media' ? Haptics.ImpactFeedbackStyle.Medium : Haptics.ImpactFeedbackStyle.Light);
 }
@@ -56,17 +65,35 @@ export function Tocavel({
   const reduzir = useReduzirMovimento();
   const tamanho = useSharedValue(1);
   const brilho = useSharedValue(0);
+  const apagado = useSharedValue(1);
   const [estado, setEstado] = useState<Estado>({ pressionado: false, hover: false });
   // refs porque o hover e o toque chegam juntos e o state ainda não atualizou
   const apertado = useRef(false);
   const emCima = useRef(false);
 
+  // a opacidade do apertado é animada; o resto (fundo etc.) ainda troca pelo state
+  const { opacity: opacidadeApertado, ...restoApertado } = StyleSheet.flatten(estiloPressionado) ?? {};
+  const opacidadeDoEstilo = StyleSheet.flatten(style)?.opacity;
+  // botão desativado já vem com opacidade; o apertado multiplica em cima dela
+  const opacidadeBase = typeof opacidadeDoEstilo === 'number' ? opacidadeDoEstilo : 1;
+  // só re-renderiza quando alguém usa o estado, senão o hover redesenhava a tela no meio da animação
+  const usaPressionado = typeof children === 'function' || Object.keys(restoApertado).length > 0;
+  const usaHover = typeof children === 'function';
+  const animaTamanho = escala !== 1 || escalaHover !== 1;
+  const animaOpacidade = typeof opacidadeApertado === 'number';
+
   const estiloTamanho = useAnimatedStyle(() => ({ transform: [{ scale: tamanho.get() }] }));
+  const estiloOpacidade = useAnimatedStyle(() => ({ opacity: opacidadeBase * apagado.get() }), [opacidadeBase]);
   const estiloRealce = useAnimatedStyle(() => ({ opacity: brilho.get() }));
 
-  function irPara(valor: number, apertando: boolean) {
-    if (reduzir) return;
-    tamanho.set(withSpring(valor, apertando ? molaApertar : molaSoltar));
+  function apertar(valor: number) {
+    if (!reduzir) tamanho.set(withSpring(valor, molaApertar));
+  }
+  function soltar(valor: number) {
+    if (!reduzir) tamanho.set(withSpring(valor, molaSoltar));
+  }
+  function hover(valor: number, entrando: boolean) {
+    if (!reduzir) tamanho.set(withTiming(valor, entrando ? entrarHover : sairHover));
   }
 
   return (
@@ -79,31 +106,44 @@ export function Tocavel({
       }}
       onPressIn={(e) => {
         apertado.current = true;
-        setEstado((s) => ({ ...s, pressionado: true }));
-        irPara(escala, true);
-        if (realce) brilho.set(withTiming(1, { duration: 60 }));
+        if (usaPressionado) setEstado((s) => ({ ...s, pressionado: true }));
+        apertar(escala);
+        if (animaOpacidade) apagado.set(withTiming(opacidadeApertado, { duration: 90 }));
+        if (realce) brilho.set(withTiming(1, { duration: 70 }));
         onPressIn?.(e);
       }}
       onPressOut={(e) => {
         apertado.current = false;
-        setEstado((s) => ({ ...s, pressionado: false }));
-        irPara(emCima.current && !disabled ? escalaHover : 1, false);
-        if (realce) brilho.set(withTiming(0, { duration: 320 }));
+        if (usaPressionado) setEstado((s) => ({ ...s, pressionado: false }));
+        soltar(emCima.current && !disabled ? escalaHover : 1);
+        if (animaOpacidade) apagado.set(withTiming(1, { duration: 240, easing: curva }));
+        if (realce) brilho.set(withTiming(emCima.current && !disabled ? REALCE_HOVER : 0, { duration: 320, easing: curva }));
         onPressOut?.(e);
       }}
       onHoverIn={(e) => {
         emCima.current = true;
-        setEstado((s) => ({ ...s, hover: true }));
-        if (!disabled && !apertado.current) irPara(escalaHover, false);
+        if (usaHover) setEstado((s) => ({ ...s, hover: true }));
+        if (!disabled && !apertado.current) {
+          hover(escalaHover, true);
+          if (realce) brilho.set(withTiming(REALCE_HOVER, { duration: 180, easing: curva }));
+        }
         onHoverIn?.(e);
       }}
       onHoverOut={(e) => {
         emCima.current = false;
-        setEstado((s) => ({ ...s, hover: false }));
-        if (!apertado.current) irPara(1, false);
+        if (usaHover) setEstado((s) => ({ ...s, hover: false }));
+        if (!apertado.current) {
+          hover(1, false);
+          if (realce) brilho.set(withTiming(0, { duration: 300, easing: curva }));
+        }
         onHoverOut?.(e);
       }}
-      style={[style, estado.pressionado ? estiloPressionado : null, escala !== 1 || escalaHover !== 1 ? estiloTamanho : null]}>
+      style={[
+        style,
+        estado.pressionado ? restoApertado : null,
+        animaTamanho ? estiloTamanho : null,
+        animaOpacidade ? estiloOpacidade : null,
+      ]}>
       {realce ? (
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: realce }, estiloRealce]} />
       ) : null}
