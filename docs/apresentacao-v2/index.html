@@ -170,14 +170,14 @@ b { font-weight: 600; }
     .tl-n { position: absolute; top: 380px; width: 50px; height: 50px; border-radius: 50%; background: var(--azul); color: #fff; font-size: 24px; font-weight: 600; display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
     .tl-t { position: absolute; top: 450px; width: 356px; text-align: center; }
   </style>
-  <div class="tl-fio" style="left:318px;width:1248px"></div>
-  <div class="tl-n" style="left:293px">01</div>
+  <div class="tl-fio" style="left:351px;width:350px"></div><div class="tl-fio" style="left:767px;width:350px"></div><div class="tl-fio" style="left:1183px;width:350px"></div>
+  <div class="tl-n" style="left:293px">1</div>
   <div class="a t-texto tl-t" style="left:140px">Escolhe o filme</div>
-  <div class="tl-n" style="left:709px">02</div>
+  <div class="tl-n" style="left:709px">2</div>
   <div class="a t-texto tl-t" style="left:556px">Marca os lugares</div>
-  <div class="tl-n" style="left:1125px">03</div>
+  <div class="tl-n" style="left:1125px">3</div>
   <div class="a t-texto tl-t" style="left:972px">Paga em até 10 min</div>
-  <div class="tl-n" style="left:1541px">04</div>
+  <div class="tl-n" style="left:1541px">4</div>
   <div class="a t-texto tl-t" style="left:1388px">Recebe código único</div>
   <div class="cel" style="left:140px;top:530px;width:356px;height:770px"><div class="tela"><img src="img/filme-bug.png"></div></div>
   <div class="cel" style="left:556px;top:530px;width:356px;height:770px"><div class="tela"><img src="img/mapa.png"></div></div>
@@ -540,16 +540,16 @@ b { font-weight: 600; }
     .linha { position: absolute; left: 140px; top: 380px; }
     .linha li { position: relative; padding: 0 0 52px 56px; }
     .linha li:last-child { padding-bottom: 0; }
-    .linha li::before { content: ""; position: absolute; left: 6px; top: 12px; width: 18px; height: 18px; border-radius: 50%; background: var(--azul); }
-    .linha li:not(:last-child)::after { content: ""; position: absolute; left: 14px; top: 38px; bottom: 6px; width: 2px; background: var(--traco); }
+    .linha .num { position: absolute; left: 0; top: 4px; width: 30px; height: 30px; border-radius: 50%; background: var(--azul); color: #fff; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+    .linha li:not(:last-child)::after { content: ""; position: absolute; left: 14px; top: 42px; bottom: 4px; width: 2px; background: var(--traco); }
     .linha .mn { font-family: "JetBrains Mono", monospace; font-size: 30px; line-height: 38px; font-weight: 500; }
     .linha .md { margin-top: 6px; font-size: 22px; line-height: 32px; color: var(--mut); white-space: nowrap; }
   </style>
   <ul class="linha">
-    <li><div class="mn">init</div><div class="md">tabelas, PKs, FKs e índices do schema</div></li>
-    <li><div class="mn">objetos_sql</div><div class="md">CHECKs, EXCLUDE, triggers, procedure e função</div></li>
-    <li><div class="mn">poster_filme</div><div class="md">pôster opcional do filme</div></li>
-    <li><div class="mn">cancelamento_ingresso</div><div class="md">índice único parcial no lugar do único simples</div></li>
+    <li><span class="num">1</span><div class="mn">init</div><div class="md">tabelas, PKs, FKs e índices do schema</div></li>
+    <li><span class="num">2</span><div class="mn">objetos_sql</div><div class="md">CHECKs, EXCLUDE, triggers, procedure e função</div></li>
+    <li><span class="num">3</span><div class="mn">poster_filme</div><div class="md">pôster opcional do filme</div></li>
+    <li><span class="num">4</span><div class="mn">cancelamento_ingresso</div><div class="md">índice único parcial no lugar do único simples</div></li>
   </ul>
   <div class="codigo" style="left:1000px;top:380px;width:780px">
     <div class="cap">PRISMA/SCHEMA.PRISMA</div>
