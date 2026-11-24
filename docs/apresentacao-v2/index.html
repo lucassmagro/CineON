@@ -646,29 +646,33 @@ b { font-weight: 600; }
   <div class="rotulo">AVALIAÇÃO</div>
   <div class="titulo">Onde cada critério aparece</div>
   <style>
-    .crit { position: absolute; top: 316px; width: 780px; box-sizing: border-box; padding: 32px 36px 30px; }
+    .crit { position: absolute; top: 316px; width: 780px; box-sizing: border-box; padding: 0; overflow: hidden; }
     .crit-rot { position: absolute; top: 280px; }
-    .crit .cab { display: flex; justify-content: space-between; height: 20px; margin-bottom: 14px; align-items: flex-start; }
-    .crit .ln:last-child { height: 66px; }
-    .crit .cab .t-rotulo { font-size: 16px; }
-    .crit .ln { display: grid; grid-template-columns: 1fr auto; align-items: center; align-content: center; grid-template-rows: auto auto; row-gap: 6px; height: 84px; white-space: nowrap; }
-    .crit .cn { font-size: 26px; line-height: 32px; font-weight: 600; }
-    .crit .cd { grid-column: 1; font-size: 22px; line-height: 28px; color: var(--mut); }
-    .crit .pe { grid-column: 2; grid-row: 1 / span 2; font-size: 22px; color: var(--mut); text-align: right; font-variant-numeric: tabular-nums; }
+    .crit { --hl: color-mix(in srgb, var(--fg) 10%, transparent); --col: 224px 1fr 76px; }
+    .crit .cab { padding: 0 32px; border-bottom: 2px solid var(--hl); display: grid; grid-template-columns: var(--col); column-gap: 20px; height: 64px; margin-bottom: 0; align-items: center; }
+    .crit .cab .t-rotulo { font-size: 18px; }
+    .crit .cab .t-rotulo:last-child { text-align: right; }
+    .crit .ln { display: grid; grid-template-columns: var(--col); column-gap: 20px; align-items: center; height: 76px; padding: 0 32px; white-space: nowrap; }
+    .crit .cn { font-size: 25px; line-height: 30px; font-weight: 600; }
+    .crit .cd { font-size: 20px; line-height: 26px; color: var(--mut); }
+    .crit .ln:nth-child(even) { background: color-mix(in srgb, var(--fg) 3%, transparent); }
+    .crit .pe { justify-self: end; min-width: 44px; height: 44px; padding: 0 12px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 600; color: var(--azul); background: color-mix(in srgb, var(--azul) 14%, transparent); font-variant-numeric: tabular-nums; }
+    .crit .pe.bonus { background: var(--azul); color: #fff; font-size: 18px; }
     .alem { position: absolute; left: 140px; top: 930px; display: flex; align-items: center; gap: 12px; }
     .alem .t-rotulo { margin-right: 12px; }
     .alem .pilula { background: var(--sup); font-weight: 500; }
   </style>
   <div class="t-rotulo crit-rot" style="left:140px">Programação II</div>
-  <div class="cartao crit" style="left:140px"><div class="cab"><span class="t-rotulo">Item</span><span class="t-rotulo">Peso</span></div>
+  <div class="cartao crit" style="left:140px"><div class="cab"><span class="t-rotulo">Item</span><span class="t-rotulo">Descrição</span><span class="t-rotulo">Peso</span></div>
     <div class="ln"><span class="cn">Acesso a dados</span><span class="cd">repositories/, único lugar com Prisma</span><span class="pe">2</span></div>
     <div class="ln"><span class="cn">Regras de negócio</span><span class="cd">services/, venda única e expiração</span><span class="pe">4</span></div>
     <div class="ln"><span class="cn">Interface gráfica</span><span class="cd">3 papéis, sem IDs nem totais</span><span class="pe">3</span></div>
     <div class="ln"><span class="cn">Arquitetura</span><span class="cd">Express + Prisma + Expo, JSON</span><span class="pe">1</span></div>
-    <div class="ln"><span class="cn">Produção</span><span class="cd">AWS EC2 + RDS gerenciado</span><span class="pe">bônus</span></div>
+    <div class="ln"><span class="cn">Produção</span><span class="cd">AWS EC2 + RDS gerenciado</span><span class="pe bonus">bônus</span></div>
+    <div class="ln"><span class="cn">Responsividade</span><span class="cd">Web e celular, layout adaptável</span><span class="pe bonus">bônus</span></div>
   </div>
   <div class="t-rotulo crit-rot" style="left:1000px">Banco de Dados II</div>
-  <div class="cartao crit" style="left:1000px"><div class="cab"><span class="t-rotulo">Item</span><span class="t-rotulo">Peso</span></div>
+  <div class="cartao crit" style="left:1000px"><div class="cab"><span class="t-rotulo">Item</span><span class="t-rotulo">Descrição</span><span class="t-rotulo">Peso</span></div>
     <div class="ln"><span class="cn">Modelagem</span><span class="cd">PK composta e único parcial</span><span class="pe">2</span></div>
     <div class="ln"><span class="cn">Migração</span><span class="cd">4 migrações Prisma Migrate</span><span class="pe">1</span></div>
     <div class="ln"><span class="cn">SQL</span><span class="cd">3 triggers, procedure, 27 índices</span><span class="pe">3</span></div>
@@ -676,7 +680,7 @@ b { font-weight: 600; }
     <div class="ln"><span class="cn">Relatório</span><span class="cd">fn_relatorio_ocupacao, 5 tabelas</span><span class="pe">1</span></div>
     <div class="ln"><span class="cn">ORM</span><span class="cd">schema tipado, $transaction</span><span class="pe">1</span></div>
   </div>
-  <div class="alem"><span class="t-rotulo">Além do enunciado</span><span class="pilula">Trailer por filme</span><span class="pilula">Página na cor do pôster</span><span class="pilula">Cancelamento com estorno</span><span class="pilula">Tema claro e escuro</span><span class="pilula">Web e celular</span></div>
+  <div class="alem"><span class="t-rotulo">Além do enunciado</span><span class="pilula">Trailer por filme</span><span class="pilula">Página na cor do pôster</span><span class="pilula">Cancelamento com estorno</span><span class="pilula">Tema claro e escuro</span></div>
   <div class="rodape d">20</div>
 </section>
 
