@@ -8,7 +8,7 @@ import type { SalaDetalhada } from '@/models/tipos';
 import { mensagemDe } from '@/services/api';
 import { salaService } from '@/services/cineon';
 import { Botao, Campo, Carregando, Contador, Linha, LinhaSwitch, Secao, Tela, Texto, TextoErro } from '@/ui/componentes';
-import { espaco, useMargem, useTema } from '@/ui/tema';
+import { espaco, useTema } from '@/ui/tema';
 import { confirmar } from '@/utils/dialogos';
 
 const MAX_FILAS = 26;
@@ -18,7 +18,6 @@ export default function FormularioSala() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const edicao = id !== undefined;
   const router = useRouter();
-  const margem = useMargem();
 
   const [sala, setSala] = useState<SalaDetalhada | null>(null);
   const [nome, setNome] = useState('');
@@ -75,7 +74,13 @@ export default function FormularioSala() {
   const capacidade = layout.reduce((t, n) => t + n, 0);
 
   return (
-    <Tela>
+    <Tela
+      rodape={
+        <>
+          <TextoErro texto={erro} />
+          <Botao titulo={edicao ? 'Salvar alterações' : `Criar sala com ${capacidade} lugares`} icone={edicao ? 'checkmark' : 'add-circle'} aoTocar={salvar} carregando={salvando} />
+        </>
+      }>
       <Stack.Screen options={{ title: edicao ? 'Editar sala' : 'Nova sala' }} />
 
       <Secao>
@@ -98,11 +103,6 @@ export default function FormularioSala() {
       <Secao titulo={`${capacidade} lugares`}>
         <PreviaLayout filas={layout} />
       </Secao>
-
-      <TextoErro texto={erro} />
-      <View style={{ paddingHorizontal: margem, marginBottom: espaco.xxl }}>
-        <Botao titulo={edicao ? 'Salvar alterações' : 'Criar sala'} aoTocar={salvar} carregando={salvando} />
-      </View>
 
       {edicao ? (
         <Secao>

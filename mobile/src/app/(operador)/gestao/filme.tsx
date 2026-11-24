@@ -8,7 +8,7 @@ import type { Classificacao } from '@/models/tipos';
 import { mensagemDe } from '@/services/api';
 import { filmeService } from '@/services/cineon';
 import { Botao, Campo, Carregando, Linha, LinhaSwitch, Secao, Tela, TextoErro } from '@/ui/componentes';
-import { espaco, useMargem, useTema } from '@/ui/tema';
+import { espaco, useTema } from '@/ui/tema';
 import { Tocavel } from '@/ui/Tocavel';
 import { confirmar } from '@/utils/dialogos';
 
@@ -20,7 +20,6 @@ export default function FormularioFilme() {
   const edicao = id !== undefined;
   const router = useRouter();
   const c = useTema();
-  const margem = useMargem();
 
   const [titulo, setTitulo] = useState('');
   const [genero, setGenero] = useState('');
@@ -83,7 +82,13 @@ export default function FormularioFilme() {
   if (carregando) return <Carregando />;
 
   return (
-    <Tela>
+    <Tela
+      rodape={
+        <>
+          <TextoErro texto={erro} />
+          <Botao titulo={edicao ? 'Salvar alterações' : 'Cadastrar filme'} icone={edicao ? 'checkmark' : 'add-circle'} aoTocar={salvar} carregando={salvando} />
+        </>
+      }>
       <Stack.Screen options={{ title: edicao ? 'Editar filme' : 'Novo filme' }} />
 
       {titulo.trim() ? (
@@ -149,11 +154,6 @@ export default function FormularioFilme() {
           <LinhaSwitch titulo="Em exibição" valor={ativo} aoMudar={setAtivo} ultima />
         </Secao>
       ) : null}
-
-      <TextoErro texto={erro} />
-      <View style={{ paddingHorizontal: margem, marginBottom: espaco.xxl }}>
-        <Botao titulo={edicao ? 'Salvar alterações' : 'Cadastrar filme'} aoTocar={salvar} carregando={salvando} />
-      </View>
 
       {edicao ? (
         <Secao>

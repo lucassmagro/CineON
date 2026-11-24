@@ -463,12 +463,20 @@ export function Segmentos<T extends string>({
   );
 }
 
-// botão de ícone para o canto do cabeçalho (ex.: o "+" de adicionar)
-export function BotaoCabecalho({ icone, rotulo, aoTocar }: { icone: NomeIcone; rotulo: string; aoTocar: () => void }) {
+// botão para o canto do cabeçalho (ex.: o "+" de adicionar); com texto fica mais fácil de achar
+export function BotaoCabecalho({ icone, rotulo, texto, aoTocar }: { icone: NomeIcone; rotulo: string; texto?: string; aoTocar: () => void }) {
   const c = useTema();
   return (
-    <Tocavel onPress={aoTocar} escala={0.82} estiloPressionado={{ opacity: 0.5 }} accessibilityRole="button" accessibilityLabel={rotulo} hitSlop={12} style={{ paddingHorizontal: 6 }}>
-      <Ionicons name={icone} size={26} color={c.azul} />
+    <Tocavel
+      onPress={aoTocar}
+      escala={0.9}
+      estiloPressionado={{ opacity: 0.5 }}
+      accessibilityRole="button"
+      accessibilityLabel={rotulo}
+      hitSlop={12}
+      style={{ paddingHorizontal: 6, flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+      <Ionicons name={icone} size={texto ? 24 : 26} color={c.azul} />
+      {texto ? <Text style={[tipos.corpo, { color: c.azul, fontWeight: '600' }]}>{texto}</Text> : null}
     </Tocavel>
   );
 }

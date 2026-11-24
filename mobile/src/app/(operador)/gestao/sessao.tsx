@@ -80,7 +80,13 @@ function NovaSessao() {
   if (carregando) return <Carregando />;
 
   return (
-    <Tela>
+    <Tela
+      rodape={
+        <>
+          <TextoErro texto={erro} />
+          <Botao titulo="Criar sessão" icone="add-circle" aoTocar={salvar} carregando={salvando} />
+        </>
+      }>
       <Stack.Screen options={{ title: 'Nova sessão' }} />
 
       <Texto tipo="destaque" style={[estilos.rotulo, { marginLeft: margem + espaco.xs }]}>
@@ -143,10 +149,6 @@ function NovaSessao() {
         <Campo rotulo="Preço" value={preco} onChangeText={(t) => setPreco(t.replace(/[^\d,.]/g, ''))} keyboardType="decimal-pad" placeholder="R$ 0,00" ultima />
       </Secao>
 
-      <TextoErro texto={erro} />
-      <View style={{ paddingHorizontal: margem }}>
-        <Botao titulo="Criar sessão" aoTocar={salvar} carregando={salvando} />
-      </View>
     </Tela>
   );
 }

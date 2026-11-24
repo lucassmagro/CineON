@@ -1,13 +1,15 @@
 import { Stack, useRouter } from 'expo-router';
+import { View } from 'react-native';
 
 import { useCarregar } from '@/hooks/useCarregar';
 import { salaService } from '@/services/cineon';
 import { Botao, BotaoCabecalho, Carregando, Etiqueta, Linha, MensagemErro, Secao, Tela, Vazio } from '@/ui/componentes';
-import { useTema } from '@/ui/tema';
+import { espaco, useMargem, useTema } from '@/ui/tema';
 
 export default function ListaSalas() {
   const router = useRouter();
   const c = useTema();
+  const margem = useMargem();
   const vm = useCarregar(salaService.listar);
   const nova = () => router.push('/gestao/sala');
 
@@ -17,11 +19,14 @@ export default function ListaSalas() {
 
   return (
     <Tela aoAtualizar={vm.recarregar} atualizando={vm.atualizando}>
-      <Stack.Screen options={{ headerRight: () => <BotaoCabecalho icone="add" rotulo="Nova sala" aoTocar={nova} /> }} />
+      <Stack.Screen options={{ headerRight: () => <BotaoCabecalho icone="add" rotulo="Nova sala" texto="Nova" aoTocar={nova} /> }} />
+      <View style={{ paddingHorizontal: margem, marginBottom: espaco.xxl }}>
+        <Botao titulo="Cadastrar nova sala" icone="add-circle" aoTocar={nova} />
+      </View>
       {salas.length === 0 ? (
-        <Vazio icone="grid-outline" titulo="Nenhuma sala cadastrada" acao={<Botao titulo="Cadastrar sala" variante="tingido" compacto aoTocar={nova} />} />
+        <Vazio icone="grid-outline" titulo="Nenhuma sala cadastrada" texto="Use o botão acima pra cadastrar a primeira." />
       ) : (
-        <Secao>
+        <Secao titulo={`${salas.length} ${salas.length === 1 ? 'sala' : 'salas'}`} nota="Os assentos de cada sala são criados junto com ela. Toque numa sala pra ver o mapa, editar ou excluir.">
           {salas.map((s, i) => (
             <Linha
               key={s.id}

@@ -6,12 +6,13 @@ import { SeloClassificacao } from '@/components/SeloClassificacao';
 import { useCarregar } from '@/hooks/useCarregar';
 import { filmeService } from '@/services/cineon';
 import { BotaoCabecalho, Botao, Carregando, Etiqueta, Linha, MensagemErro, Secao, Tela, Vazio } from '@/ui/componentes';
-import { useTema } from '@/ui/tema';
+import { espaco, useMargem, useTema } from '@/ui/tema';
 import { duracao } from '@/utils/formatar';
 
 export default function ListaFilmes() {
   const router = useRouter();
   const c = useTema();
+  const margem = useMargem();
   const vm = useCarregar(filmeService.todos);
   const novo = () => router.push('/gestao/filme');
 
@@ -21,11 +22,14 @@ export default function ListaFilmes() {
 
   return (
     <Tela aoAtualizar={vm.recarregar} atualizando={vm.atualizando}>
-      <Stack.Screen options={{ headerRight: () => <BotaoCabecalho icone="add" rotulo="Novo filme" aoTocar={novo} /> }} />
+      <Stack.Screen options={{ headerRight: () => <BotaoCabecalho icone="add" rotulo="Novo filme" texto="Novo" aoTocar={novo} /> }} />
+      <View style={{ paddingHorizontal: margem, marginBottom: espaco.xxl }}>
+        <Botao titulo="Cadastrar novo filme" icone="add-circle" aoTocar={novo} />
+      </View>
       {filmes.length === 0 ? (
-        <Vazio icone="film-outline" titulo="Nenhum filme cadastrado" acao={<Botao titulo="Cadastrar filme" variante="tingido" compacto aoTocar={novo} />} />
+        <Vazio icone="film-outline" titulo="Nenhum filme cadastrado" texto="Use o botão acima pra cadastrar o primeiro." />
       ) : (
-        <Secao>
+        <Secao titulo={`${filmes.length} ${filmes.length === 1 ? 'filme' : 'filmes'}`} nota="Toque num filme pra editar, tirar de exibição ou excluir.">
           {filmes.map((f, i) => (
             <Linha
               key={f.id}
